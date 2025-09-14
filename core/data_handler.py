@@ -220,19 +220,14 @@ class DataHandler:
             return DataHandler._parse_key_colon_value_format(content)
 
     @staticmethod
-    def import_from_file(file_path: str, password_provider: Optional[Callable[[], Optional[str]]] = None) -> List[Dict[str, Any]]:
+    def import_from_file(file_path: str, password: Optional[str] = None) -> List[Dict[str, Any]]: # 修正: 参数类型改变
         logger.info(f"Starting import from file: {file_path}")
         try:
             file_ext = os.path.splitext(file_path)[1].lower()
 
             if file_ext == '.skey':
-                if not password_provider:
-                    raise ValueError("A password provider is required to decrypt .skey files.")
-                
-                password = password_provider()
-                if not password:
-                    logger.warning("Import cancelled by user (no password provided for .skey).")
-                    return []
+                if password is None: # 修正: 检查密码是否存在
+                    raise ValueError("A password is required to decrypt .skey files.")
                 
                 with open(file_path, 'rb') as f:
                     file_content = f.read()

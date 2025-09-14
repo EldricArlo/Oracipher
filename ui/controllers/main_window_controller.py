@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, List, Dict, Any, Optional
 
 from PyQt6.QtWidgets import (QDialog, QApplication, QMainWindow, QWidget, QListWidgetItem)
-from PyQt6.QtCore import QObject
+from PyQt6.QtCore import QObject, Qt # 修正: 在这里导入 Qt
 
 from language import t
 from config import load_settings, save_settings
@@ -16,7 +16,6 @@ from ..dialogs.message_box_dialog import CustomMessageBox
 from ..dialogs.settings_dialog import SettingsDialog
 from ..task_manager import task_manager
 from ..theme_manager import apply_theme, get_current_theme
-# 新增: 导入新的数据IO控制器
 from .data_io_controller import DataIOController
 
 if TYPE_CHECKING:
@@ -40,7 +39,6 @@ class MainWindowController(QObject):
         self.content_view = content_view
         self.data_manager = data_manager
 
-        # 新增: 初始化数据IO控制器，并传入一个回调函数
         self.io_controller = DataIOController(
             main_app_window, data_manager, self.load_initial_data
         )
@@ -210,7 +208,6 @@ class MainWindowController(QObject):
         dialog = SettingsDialog(self.main_app_window)
         
         dialog.change_password_requested.connect(self._handle_change_password)
-        # 修改: 将导入导出信号连接到新的IO控制器
         dialog.import_requested.connect(self.io_controller.handle_import)
         dialog.export_requested.connect(lambda: self.io_controller.handle_export(self.all_entries))
 

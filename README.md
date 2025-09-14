@@ -7,7 +7,7 @@
     <a href="https://www.riverbankcomputing.com/software/pyqt/" title="Framework PyQt6"><img src="https://img.shields.io/badge/Framework-PyQt6-green.svg" alt="Framework PyQt6"></a>
     <a href="https://opensource.org/licenses/MIT" title="License MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License MIT"></a>
     <a href="https://www.microsoft.com/windows" title="Platform Windows"><img src="https://img.shields.io/badge/Platform-Windows-0078D6.svg?logo=windows" alt="Platform Windows"></a>
-    <a href="https://github.com/EldricArlo/Simple-Safekey/blob/10.4.1-version/CONTRIBUTING.md" title="Contributions welcome"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions welcome"></a>
+    <a href="https://github.com/EldricArlo/Simple-Safekey/blob/10.5.0-version/CONTRIBUTING.md" title="Contributions welcome"><img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions welcome"></a>
 </p>
 
 <p align="center">
@@ -190,6 +190,8 @@ SafeKey/
 
 
 本项目采用 MIT 许可证,详情请见 [LICENSE](LICENSE) 文件
+
+
 
 
 
