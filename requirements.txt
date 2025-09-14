@@ -1,0 +1,6 @@
+# requirements.txt
+
+PyQt6
+PyQt6-SVG
+cryptography
+python-dotenv
