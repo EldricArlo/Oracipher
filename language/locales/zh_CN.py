@@ -3,6 +3,7 @@
 translations = {
     "2fa_delete_denied_title": "删除被阻止",
     "2fa_delete_denied_message": "此条目受两步验证 (2FA) 保护，无法直接删除。\n\n请先进入编辑模式，清除该条目的2FA密钥后，再执行删除操作。",
+    "button_2fa_remove_key": "移除密钥",
     "settings_section_general": "常规设置",
     "settings_section_security": "安全设置",
     "settings_section_data": "数据管理",
@@ -102,15 +103,30 @@ translations = {
         <h4>核心安全架构</h4>
         <p>您的安全是我们的最高优先级。Oracipher 建立在经过验证的、现代的密码学原则之上：</p>
         <ul>
-            <li><strong>零知识:</strong> 您的主密码是您的私钥。它<strong>绝不会</strong>被存储在您的设备上。</li>
-            <li><strong>密钥派生 (Argon2id):</strong> 我们使用 Argon2id 将您的主密码转换为一个强大的加密密钥。</li>
-            <li><strong>认证加密 (AES-256):</strong> 您保险库中的所有数据都使用 AES-256 进行加密。</li>
+            <li><strong>零知识 (Zero-Knowledge):</strong> 您的主密码是您的私钥。它<strong>绝不会</strong>被存储在您的设备上，也绝不会被传输到任何地方。我们无法访问、查看或为您恢复它。<em>您是唯一的控制者。</em></li>
+            <li><strong>密钥派生 (Argon2id):</strong> 我们使用 Argon2id 将您的主密码转换为一个强大的加密密钥。这是一个内存困难型函数，可以有效抵御暴力破解攻击。</li>
+            <li><strong>认证加密 (AES-256):</strong> 您保险库中的所有数据都使用 AES-256-GCM 进行加密。这同时确保了数据的机密性（您的数据是秘密的）和完整性（您的数据无法被悄悄篡改）。</li>
         </ul>
         <h4>您的隐私承诺</h4>
         <p>我们坚信，您的数据只属于您自己。</p>
         <ul>
-            <li><strong>本地优先存储:</strong> 您的整个加密保险库完全存储在您本地设备中。</li>
-            <li><strong>无追踪，无分析:</strong> 本应用程序不收集任何使用数据。</li>
+            <li><strong>本地优先存储:</strong> 您的整个加密保险库完全存储在您的本地设备中。没有云服务器，您的数据除非您明确导出，否则绝不会离开您的计算机。</li>
+            <li><strong>无追踪，无分析:</strong> 本应用程序不收集任何使用数据、遥测信息或崩溃报告。您在应用内的所有活动都只属于您自己。</li>
+        </ul>
+        <hr>
+        <h4>数据管理</h4>
+        <p>您可以通过设置中的导入和导出功能完全控制您的数据。</p>
+        <ul>
+            <li><strong>安全备份 (.skey):</strong> <em>.skey</em> 格式是备份保险库的推荐方式。它是一个完全加密的文件，包含了您的所有条目，并受您的主密码保护。</li>
+            <li><strong>非安全导出 (.csv):</strong> 提供CSV格式是为了与其他应用程序兼容。<strong>警告：</strong>CSV文件是一个纯文本文件。任何能访问此文件的人都可以读取您所有的用户名和密码。请极其谨慎地使用此格式。</li>
+        </ul>
+        <hr>
+        <h4>关于与联系</h4>
+        <p>Oracipher 是一个注重安全和隐私的开源项目。</p>
+        <ul>
+            <li><strong>发现问题或有功能建议？</strong>欢迎在我们的 GitHub 仓库中提交 Issue。</li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/your-repo/oracipher">github.com/your-repo/oracipher</a></li>
+            <li><strong>联系开发者:</strong> <a href="mailto:developer@example.com">developer@example.com</a></li>
         </ul>
     """,
     "change_pass_title": "修改主密码",
@@ -163,5 +179,9 @@ translations = {
     "warning_unsecure_export_title": "安全警告",
     "warning_unsecure_export_text": "您即将将数据导出为未加密的 CSV 文件。此文件为纯文本，任何人都可以读取您的密码。如需备份，请务必使用安全的 .skey 格式。\n\n您理解此风险并确定要继续吗？",
     "warning_include_totp_title": "包含 TOTP 密钥？",
-    "warning_include_totp_text": "您是否要在未加密的CSV文件中包含2FA/TOTP密钥？\n\n警告：这样做极度危险！任何能接触到此文件的人都将能够生成您的两步验证码。\n\n您确定要继续吗？"
+    "warning_include_totp_text": "您是否要在未加密的CSV文件中包含2FA/TOTP密钥？\n\n警告：这样做极度危险！任何能接触到此文件的人都将能够生成您的两步验证码。\n\n您确定要继续吗？",
+    "settings_auto_lock_title": "自动锁定保险库",
+    # "settings_auto_lock_desc": "在一段时间无操作后，自动锁定保险库以保护您的数据安全。",
+    # "minutes_suffix": "分钟",
+    "settings_auto_lock_desc_3min": "在 3 分钟无操作后，自动锁定保险库以保护您的数据安全。",
 }

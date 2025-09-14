@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class UnlockScreen(QWidget):
     unlocked = pyqtSignal()
+    exit_requested = pyqtSignal() # 新增
 
     def __init__(self, crypto_handler: CryptoHandler, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -34,7 +35,6 @@ class UnlockScreen(QWidget):
         layout = QVBoxLayout(container)
         layout.setSpacing(20)
         
-        # 修正: 恢复为纯文本标签
         self.logo_label = QLabel()
         self.logo_label.setObjectName("logoLabel")
         self.logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -56,7 +56,7 @@ class UnlockScreen(QWidget):
         
         self.exit_button = QPushButton()
         self.exit_button.setObjectName("unlockExitButton")
-        self.exit_button.clicked.connect(self.parent().close)
+        self.exit_button.clicked.connect(self.exit_requested.emit) # 修改
         
         layout.addWidget(self.logo_label)
         layout.addWidget(self.welcome_label)
@@ -79,7 +79,6 @@ class UnlockScreen(QWidget):
             self.password_input.setPlaceholderText(t.get('unlock_placeholder'))
             self.action_button.setText(t.get('unlock_button'))
 
-        # 修正: 重新设置文本
         self.logo_label.setText(t.get('app_title'))
         self.exit_button.setText(t.get('button_exit'))
 

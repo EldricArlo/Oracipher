@@ -20,3 +20,29 @@
     border-top: 1px solid rgba(181, 177, 176, 0.5); border-left: 1px solid rgba(181, 177, 176, 0.5);
     border-bottom: 1px solid rgba(255, 255, 255, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.9);
 }
+
+/*******************************************************
+ * [Light Theme] 3.5 CheckBox
+ *******************************************************/
+QCheckBox { 
+    color: #5E5C5B;
+    font-weight: 600;
+    spacing: 10px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border-top: 1px solid rgba(181, 177, 176, 0.5);
+    border-left: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+    border-right: 1px solid rgba(255, 255, 255, 0.9);
+}
+QCheckBox::indicator:hover {
+    background-color: #F5F5F5;
+}
+QCheckBox::indicator:checked {
+    image: url(ui/assets/icons/check_light.svg);
+    border: 1px solid #8C8685;
+}

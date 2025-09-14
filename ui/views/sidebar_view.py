@@ -4,8 +4,8 @@ import logging
 from typing import Optional, List, Dict
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLayout, QLabel, QHBoxLayout
-from PyQt6.QtCore import pyqtSignal, Qt
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import pyqtSignal, Qt, QTimer, QEvent, QObject
+from PyQt6.QtGui import QPixmap, QShowEvent
 
 from language import t
 from core.icon_fetcher import IconFetcher
@@ -21,7 +21,63 @@ class SidebarView(QWidget):
         super().__init__(parent)
         self.setObjectName("sidebarContainer")
         self.category_buttons: dict[str, AnimatedBookmarkButton] = {}
+        
+        self._filter_installed = False
+        self.hover_check_timer = QTimer(self)
+        self.hover_check_timer.setInterval(100) # 每秒检查10次，响应迅速
+        self.hover_check_timer.timeout.connect(self._continuously_check_hover_states)
+
         self.init_ui()
+    
+    def showEvent(self, event: QShowEvent) -> None:
+        """在控件首次显示时，为父窗口安装事件过滤器。"""
+        super().showEvent(event)
+        if not self._filter_installed:
+            parent_window = self.window()
+            if parent_window:
+                parent_window.installEventFilter(self)
+                self._filter_installed = True
+                # 检查窗口是否已经激活，如果是，则立即启动定时器
+                if parent_window.isActiveWindow():
+                    self.hover_check_timer.start()
+
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+        """
+        监听父窗口的激活/非激活事件，以启动/停止悬停状态检查定时器。
+        这是为了优化性能，仅在应用处于前台时才进行检查。
+        """
+        if watched == self.window():
+            if event.type() == QEvent.Type.WindowActivate:
+                if not self.hover_check_timer.isActive():
+                    self.hover_check_timer.start()
+            elif event.type() == QEvent.Type.WindowDeactivate:
+                if self.hover_check_timer.isActive():
+                    self.hover_check_timer.stop()
+                    # 当窗口失活时，强制所有按钮收缩
+                    self._force_collapse_all()
+
+        return super().eventFilter(watched, event)
+        
+    def _get_all_buttons(self) -> List[AnimatedBookmarkButton]:
+        """获取侧边栏上所有动画按钮的列表。"""
+        return list(self.category_buttons.values()) + [
+            self.add_account_button, self.generate_password_button,
+            self.settings_button, self.minimize_button, self.exit_button
+        ]
+
+    def _continuously_check_hover_states(self) -> None:
+        """
+        定时器触发时调用，遍历所有动画按钮，并调用它们的状态检查方法来强制同步UI。
+        """
+        for button in self._get_all_buttons():
+            if button.isVisible():
+                button.check_hover_state_and_correct()
+
+    def _force_collapse_all(self) -> None:
+        """当窗口失活时，强制收缩所有按钮。"""
+        for button in self._get_all_buttons():
+            if button.isVisible() and button.width() != button.compact_width:
+                button._collapse()
 
     def init_ui(self) -> None:
         main_layout = QVBoxLayout(self)

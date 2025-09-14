@@ -8,14 +8,11 @@ from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-# 加载 .env 文件中的环境变量 (如果存在)
 load_dotenv()
 
-# 从环境变量获取数据和日志目录路径，如果未设置，则使用默认值
 APP_DATA_DIR: str = os.getenv("ORACIPHER_DATA_PATH", "oracipher_data")
 APP_LOG_DIR: str = os.getenv("ORACIPHER_LOG_PATH", "logs")
 
-# 设置文件的完整路径
 SETTINGS_FILE_PATH: str = os.path.join(APP_DATA_DIR, "settings.json")
 
 def get_default_settings() -> Dict[str, Any]:
@@ -24,7 +21,9 @@ def get_default_settings() -> Dict[str, Any]:
     """
     return {
         "language": "zh_CN",
-        "theme": "light"  # 可选值: "light", "dark"
+        "theme": "light",
+        "auto_lock_enabled": True,
+        "auto_lock_timeout_minutes": 3 # 修改: 默认值改为3
     }
 
 def load_settings() -> Dict[str, Any]:
@@ -43,7 +42,6 @@ def load_settings() -> Dict[str, Any]:
             save_settings(default_settings)
             return default_settings
 
-        # 检查是否有新的设置项需要从默认配置中添加
         is_dirty = False
         for key, value in default_settings.items():
             if key not in settings:

@@ -4,7 +4,7 @@ import logging
 import urllib.parse
 from typing import Optional, TYPE_CHECKING
 
-from PyQt6.QtWidgets import QFileDialog, QWidget, QLabel
+from PyQt6.QtWidgets import QFileDialog, QWidget, QLabel, QPushButton
 
 from PIL import Image
 from pyzbar.pyzbar import decode
@@ -22,18 +22,22 @@ class TwoFAManager:
     def __init__(
         self,
         parent_widget: QWidget,
-        status_label: QLabel
+        status_label: QLabel,
+        remove_key_btn: QPushButton  # 修改: 接收移除按钮
     ):
         self.parent = parent_widget
         self.status_label = status_label
+        self.remove_key_btn = remove_key_btn # 修改: 保存移除按钮的引用
         self.totp_secret: Optional[str] = None
 
     def set_initial_secret(self, secret: Optional[str]) -> None:
         self.totp_secret = secret
         if self.totp_secret:
             self.status_label.setText(t.get('2fa_status_enabled'))
+            self.remove_key_btn.setVisible(True) # 修改: 如果有密钥则显示移除按钮
         else:
             self.status_label.setText(t.get('2fa_status_not_setup'))
+            self.remove_key_btn.setVisible(False) # 修改: 如果没有密钥则隐藏移除按钮
 
     def open_manual_setup(self) -> None:
         dialog = EnterSecretDialog(self.parent)
@@ -42,11 +46,20 @@ class TwoFAManager:
             if secret:
                 self.totp_secret = secret
                 self.status_label.setText(t.get('2fa_status_enabled_pending_save'))
+                self.remove_key_btn.setVisible(True) # 修改: 设置新密钥后显示移除按钮
                 logger.info("New 2FA secret has been set manually.")
             else:
-                self.totp_secret = None
-                self.status_label.setText(t.get('2fa_status_not_setup'))
-                logger.info("2FA secret has been cleared.")
+                # 用户可能在对话框中清空了密钥，这里我们不做任何事，保留原有密钥
+                # 只有clear_secret才能清空
+                pass
+
+    # 新增: 清除密钥的逻辑
+    def clear_secret(self) -> None:
+        """清除当前的TOTP密钥。"""
+        self.totp_secret = None
+        self.status_label.setText(t.get('2fa_status_not_setup'))
+        self.remove_key_btn.setVisible(False)
+        logger.info("2FA secret has been cleared by user.")
 
     def scan_qr_from_file(self) -> None:
         """
@@ -90,6 +103,7 @@ class TwoFAManager:
                 if secret:
                     self.totp_secret = secret.strip().replace(" ", "").upper()
                     self.status_label.setText(t.get('2fa_status_enabled_pending_save'))
+                    self.remove_key_btn.setVisible(True) # 修改: 从QR码设置后显示移除按钮
                     logger.info("Successfully set 2FA secret from image file.")
                     return
         except Exception as e:

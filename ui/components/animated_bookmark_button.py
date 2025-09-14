@@ -46,18 +46,22 @@ class AnimatedBookmarkButton(QWidget):
         self.opacity_animation = QPropertyAnimation(self.text_opacity_effect, b"opacity")
         self.opacity_animation.setDuration(150)
 
-    def paintEvent(self, event: QPaintEvent) -> None:
+    def check_hover_state_and_correct(self):
         """
-        重写 paintEvent 以确保 QSS 样式能正确绘制控件的背景和边框。
+        检查鼠标当前是否在此按钮上方，并强制更新视觉状态以匹配。
+        这是解决最小化/恢复后动画状态不同步的核心。
         """
-        opt = QStyleOption()
-        opt.initFrom(self)
-        p = QPainter(self)
-        self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
-        super().paintEvent(event)
+        if self:
+            is_under_mouse = self.rect().contains(self.mapFromGlobal(self.cursor().pos()))
+            
+            if is_under_mouse:
+                if self.width() != self.extended_width:
+                    self._expand()
+            else:
+                if self.width() != self.compact_width:
+                    self._collapse()
 
-    def enterEvent(self, event: QEvent) -> None:
-        """当鼠标进入控件区域时，触发展开动画。"""
+    def _expand(self):
         self.animation.stop()
         self.opacity_animation.stop()
         self.animation.setEndValue(self.extended_width)
@@ -65,10 +69,8 @@ class AnimatedBookmarkButton(QWidget):
         self.opacity_animation.setStartValue(self.text_opacity_effect.opacity())
         self.opacity_animation.setEndValue(1.0)
         self.opacity_animation.start()
-        super().enterEvent(event)
 
-    def leaveEvent(self, event: QEvent) -> None:
-        """当鼠标离开控件区域时，触发收缩动画。"""
+    def _collapse(self):
         self.animation.stop()
         self.opacity_animation.stop()
         self.animation.setEndValue(self.compact_width)
@@ -76,10 +78,24 @@ class AnimatedBookmarkButton(QWidget):
         self.opacity_animation.setStartValue(self.text_opacity_effect.opacity())
         self.opacity_animation.setEndValue(0.0)
         self.opacity_animation.start()
+
+    def paintEvent(self, event: QPaintEvent) -> None:
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
+        super().paintEvent(event)
+
+    # 我们仍然保留 enter/leaveEvent 以便在正常情况下获得最快的响应
+    def enterEvent(self, event: QEvent) -> None:
+        self._expand()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        self._collapse()
         super().leaveEvent(event)
         
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        """处理鼠标点击事件，并发出 `clicked` 信号。"""
         if event.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit()
         super().mousePressEvent(event)

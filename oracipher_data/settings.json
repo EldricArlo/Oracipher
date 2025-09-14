@@ -1,4 +1,6 @@
 {
     "language": "zh_CN",
-    "theme": "light"
+    "theme": "light",
+    "auto_lock_enabled": true,
+    "auto_lock_timeout_minutes": 3
 }

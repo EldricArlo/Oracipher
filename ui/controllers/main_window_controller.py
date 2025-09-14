@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, List, Dict, Any, Optional
 
 from PyQt6.QtWidgets import (QDialog, QApplication, QMainWindow, QWidget, QListWidgetItem)
-from PyQt6.QtCore import QObject, Qt # 修正: 在这里导入 Qt
+from PyQt6.QtCore import QObject, Qt, pyqtSignal
 
 from language import t
 from config import load_settings, save_settings
@@ -26,6 +26,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 class MainWindowController(QObject):
+    settings_changed = pyqtSignal() # 新增: 用于通知主窗口设置已更改
+
     def __init__(
         self,
         main_app_window: QMainWindow,
@@ -106,7 +108,9 @@ class MainWindowController(QObject):
                     term in entry.get('name', '').lower() or
                     term in entry.get('category', '').lower() or
                     term in entry.get('details', {}).get('username', '').lower() or
-                    term in entry.get('details', {}).get('url', '').lower()
+                    term in entry.get('details', {}).get('url', '').lower() or
+                    term in entry.get('details', {}).get('notes', '').lower() or # 修改: 增加搜索范围
+                    term in entry.get('details', {}).get('backup_codes', '').lower() # 修改: 增加搜索范围
                 )
             ]
         else:
@@ -213,19 +217,33 @@ class MainWindowController(QObject):
 
         original_lang = t._language
         original_theme = get_current_theme()
+        original_settings = load_settings() # 新增
 
         if dialog.exec():
-            selected_lang = dialog.get_selected_language()
-            selected_theme = dialog.get_selected_theme()
+            # 修改: 将所有设置项的获取和保存逻辑集中处理
+            settings_changed = False
+            new_settings = original_settings.copy()
 
-            settings_changed = (selected_lang != original_lang) or \
-                               (selected_theme != original_theme)
+            selected_lang = dialog.get_selected_language()
+            if new_settings['language'] != selected_lang:
+                new_settings['language'] = selected_lang
+                settings_changed = True
+                
+            selected_theme = dialog.get_selected_theme()
+            if new_settings['theme'] != selected_theme:
+                new_settings['theme'] = selected_theme
+                settings_changed = True
+
+            auto_lock_enabled, auto_lock_minutes = dialog.get_auto_lock_settings()
+            if new_settings['auto_lock_enabled'] != auto_lock_enabled or \
+               new_settings['auto_lock_timeout_minutes'] != auto_lock_minutes:
+                new_settings['auto_lock_enabled'] = auto_lock_enabled
+                new_settings['auto_lock_timeout_minutes'] = auto_lock_minutes
+                settings_changed = True
 
             if settings_changed:
-                settings = load_settings()
-                settings['language'] = selected_lang
-                settings['theme'] = selected_theme
-                save_settings(settings)
+                save_settings(new_settings)
+                self.settings_changed.emit() # 新增: 发出信号通知主窗口
             
             if selected_theme != original_theme:
                 self._apply_theme(selected_theme)

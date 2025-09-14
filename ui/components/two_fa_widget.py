@@ -60,6 +60,7 @@ class TwoFAWidget(QWidget):
         copy_button.setText("")
         copy_button.setFixedSize(32, 32)
         copy_button.setToolTip(t.get('button_copy'))
+        copy_button.setFocusPolicy(Qt.FocusPolicy.NoFocus) # 修改: 解决焦点问题
         copy_button.clicked.connect(self.copy_to_clipboard)
 
         value_layout.addWidget(self.code_display, 1)

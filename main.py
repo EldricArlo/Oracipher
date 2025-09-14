@@ -5,7 +5,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
-from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication, QMessageBox
 from PyQt6.QtGui import QImageReader, QIcon
 
 from config import APP_LOG_DIR, load_settings
@@ -43,7 +43,14 @@ def main():
     
     supported_formats = [f.data().decode('ascii').lower() for f in QImageReader.supportedImageFormats()]
     if 'svg' not in supported_formats:
+        # 修改: 在记录日志后，弹出对话框并退出
         logger.critical("CRITICAL ERROR: SVG image format is NOT supported.")
+        QMessageBox.critical(
+            None,
+            "Critical Error",
+            "This application requires SVG image format support, which is missing in your current Qt installation.\nThe application will now exit."
+        )
+        sys.exit(1)
 
     try:
         settings = load_settings()
@@ -56,7 +63,6 @@ def main():
 
     from app import SafeKeyApp
 
-    # 修正: 添加健壮的图标加载逻辑
     logo_path = resource_path("ui/assets/icons/logo.png")
     app_icon = QIcon(logo_path)
     if app_icon.isNull():

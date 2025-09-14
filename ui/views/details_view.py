@@ -135,7 +135,6 @@ class DetailsView(QWidget):
             value_display = QTextEdit(value)
             value_display.setReadOnly(True)
             value_display.setObjectName("fieldValueDisplay")
-            # 修正: 移除所有手动调整高度的逻辑
         else:
             value_display = QLineEdit(value)
             value_display.setReadOnly(True)
@@ -146,10 +145,12 @@ class DetailsView(QWidget):
         
         if is_password:
             show_hide_btn = QPushButton(t.get('button_show')); show_hide_btn.setObjectName("inlineButton"); show_hide_btn.setCheckable(True)
+            show_hide_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus) # 修改: 解决焦点问题
             show_hide_btn.toggled.connect(lambda checked, v=value_display, b=show_hide_btn: self._toggle_password_visibility(checked, v, b))
             value_layout.addWidget(show_hide_btn)
         
         copy_btn = QPushButton(t.get('button_copy')); copy_btn.setObjectName("inlineButton")
+        copy_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus) # 修改: 解决焦点问题
         is_sensitive = is_password or title == t.get('label_backup_codes')
         copy_btn.clicked.connect(lambda: self._copy_to_clipboard(value, copy_btn, is_sensitive))
         value_layout.addWidget(copy_btn)
@@ -195,6 +196,3 @@ class DetailsView(QWidget):
             child = layout.takeAt(0)
             if child.widget(): child.widget().deleteLater()
             elif child.layout(): self._clear_recursive(child.layout())
-
-    # 移除不再使用的方法
-    # def _adjust_textedit_height(...)

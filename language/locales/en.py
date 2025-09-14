@@ -3,6 +3,7 @@
 translations = {
     "2fa_delete_denied_title": "Deletion Denied",
     "2fa_delete_denied_message": "This entry is protected by 2FA and cannot be deleted directly.\n\nPlease edit the entry and remove the 2FA secret key first.",
+    "button_2fa_remove_key": "Remove Key",
     "settings_section_general": "General",
     "settings_section_security": "Security",
     "settings_section_data": "Data Management",
@@ -103,14 +104,29 @@ translations = {
         <p>Your security is our highest priority. Oracipher is built on a foundation of proven, modern cryptographic principles:</p>
         <ul>
             <li><strong>Zero-Knowledge:</strong> Your Master Password is your private key. It is <em>never</em> stored on your device or transmitted anywhere. We cannot access, view, or recover it for you. <em>You are in sole control.</em></li>
-            <li><strong>Key Derivation (Argon2id):</strong> We use Argon2id to transform your Master Password into a powerful encryption key.</li>
-            <li><strong>Authenticated Encryption (AES-256):</strong> All data in your vault is encrypted using AES-256.</li>
+            <li><strong>Key Derivation (Argon2id):</strong> We use Argon2id to transform your Master Password into a powerful encryption key. This is a memory-hard function that provides strong resistance against brute-force attacks.</li>
+            <li><strong>Authenticated Encryption (AES-256):</strong> All data in your vault is encrypted using AES-256 with GCM. This ensures both confidentiality (your data is secret) and integrity (your data cannot be tampered with undetected).</li>
         </ul>
         <h4>Your Privacy Commitment</h4>
         <p>We believe that your data belongs to you, and only you.</p>
         <ul>
-            <li><strong>Local-First Storage:</strong> Your entire encrypted vault is stored exclusively on your local device.</li>
-            <li><strong>No Tracking, No Analytics:</strong> This application does not collect any usage data.</li>
+            <li><strong>Local-First Storage:</strong> Your entire encrypted vault is stored exclusively on your local device. There is no cloud server, and your data never leaves your computer unless you explicitly export it.</li>
+            <li><strong>No Tracking, No Analytics:</strong> This application does not collect any usage data, telemetry, or crash reports. Your activity within the app is your business alone.</li>
+        </ul>
+        <hr>
+        <h4>Data Management</h4>
+        <p>You have full control over your data through the Import and Export functions in the settings.</p>
+        <ul>
+            <li><strong>Secure Backup (.skey):</strong> The <em>.skey</em> format is the recommended way to back up your vault. It's a fully encrypted file that contains all your entries and is protected by your master password.</li>
+            <li><strong>Unsecured Export (.csv):</strong> The CSV format is provided for compatibility with other applications. <strong>Warning:</strong> A CSV file is a plain text file. Anyone with access to it can read all your usernames and passwords. Use this format with extreme caution.</li>
+        </ul>
+        <hr>
+        <h4>About & Contact</h4>
+        <p>Oracipher is an open-source project developed with a focus on security and privacy.</p>
+        <ul>
+            <li><strong>Found an issue or have a suggestion?</strong> Please open an issue on our GitHub repository.</li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/your-repo/oracipher">github.com/your-repo/oracipher</a></li>
+            <li><strong>Contact the developer:</strong> <a href="mailto:developer@example.com">developer@example.com</a></li>
         </ul>
     """,
     "change_pass_title": "Change Master Password",
@@ -163,5 +179,9 @@ translations = {
     "warning_unsecure_export_title": "Security Warning",
     "warning_unsecure_export_text": "You are about to export your data as an unencrypted CSV file. This file will be human-readable and contain all your passwords in plain text. For backups, please use the secure .skey format.\n\nDo you understand the risk and wish to continue?",
     "warning_include_totp_title": "Include TOTP Secrets?",
-    "warning_include_totp_text": "Do you want to include 2FA/TOTP secret keys in the unencrypted CSV file?\n\nWARNING: This is extremely dangerous! Anyone with access to this file will be able to generate your two-factor codes.\n\nAre you sure you want to continue?"
+    "warning_include_totp_text": "Do you want to include 2FA/TOTP secret keys in the unencrypted CSV file?\n\nWARNING: This is extremely dangerous! Anyone with access to this file will be able to generate your two-factor codes.\n\nAre you sure you want to continue?",
+    "settings_auto_lock_title": "Auto-lock Vault",
+    # "settings_auto_lock_desc": "Automatically lock the vault after a period of inactivity.",
+    # "minutes_suffix": "min",
+    "settings_auto_lock_desc_3min": "Automatically lock the vault after 3 minutes of inactivity.",
 }

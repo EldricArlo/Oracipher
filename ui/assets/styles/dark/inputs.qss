@@ -45,3 +45,25 @@
 #AddEditDialog QLineEdit:focus, #AddEditDialog QTextEdit:focus, #AddEditDialog QComboBox:focus {
     border: 1px solid #bd93f9;
 }
+
+/*******************************************************
+ * [Dark Theme] 3.5 CheckBox
+ *******************************************************/
+QCheckBox { 
+    color: #f8f8f2; 
+    font-weight: 600;
+    spacing: 10px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+    background-color: #282a36;
+    border-radius: 8px;
+}
+QCheckBox::indicator:hover {
+    background-color: #313342;
+}
+QCheckBox::indicator:checked {
+    image: url(ui/assets/icons/check.svg);
+    border: 1px solid #bd93f9;
+}

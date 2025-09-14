@@ -98,8 +98,13 @@ class AddEditDialogUI:
         d.two_fa_status_label = QLabel()
         d.scan_qr_btn = QPushButton(t.get('button_2fa_scan_qr')); d.scan_qr_btn.setObjectName("inlineButton")
         d.enter_key_btn = QPushButton(t.get('button_2fa_setup')); d.enter_key_btn.setObjectName("inlineButton")
+        # 修改: 创建移除按钮
+        d.remove_key_btn = QPushButton(t.get('button_2fa_remove_key')); d.remove_key_btn.setObjectName("inlineButton")
+        
         layout.addWidget(QLabel(t.get('label_2fa_status'))); layout.addWidget(d.two_fa_status_label, 1)
-        layout.addWidget(d.scan_qr_btn); layout.addWidget(d.enter_key_btn)
+        layout.addWidget(d.scan_qr_btn)
+        layout.addWidget(d.enter_key_btn)
+        layout.addWidget(d.remove_key_btn) # 修改: 将移除按钮添加到布局中
         return layout
 
     def _create_button_layout(self, d) -> QHBoxLayout:
