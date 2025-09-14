@@ -1,0 +1,22 @@
+/*******************************************************
+ * [Light Theme] 3. 输入框 (QLineEdit & QTextEdit)
+ *******************************************************/
+#UnlockScreen QLineEdit, #search_input {
+    min-height: 25px; font-size: 14px; background-color: #E6E1E0; border-radius: 22px;
+    padding: 10px 20px; color: #3D3B3A;
+    border-top: 1px solid rgba(255, 255, 255, 0.9); border-left: 1px solid rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(181, 177, 176, 0.5); border-right: 1px solid rgba(181, 177, 176, 0.5);
+}
+#UnlockScreen QLineEdit { text-align: center; }
+#fieldValueDisplay { background: transparent; border: none; font-size: 16px; padding: 0; color: #3D3B3A; }
+#detailField {
+    border-radius: 15px; padding: 15px 20px; background-color: #E6E1E0;
+    border-top: 1px solid rgba(181, 177, 176, 0.5); border-left: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.9);
+}
+#AddEditDialog QLineEdit, #AddEditDialog QTextEdit, #AddEditDialog QComboBox {
+    min-height: 25px; border-radius: 12px; padding: 10px 15px; font-size: 14px;
+    color: #3D3B3A; background-color: #E6E1E0;
+    border-top: 1px solid rgba(181, 177, 176, 0.5); border-left: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.9);
+}

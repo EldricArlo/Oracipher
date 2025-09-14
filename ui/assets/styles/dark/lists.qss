@@ -1,0 +1,32 @@
+/*******************************************************
+ * [Dark Theme] 5. 列表视图 (QListWidget)
+ *******************************************************/
+QListWidget { 
+    background: transparent; 
+    border: none; 
+}
+QListWidget::item {
+    padding: 0; 
+    margin: 4px 0px; 
+    border-radius: 12px; 
+    color: #f8f8f2; 
+    font-weight: 500;
+    background-color: transparent;
+    border: 1px solid #44475a;
+    min-height: 45px; 
+    outline: none;
+}
+QListWidget::item:hover { 
+    background-color: #44475a; 
+}
+QListWidget::item:selected {
+    font-weight: 600; 
+    color: #f8f8f2; 
+    background-color: #44475a;
+    border: 1px solid #bd93f9; /* 紫色高亮 */
+}
+EntryListItemWidget QLabel {
+    background: transparent; 
+    border: none;
+    color: #f8f8f2;
+}

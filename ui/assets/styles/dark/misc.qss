@@ -1,0 +1,71 @@
+/*******************************************************
+ * [Dark Theme] 9. 说明文本样式 & 其他
+ *******************************************************/
+#instructionsText {
+    background-color: #282a36; 
+    border-radius: 12px; 
+    padding: 15px; 
+    color: #f8f8f2;
+    border: 1px solid #44475a;
+}
+#instructionsText h2 { 
+    font-size: 18px; 
+    font-weight: bold; 
+    color: #f8f8f2; 
+    margin-bottom: 10px; 
+}
+#instructionsText h4, #instructionsText p, #instructionsText ul { 
+    font-size: 13px; 
+    line-height: 1.5; 
+}
+#instructionsText h4 { 
+    font-weight: bold; 
+    color: #bd93f9; 
+    margin-top: 15px; 
+    margin-bottom: 5px; 
+}
+#instructionsText ul { 
+    margin-left: 20px; 
+} 
+#instructionsText li { 
+    margin-bottom: 5px; 
+}
+#instructionsText strong { 
+    font-weight: bold; 
+    color: #ff79c6; /* 粉色高亮 */
+}
+#instructionsText em {
+    font-style: italic;
+    color: #6272a4;
+}
+#instructionsText hr { 
+    border: 1px solid #44475a; 
+    margin-top: 15px; 
+}
+QProgressBar { 
+    border: 1px solid #6272a4; 
+    border-radius: 2px; 
+    background-color: transparent; 
+    text-align: center;
+    color: #f8f8f2;
+}
+QProgressBar::chunk { 
+    background-color: #bd93f9; /* 紫色 */
+    border-radius: 2px; 
+}
+#qrCancelButton {
+    color: #f8f8f2; 
+    font-size: 14px; 
+    font-weight: 600; 
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px 16px; 
+    border-radius: 16px; 
+    border: 1px solid rgba(248, 248, 242, 0.5);
+}
+#qrCancelButton:hover { 
+    background-color: rgba(248, 248, 242, 0.2); 
+}
+#qrCancelButton:pressed { 
+    background-color: rgba(0, 0, 0, 0.5); 
+    border: 1px solid rgba(248, 248, 242, 0.8); 
+}

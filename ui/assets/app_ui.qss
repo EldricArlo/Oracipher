@@ -1,0 +1,15 @@
+/******************************************************************************
+ * SafeKey - 亮色主题主入口
+ *
+ * 版本: 3.2 (Refactored)
+ * 描述: 此文件现在作为亮色主题所有样式模块的入口点。
+ *       使用 @import 规则来加载分离的样式文件，以提高可维护性。
+ ******************************************************************************/
+
+@import url("styles/light/base.qss");
+@import url("styles/light/buttons.qss");
+@import url("styles/light/inputs.qss");
+@import url("styles/light/lists.qss");
+@import url("styles/light/dialogs.qss");
+@import url("styles/light/settings.qss");
+@import url("styles/light/misc.qss");

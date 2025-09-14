@@ -1,0 +1,31 @@
+/******************************************************************************
+ * SafeKey - 基础窗口与布局样式 (style_dark.qss)
+ *
+ * 版本: 1.1 (Dracula Theme)
+ * 描述: 定义了主窗口、解锁屏幕和主要容器的背景、边框和阴影。
+ *       这是Dracula暗色主题的基础层。
+ ******************************************************************************/
+
+#backgroundPanel {
+    background-color: #21222C; /* 接近纯黑的深色，用于窗口背景 */
+    border-radius: 15px; 
+}
+
+#unlockContainer {
+    max-width: 400px;
+    background-color: transparent;
+    border: none;
+}
+
+#sidebarContainer {
+    background-color: #282a36; /* Dracula 主背景色 */
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-right: 1px solid #44475a; /* Dracula 当前行颜色作为分隔线 */
+}
+
+#contentContainer {
+    background-color: #21222C; /* 窗口背景色 */
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}

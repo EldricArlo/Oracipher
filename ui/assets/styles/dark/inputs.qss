@@ -1,0 +1,47 @@
+/*******************************************************
+ * [Dark Theme] 3. 输入框 (QLineEdit & QTextEdit)
+ *******************************************************/
+#UnlockScreen QLineEdit, #search_input {
+    min-height: 25px; 
+    font-size: 14px; 
+    background-color: #282a36; 
+    border-radius: 22px;
+    padding: 10px 20px; 
+    color: #f8f8f2;
+    border: 1px solid #44475a;
+}
+#UnlockScreen QLineEdit:focus, #search_input:focus {
+    border: 1px solid #bd93f9; /* 紫色高亮 */
+}
+#UnlockScreen QLineEdit { 
+    text-align: center; 
+}
+
+#fieldValueDisplay { 
+    background: transparent; 
+    border: none; 
+    font-size: 16px; 
+    padding: 0; 
+    color: #f8f8f2; 
+}
+
+#detailField {
+    border-radius: 15px; 
+    padding: 15px 20px; 
+    background-color: #282a36;
+    border: 1px solid #44475a;
+    color: #f8f8f2;
+}
+
+#AddEditDialog QLineEdit, #AddEditDialog QTextEdit, #AddEditDialog QComboBox {
+    min-height: 25px; 
+    border-radius: 12px; 
+    padding: 10px 15px; 
+    font-size: 14px;
+    color: #f8f8f2; 
+    background-color: #44475a;
+    border: 1px solid #282a36;
+}
+#AddEditDialog QLineEdit:focus, #AddEditDialog QTextEdit:focus, #AddEditDialog QComboBox:focus {
+    border: 1px solid #bd93f9;
+}

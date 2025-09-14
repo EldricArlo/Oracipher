@@ -1,0 +1,42 @@
+/*******************************************************
+ * [Light Theme] 4. 按钮 (QPushButton & AnimatedBookmarkButton)
+ *******************************************************/
+QPushButton {
+    color: #3D3B3A; font-weight: 600; font-size: 16px; background-color: #EDEAE9;
+    padding: 10px; border-radius: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.8); border-left: 1px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(181, 177, 176, 0.5); border-right: 1px solid rgba(181, 177, 176, 0.5);
+}
+QPushButton:pressed {
+    color: #3D3B3A; background-color: #E6E1E0;
+    border-top: 1px solid rgba(181, 177, 176, 0.5); border-left: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.9);
+}
+QPushButton:focus { border: 1px solid rgba(140, 134, 133, 0.4); }
+
+AnimatedBookmarkButton {
+    background-color: #EDEAE9; border-top-right-radius: 18px; border-bottom-right-radius: 18px;
+    border-top-left-radius: 0px; border-bottom-left-radius: 0px;
+    border-top: 1px solid rgba(255, 255, 255, 0.8); border-right: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(181, 177, 176, 0.5); border-left: 1px solid transparent;
+}
+AnimatedBookmarkButton:hover { background-color: #E6E1E0; }
+AnimatedBookmarkButton[active=true] {
+    background-color: #E6E1E0; border-top: 1px solid rgba(181, 177, 176, 0.5);
+    border-left: 1px solid transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+    border-right: 1px solid rgba(255, 255, 255, 0.9);
+}
+AnimatedBookmarkButton QLabel {
+    background: transparent; border: none; font-weight: 600; font-size: 14px; color: #3D3B3A;
+}
+
+#mainActionButton, #unlockExitButton { min-width: 120px; font-size: 18px; font-weight: bold; padding: 15px; border-radius: 26px; }
+#detailsActionButton, #addButton { border-radius: 20px; }
+#inlineButton { border-radius: 10px; font-size: 12px; font-weight: 500; padding: 6px 10px; margin-left: 5px; }
+#inlineButton:checked {
+    color: #3D3B3A; background-color: #E6E1E0;
+    border-top: 1px solid rgba(181, 177, 176, 0.5); border-left: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.9);
+}
+#saveButton { color: #F0E8E6; font-weight: bold; background-color: #8C8685; }
+#saveButton:pressed { color: #3D3B3A; background-color: #E6E1E0; }

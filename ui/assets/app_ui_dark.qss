@@ -1,0 +1,15 @@
+/******************************************************************************
+ * SafeKey - 暗色主题主入口
+ *
+ * 版本: 1.4 (Refactored)
+ * 描述: 此文件现在作为暗色主题所有样式模块的入口点。
+ *       使用 @import 规则来加载分离的样式文件，以提高可维护性。
+ ******************************************************************************/
+
+@import url("styles/dark/base.qss");
+@import url("styles/dark/buttons.qss");
+@import url("styles/dark/inputs.qss");
+@import url("styles/dark/lists.qss");
+@import url("styles/dark/dialogs.qss");
+@import url("styles/dark/settings.qss");
+@import url("styles/dark/misc.qss");

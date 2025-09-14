@@ -1,0 +1,62 @@
+/*******************************************************
+ * [Dark Theme] 6. 对话框 (QDialog)
+ *******************************************************/
+#AddEditDialog #dialogContainer {
+    background-color: #282a36; 
+    border-radius: 20px; 
+    padding: 10px;
+    border: 1px solid #44475a;
+}
+#AddEditDialog QPushButton { 
+    min-width: 80px; 
+    padding-top: 10px; 
+    padding-bottom: 10px; 
+    border-radius: 12px; 
+}
+
+/*******************************************************
+ * [Dark Theme] 7. 下拉/复选框/标签页
+ *******************************************************/
+#AddEditDialog QComboBox::drop-down { 
+    border: none; 
+    subcontrol-origin: padding; 
+    subcontrol-position: top right; 
+    width: 30px; 
+}
+#AddEditDialog QComboBox QAbstractItemView {
+    background-color: #44475a; 
+    border: 1px solid #bd93f9; 
+    border-radius: 8px;
+    padding: 5px; 
+    color: #f8f8f2;
+    selection-background-color: #6272a4; 
+    selection-color: #f8f8f2;
+}
+QCheckBox { 
+    color: #f8f8f2; 
+    font-weight: 600; 
+}
+QTabWidget::pane { 
+    border: none; 
+    background: transparent; 
+}
+QTabBar::tab {
+    color: #6272a4; 
+    font-weight: 600; 
+    font-size: 14px; 
+    padding: 10px 20px; 
+    margin-right: 4px;
+    background-color: transparent; 
+    border-top-left-radius: 12px; 
+    border-top-right-radius: 12px;
+    border-bottom: 2px solid #44475a;
+}
+QTabBar::tab:hover { 
+    background-color: #44475a; 
+    color: #f8f8f2;
+}
+QTabBar::tab:selected {
+    color: #f8f8f2; 
+    background-color: #44475a;
+    border-bottom: 2px solid #bd93f9;
+}
