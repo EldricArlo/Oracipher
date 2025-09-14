@@ -183,5 +183,6 @@ translations = {
     "settings_auto_lock_title": "Auto-lock Vault",
     # "settings_auto_lock_desc": "Automatically lock the vault after a period of inactivity.",
     # "minutes_suffix": "min",
-    "settings_auto_lock_desc_3min": "Automatically lock the vault after 3 minutes of inactivity.",
+    "settings_auto_lock_desc": "Automatically lock the vault after a period of inactivity to keep your data safe.",
+    "minutes_suffix": "min",
 }

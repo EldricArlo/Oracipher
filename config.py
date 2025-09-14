@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-APP_DATA_DIR: str = os.getenv("ORACIPHER_DATA_PATH", "oracipher_data")
+APP_DATA_DIR: str = os.getenv("ORACIPHER_DATA_PATH", "data")
 APP_LOG_DIR: str = os.getenv("ORACIPHER_LOG_PATH", "logs")
 
 SETTINGS_FILE_PATH: str = os.path.join(APP_DATA_DIR, "settings.json")
@@ -23,7 +23,9 @@ def get_default_settings() -> Dict[str, Any]:
         "language": "zh_CN",
         "theme": "light",
         "auto_lock_enabled": True,
-        "auto_lock_timeout_minutes": 3 # 修改: 默认值改为3
+        # --- MODIFICATION START ---
+        "auto_lock_timeout_minutes": 15 # 恢复为一个更通用的默认值
+        # --- MODIFICATION END ---
     }
 
 def load_settings() -> Dict[str, Any]:

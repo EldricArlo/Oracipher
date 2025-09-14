@@ -12,13 +12,11 @@ from language import t
 from utils import clipboard_manager, icon_cache
 from core.icon_fetcher import IconFetcher
 from ..components.two_fa_widget import TwoFAWidget
+from ..components.custom_widgets import StyledTextEdit 
 
 logger = logging.getLogger(__name__)
 
 class DetailsView(QWidget):
-    """
-    详情视图，用于展示一个或多个同名账户的详细信息。
-    """
     edit_requested = pyqtSignal(int)
     delete_requested = pyqtSignal(int)
 
@@ -94,32 +92,62 @@ class DetailsView(QWidget):
         
         tabs = QTabWidget()
         main_tab, advanced_tab = QWidget(), QWidget()
-        tabs.addTab(main_tab, t.get('tab_main')); tabs.addTab(advanced_tab, t.get('tab_advanced'))
+        tabs.addTab(main_tab, t.get('tab_main'))
+        tabs.addTab(advanced_tab, t.get('tab_advanced'))
         container_layout.addWidget(tabs)
         
-        main_layout = QVBoxLayout(main_tab); main_layout.setContentsMargins(0, 15, 0, 0)
-        main_layout.setSpacing(15); main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        
         details = entry.get("details", {})
-        if details.get("username"): main_layout.addWidget(self._create_detail_field(t.get('label_user'), details["username"]))
-        if details.get("email"): main_layout.addWidget(self._create_detail_field(t.get('label_email'), details["email"]))
-        if details.get("password"): main_layout.addWidget(self._create_detail_field(t.get('label_pass'), details["password"], is_password=True))
-        if details.get("url"): main_layout.addWidget(self._create_detail_field(t.get('label_url'), details["url"]))
-        if details.get("totp_secret"): main_layout.addWidget(self._create_2fa_field(details["totp_secret"]))
+        
+        main_layout = QVBoxLayout(main_tab)
+        main_layout.setContentsMargins(0, 15, 0, 0)
+        main_layout.setSpacing(15)
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        # --- MODIFICATION START ---
+        # Create and add fields one by one, managing their visibility individually.
+        
+        username_field = self._create_detail_field(t.get('label_user'), details.get("username", ""))
+        username_field.setVisible(bool(details.get("username")))
+        main_layout.addWidget(username_field)
+
+        email_field = self._create_detail_field(t.get('label_email'), details.get("email", ""))
+        email_field.setVisible(bool(details.get("email")))
+        main_layout.addWidget(email_field)
+
+        password_field = self._create_detail_field(t.get('label_pass'), details.get("password", ""), is_password=True)
+        password_field.setVisible(bool(details.get("password")))
+        main_layout.addWidget(password_field)
+        
+        url_field = self._create_detail_field(t.get('label_url'), details.get("url", ""))
+        url_field.setVisible(bool(details.get("url")))
+        main_layout.addWidget(url_field)
+
+        # Only create the 2FA widget if a secret exists.
+        totp_secret = details.get("totp_secret")
+        if totp_secret:
+            two_fa_field = self._create_2fa_field(totp_secret)
+            main_layout.addWidget(two_fa_field)
+        
         main_layout.addStretch()
+        # --- MODIFICATION END ---
         
-        adv_layout = QVBoxLayout(advanced_tab); adv_layout.setContentsMargins(0, 15, 0, 0)
-        adv_layout.setSpacing(15); adv_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        adv_layout = QVBoxLayout(advanced_tab)
+        adv_layout.setContentsMargins(0, 15, 0, 0)
+        adv_layout.setSpacing(15)
+        adv_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
-        has_advanced_info = False
-        if details.get("backup_codes"):
-            has_advanced_info = True
-            adv_layout.addWidget(self._create_detail_field(t.get('label_backup_codes'), details["backup_codes"], multiline=True))
-        if details.get("notes"):
-            has_advanced_info = True
-            adv_layout.addWidget(self._create_detail_field(t.get('label_notes'), details["notes"], multiline=True))
+        backup_codes_field = self._create_detail_field(t.get('label_backup_codes'), details.get("backup_codes", ""), multiline=True)
+        notes_field = self._create_detail_field(t.get('label_notes'), details.get("notes", ""), multiline=True)
         
+        adv_layout.addWidget(backup_codes_field)
+        adv_layout.addWidget(notes_field)
+        
+        backup_codes_field.setVisible(bool(details.get("backup_codes")))
+        notes_field.setVisible(bool(details.get("notes")))
+        
+        has_advanced_info = bool(details.get("backup_codes")) or bool(details.get("notes"))
         tabs.setTabVisible(1, has_advanced_info)
+        
         adv_layout.addStretch()
         
         return container
@@ -132,7 +160,7 @@ class DetailsView(QWidget):
         value_display: QLineEdit | QTextEdit
         
         if multiline:
-            value_display = QTextEdit(value)
+            value_display = StyledTextEdit(value)
             value_display.setReadOnly(True)
             value_display.setObjectName("fieldValueDisplay")
         else:
@@ -145,12 +173,12 @@ class DetailsView(QWidget):
         
         if is_password:
             show_hide_btn = QPushButton(t.get('button_show')); show_hide_btn.setObjectName("inlineButton"); show_hide_btn.setCheckable(True)
-            show_hide_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus) # 修改: 解决焦点问题
+            show_hide_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus) 
             show_hide_btn.toggled.connect(lambda checked, v=value_display, b=show_hide_btn: self._toggle_password_visibility(checked, v, b))
             value_layout.addWidget(show_hide_btn)
         
         copy_btn = QPushButton(t.get('button_copy')); copy_btn.setObjectName("inlineButton")
-        copy_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus) # 修改: 解决焦点问题
+        copy_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus) 
         is_sensitive = is_password or title == t.get('label_backup_codes')
         copy_btn.clicked.connect(lambda: self._copy_to_clipboard(value, copy_btn, is_sensitive))
         value_layout.addWidget(copy_btn)

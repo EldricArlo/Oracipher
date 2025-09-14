@@ -34,7 +34,6 @@ class AddEditDialog(QDialog):
         self.setMinimumSize(520, 620)
         self.drag_pos: QPoint = QPoint()
         
-        # UI构建器负责创建所有小部件
         ui_builder = AddEditDialogUI()
         ui_builder.setup_ui(self)
         
@@ -48,11 +47,15 @@ class AddEditDialog(QDialog):
             icon_preview_button=self.icon_preview_button,
             url_input=self.url_input
         )
+        # --- MODIFICATION START ---
         self.two_fa_manager = TwoFAManager(
             parent_widget=self,
             status_label=self.two_fa_status_label,
-            remove_key_btn=self.remove_key_btn # 修改: 将移除按钮传递给管理器
+            scan_qr_btn=self.scan_qr_btn,
+            enter_key_btn=self.enter_key_btn,
+            remove_key_btn=self.remove_key_btn
         )
+        # --- MODIFICATION END ---
         
     def _connect_signals(self) -> None:
         self.icon_preview_button.clicked.connect(self.icon_manager.select_icon_from_file)
@@ -62,14 +65,14 @@ class AddEditDialog(QDialog):
         self.set_cat_icon_btn.clicked.connect(self._set_category_icon)
         self.scan_qr_btn.clicked.connect(self.two_fa_manager.scan_qr_from_file)
         self.enter_key_btn.clicked.connect(self.two_fa_manager.open_manual_setup)
-        self.remove_key_btn.clicked.connect(self.two_fa_manager.clear_secret) # 修改: 连接移除按钮的点击信号
+        self.remove_key_btn.clicked.connect(self.two_fa_manager.clear_secret)
         self.cancel_btn.clicked.connect(self.reject)
         self.save_btn.clicked.connect(self.accept)
 
     def load_entry_data(self) -> None:
         if not self.entry:
             self.icon_manager.set_initial_icon(None)
-            self.two_fa_manager.set_initial_secret(None) # 修改: 确保在添加模式下也初始化2FA管理器
+            self.two_fa_manager.set_initial_secret(None)
             return
             
         details = self.entry.get("details", {})

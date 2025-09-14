@@ -3,8 +3,10 @@
 import logging
 from typing import Optional, Tuple
 
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QGridLayout,
+# --- MODIFICATION START ---
+from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QGridLayout, QHBoxLayout,
                              QLabel, QLineEdit, QPushButton, QFrame, QWidget)
+# --- MODIFICATION END ---
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QMouseEvent
 

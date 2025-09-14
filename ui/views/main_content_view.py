@@ -12,6 +12,9 @@ from language import t
 from .details_view import DetailsView
 from ..components.entry_list_item_widget import EntryListItemWidget
 from ..components.no_focus_delegate import NoFocusDelegate
+# --- MODIFICATION START ---
+from ..components.custom_widgets import StyledListWidget
+# --- MODIFICATION END ---
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +37,10 @@ class MainContentView(QWidget):
         top_toolbar_layout.addWidget(self.search_input, 1); top_toolbar_layout.addStretch(0); top_toolbar_layout.addWidget(self.add_button)
         
         inner_splitter = QSplitter(Qt.Orientation.Horizontal)
-        self.entry_list = QListWidget(); self.entry_list.setItemDelegate(NoFocusDelegate(self))
+        # --- MODIFICATION START ---
+        self.entry_list = StyledListWidget() # 使用新的自定义控件
+        # --- MODIFICATION END ---
+        self.entry_list.setItemDelegate(NoFocusDelegate(self))
         self.details_view = DetailsView()
         inner_splitter.addWidget(self.entry_list); inner_splitter.addWidget(self.details_view)
         inner_splitter.setSizes([300, 700])
@@ -46,7 +52,6 @@ class MainContentView(QWidget):
         self.entry_list.blockSignals(True)
         self.entry_list.clear()
 
-        # 当条目过多时，显示等待光标并分块处理，防止UI冻结
         total_items = len(entries_by_name)
         if total_items > 200:
             QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
@@ -64,7 +69,6 @@ class MainContentView(QWidget):
             self.entry_list.setItemWidget(list_item, widget)
             if name == current_selection: item_to_select = list_item
             
-            # 每处理100个条目，就强制处理一次UI事件
             if total_items > 200 and i % 100 == 0:
                 QApplication.processEvents()
         

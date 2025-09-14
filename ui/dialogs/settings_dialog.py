@@ -5,7 +5,9 @@ from typing import Optional, Tuple
 
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout,
                              QLabel, QPushButton, QFrame, QWidget,
-                             QTextEdit, QTabWidget, QComboBox, QCheckBox, QApplication)
+                             QTextEdit, QTabWidget, QComboBox, QCheckBox, QApplication,
+                             QSpinBox 
+                             )
 from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QEvent, QObject
 from PyQt6.QtGui import QMouseEvent, QIcon, QShowEvent
 
@@ -49,9 +51,11 @@ class SettingsDialog(QDialog):
         if self._is_first_show:
             settings = load_settings()
             is_enabled = settings.get("auto_lock_enabled", True)
+            timeout_minutes = settings.get("auto_lock_timeout_minutes", 15)
             self.auto_lock_checkbox.setChecked(is_enabled)
+            self.auto_lock_spinbox.setValue(timeout_minutes)
             self._is_first_show = False
-            self._update_auto_lock_style(self.auto_lock_checkbox.checkState())
+            self._update_auto_lock_controls(self.auto_lock_checkbox.checkState())
 
     def _save_position(self) -> None:
         self._last_pos = self.pos()
@@ -125,8 +129,6 @@ class SettingsDialog(QDialog):
         # --- 常规设置 ---
         general_section, general_card_layout = self._create_section_widget(t.get('settings_section_general'))
         self.lang_combo = PositionAwareComboBox(); self.lang_combo.setFixedWidth(200)
-        icon_path = str(resource_path("ui/assets/icons/chevron-down.svg")).replace('\\', '/')
-        self.lang_combo.setStyleSheet(f"QComboBox::down-arrow {{ image: url({icon_path}); width: 14px; height: 14px; }}")
         
         available_languages = t.get_available_languages()
         for code, name in available_languages.items(): self.lang_combo.addItem(name, userData=code)
@@ -160,14 +162,30 @@ class SettingsDialog(QDialog):
         
         # --- 自动锁定设置UI ---
         self.auto_lock_checkbox = QCheckBox()
-        self.auto_lock_checkbox.stateChanged.connect(self._update_auto_lock_style)
-        
-        # 修改: 更新描述文本以反映固定的3分钟
-        auto_lock_desc = t.get('settings_auto_lock_desc_3min', default="Automatically lock the vault after 3 minutes of inactivity.")
+        self.auto_lock_checkbox.stateChanged.connect(self._update_auto_lock_controls)
+
+        self.auto_lock_spinbox = QSpinBox()
+        self.auto_lock_spinbox.setRange(1, 120) 
+        self.auto_lock_spinbox.setSuffix(f" {t.get('minutes_suffix')}")
+        self.auto_lock_spinbox.setFixedWidth(120)
+        # --- MODIFICATION START ---
+        # 将内部QLineEdit设置为只读，这是隐藏光标最可靠的方法
+        if self.auto_lock_spinbox.lineEdit():
+            self.auto_lock_spinbox.lineEdit().setReadOnly(True)
+        # --- MODIFICATION END ---
+
+        auto_lock_controls_widget = QWidget()
+        auto_lock_controls_layout = QHBoxLayout(auto_lock_controls_widget)
+        auto_lock_controls_layout.setContentsMargins(0,0,0,0)
+        auto_lock_controls_layout.setSpacing(15)
+        auto_lock_controls_layout.addWidget(self.auto_lock_spinbox)
+        auto_lock_controls_layout.addWidget(self.auto_lock_checkbox)
+        auto_lock_controls_layout.addStretch()
+
         auto_lock_row = self._create_setting_row(
-            t.get('settings_auto_lock_title', default="Auto-lock Vault"),
-            auto_lock_desc,
-            self.auto_lock_checkbox
+            t.get('settings_auto_lock_title'),
+            t.get('settings_auto_lock_desc'),
+            auto_lock_controls_widget
         )
         security_card_layout.addWidget(auto_lock_row)
         settings_layout.addWidget(security_section)
@@ -187,7 +205,19 @@ class SettingsDialog(QDialog):
         
         settings_layout.addStretch()
 
-    def _update_auto_lock_style(self, state: Qt.CheckState):
+    def _update_auto_lock_controls(self, state: int) -> None:
+        """
+        根据复选框的状态，更新 QSpinBox 的启用状态和样式。
+        """
+        is_checked = (Qt.CheckState(state) == Qt.CheckState.Checked)
+        
+        self.auto_lock_spinbox.setEnabled(is_checked)
+        
+        self.auto_lock_spinbox.style().unpolish(self.auto_lock_spinbox)
+        self.auto_lock_spinbox.style().polish(self.auto_lock_spinbox)
+        
+        self.auto_lock_spinbox.update()
+        
         self.auto_lock_checkbox.style().unpolish(self.auto_lock_checkbox)
         self.auto_lock_checkbox.style().polish(self.auto_lock_checkbox)
 
@@ -207,8 +237,8 @@ class SettingsDialog(QDialog):
         
     def get_auto_lock_settings(self) -> Tuple[bool, int]:
         is_enabled = self.auto_lock_checkbox.isChecked()
-        # 修改: 总是返回固定的3分钟
-        return is_enabled, 3
+        minutes = self.auto_lock_spinbox.value()
+        return is_enabled, minutes
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:

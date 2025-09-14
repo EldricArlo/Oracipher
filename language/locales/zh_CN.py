@@ -181,7 +181,6 @@ translations = {
     "warning_include_totp_title": "包含 TOTP 密钥？",
     "warning_include_totp_text": "您是否要在未加密的CSV文件中包含2FA/TOTP密钥？\n\n警告：这样做极度危险！任何能接触到此文件的人都将能够生成您的两步验证码。\n\n您确定要继续吗？",
     "settings_auto_lock_title": "自动锁定保险库",
-    # "settings_auto_lock_desc": "在一段时间无操作后，自动锁定保险库以保护您的数据安全。",
-    # "minutes_suffix": "分钟",
-    "settings_auto_lock_desc_3min": "在 3 分钟无操作后，自动锁定保险库以保护您的数据安全。",
+    "settings_auto_lock_desc": "在一段时间无操作后，自动锁定保险库以保护您的数据安全。",
+    "minutes_suffix": "分钟",
 }

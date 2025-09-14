@@ -19,25 +19,32 @@ class TwoFAManager:
     """
     负责处理添加/编辑对话框中所有与两步验证(2FA/TOTP)相关的逻辑。
     """
+    # --- MODIFICATION START ---
     def __init__(
         self,
         parent_widget: QWidget,
         status_label: QLabel,
-        remove_key_btn: QPushButton  # 修改: 接收移除按钮
+        scan_qr_btn: QPushButton,
+        enter_key_btn: QPushButton,
+        remove_key_btn: QPushButton
     ):
         self.parent = parent_widget
         self.status_label = status_label
-        self.remove_key_btn = remove_key_btn # 修改: 保存移除按钮的引用
+        self.scan_qr_btn = scan_qr_btn
+        self.enter_key_btn = enter_key_btn
+        self.remove_key_btn = remove_key_btn
         self.totp_secret: Optional[str] = None
+    # --- MODIFICATION END ---
 
     def set_initial_secret(self, secret: Optional[str]) -> None:
         self.totp_secret = secret
         if self.totp_secret:
             self.status_label.setText(t.get('2fa_status_enabled'))
-            self.remove_key_btn.setVisible(True) # 修改: 如果有密钥则显示移除按钮
         else:
             self.status_label.setText(t.get('2fa_status_not_setup'))
-            self.remove_key_btn.setVisible(False) # 修改: 如果没有密钥则隐藏移除按钮
+        # --- MODIFICATION START ---
+        self._update_button_visibility()
+        # --- MODIFICATION END ---
 
     def open_manual_setup(self) -> None:
         dialog = EnterSecretDialog(self.parent)
@@ -46,20 +53,21 @@ class TwoFAManager:
             if secret:
                 self.totp_secret = secret
                 self.status_label.setText(t.get('2fa_status_enabled_pending_save'))
-                self.remove_key_btn.setVisible(True) # 修改: 设置新密钥后显示移除按钮
                 logger.info("New 2FA secret has been set manually.")
+                # --- MODIFICATION START ---
+                self._update_button_visibility()
+                # --- MODIFICATION END ---
             else:
-                # 用户可能在对话框中清空了密钥，这里我们不做任何事，保留原有密钥
-                # 只有clear_secret才能清空
                 pass
 
-    # 新增: 清除密钥的逻辑
     def clear_secret(self) -> None:
         """清除当前的TOTP密钥。"""
         self.totp_secret = None
         self.status_label.setText(t.get('2fa_status_not_setup'))
-        self.remove_key_btn.setVisible(False)
         logger.info("2FA secret has been cleared by user.")
+        # --- MODIFICATION START ---
+        self._update_button_visibility()
+        # --- MODIFICATION END ---
 
     def scan_qr_from_file(self) -> None:
         """
@@ -103,8 +111,10 @@ class TwoFAManager:
                 if secret:
                     self.totp_secret = secret.strip().replace(" ", "").upper()
                     self.status_label.setText(t.get('2fa_status_enabled_pending_save'))
-                    self.remove_key_btn.setVisible(True) # 修改: 从QR码设置后显示移除按钮
                     logger.info("Successfully set 2FA secret from image file.")
+                    # --- MODIFICATION START ---
+                    self._update_button_visibility()
+                    # --- MODIFICATION END ---
                     return
         except Exception as e:
             logger.error(f"Failed to parse QR code URI: '{qr_data}'. Error: {e}")
@@ -119,6 +129,15 @@ class TwoFAManager:
             t.get('error_title_generic'),
             t.get('2fa_error_invalid_qr')
         )
+
+    # --- MODIFICATION START ---
+    def _update_button_visibility(self) -> None:
+        """根据是否存在密钥来更新按钮的可见性。"""
+        has_secret = self.totp_secret is not None
+        self.remove_key_btn.setVisible(has_secret)
+        self.scan_qr_btn.setVisible(not has_secret)
+        self.enter_key_btn.setVisible(not has_secret)
+    # --- MODIFICATION END ---
 
     def get_secret(self) -> Optional[str]:
         return self.totp_secret

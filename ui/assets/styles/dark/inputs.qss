@@ -59,11 +59,60 @@ QCheckBox::indicator {
     height: 24px;
     background-color: #282a36;
     border-radius: 8px;
+    border: 1px solid #44475a;
 }
 QCheckBox::indicator:hover {
     background-color: #313342;
 }
 QCheckBox::indicator:checked {
-    image: url(ui/assets/icons/check.svg);
+    image: url("ui/assets/icons/check.svg");
     border: 1px solid #bd93f9;
+}
+
+/*******************************************************
+ * [Dark Theme] 3.6 SpinBox
+ *******************************************************/
+QSpinBox {
+    min-height: 25px; 
+    border-radius: 12px; 
+    padding: 10px 15px; 
+    font-size: 14px;
+    color: #f8f8f2; 
+    background-color: #44475a;
+    border: 1px solid #282a36;
+    /* --- MODIFICATION START --- */
+    selection-background-color: #44475a; /* 与背景色相同以隐藏选中效果 */
+    selection-color: #f8f8f2;            /* 与文本颜色相同 */
+    /* --- MODIFICATION END --- */
+}
+QSpinBox:focus {
+    border: 1px solid #bd93f9;
+}
+QSpinBox:disabled {
+    background-color: #282a36;
+    color: #6272a4;
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+    subcontrol-origin: border;
+    background: transparent;
+    border: none;
+    width: 20px;
+    border-radius: 4px;
+}
+QSpinBox::up-button { 
+    subcontrol-position: top right; 
+    margin: 4px 6px 0px 0px;
+}
+QSpinBox::down-button { 
+    subcontrol-position: bottom right; 
+    margin: 0px 6px 4px 0px;
+}
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #6272a4;
+}
+QSpinBox::up-arrow { image: url("ui/assets/icons/chevron-up.svg"); }
+QSpinBox::down-arrow { image: url("ui/assets/icons/chevron-down.svg"); }
+QSpinBox::up-arrow:disabled, QSpinBox::down-arrow:disabled {
+    image: none;
 }

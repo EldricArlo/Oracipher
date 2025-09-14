@@ -21,12 +21,21 @@ class TwoFAWidget(QWidget):
     """
     def __init__(self, secret: str, parent: Optional[QWidget] = None):
         super().__init__(parent)
-        try:
-            self.totp = pyotp.TOTP(secret)
-            self.is_valid = True
-        except Exception:
+        
+        # --- 修改开始 ---
+        # 增加对 secret 参数的有效性检查，防止其为 None 或空字符串
+        if not secret:
             self.is_valid = False
-            logger.error(f"Invalid Base32 secret provided to TwoFAWidget.")
+            logger.error("A null or empty secret was provided to TwoFAWidget.")
+        else:
+            try:
+                self.totp = pyotp.TOTP(secret)
+                self.is_valid = True
+            except Exception:
+                # 捕获 pyotp 可能因无效密钥（如非 Base32 字符串）抛出的异常
+                self.is_valid = False
+                logger.error(f"Invalid Base32 secret provided to TwoFAWidget.")
+        # --- 修改结束 ---
 
         self.init_ui()
         
@@ -37,6 +46,7 @@ class TwoFAWidget(QWidget):
             
             self.update_code()
         else:
+            # 如果密钥无效，直接显示错误信息
             self.code_display.setText("Invalid Key")
             self.progress_bar.setVisible(False)
 
