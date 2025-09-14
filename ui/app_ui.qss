@@ -1,37 +1,31 @@
 /******************************************************************************
  * SafeKey - 统一UI组件样式 (app_ui.qss)
- * ---------------------------------------------------------------------------
- * 此文件定义了应用中所有UI组件的具体样式，
- * 旨在创建一种统一、现代的“新拟态” (Neomorphism) 视觉风格。
  ******************************************************************************/
 
 /*******************************************************
  * 0. 色彩与字体定义
  *******************************************************/
 /*
- * 色彩面板 (参考):
+ * 色彩面板 (最终版):
  * -----------------------------------------------------
  * 背景色 (主):       #EDEAE9
  * 背景色 (次/凹陷):   #E6E1E0
- * 边框高光:          rgba(255, 255, 255, 0.9)
- * 边框阴影:          rgba(181, 177, 176, 0.5)
  * -----------------------------------------------------
- * 文本颜色 (主):       #4A4847 (深灰)
- * 文本颜色 (次):       #6D6A69 (中灰)
- * 文本颜色 (提示/标签): #B5B1B0 (浅灰)
+ * 文本颜色 (主/高对比度):  #3D3B3A
+ * 文本颜色 (次/标签):      #5E5C5B
+ * 文本颜色 (提示):         #A9A5A4
  * -----------------------------------------------------
- * 主按钮背景色:       #8C8685 (深灰褐色)
- * 主按钮文字色:       #EDEAE9 (与主背景色相同)
- * 焦点光晕色:        rgba(140, 134, 133, 0.5) (主按钮色的半透明版本)
+ * 主按钮背景色:       #8C8685
+ * 主按钮文字色:       #F0E8E6
  *******************************************************/
 
 /*******************************************************
  * 1. 基础容器与窗口
  *******************************************************/
 #UnlockScreen, #MainWindow {
-    background: transparent; /* 窗口本身透明，依赖父容器的背景 */
+    background: transparent;
     font-family: "Segoe UI", "San Francisco", "Helvetica Neue", sans-serif;
-    color: #6D6A69; /* 默认文字颜色 */
+    color: #5E5C5B;
 }
 
 QSplitter, #sidebarContainer, #contentContainer {
@@ -53,50 +47,47 @@ QSplitter::handle:hover {
  * 2. 文本与标题
  *******************************************************/
 #UnlockScreen QLabel {
-    color: #6D6A69;
+    color: #5E5C5B;
     background-color: transparent;
 }
 #logoLabel {
-    color: #4A4847;
+    color: #3D3B3A;
     font-size: 32px;
     font-weight: bold;
 }
 #panelTitle {
-    color: #B5B1B0;
+    color: #A9A5A4;
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 #detailsNameLabel {
-    color: #4A4847;
+    color: #3D3B3A;
     font-size: 28px;
     font-weight: 600;
 }
 #placeholderLabel {
-    color: #B5B1B0;
+    color: #A9A5A4;
     font-size: 16px;
 }
 #fieldTitleLabel {
     font-size: 12px;
     font-weight: 600;
-    color: #B5B1B0;
+    color: #A9A5A4;
     margin-bottom: 5px;
 }
 
 /*******************************************************
  * 3. 输入框 (QLineEdit & QTextEdit)
  *******************************************************/
-
-/* --- 核心修改 START: 恢复解锁和搜索输入框的特定样式 --- */
 #UnlockScreen QLineEdit, #search_input {
     min-height: 25px;
     font-size: 14px;
-    background-color: #E6E1E0; /* 恢复浅色凹陷背景 */
+    background-color: #E6E1E0;
     border-radius: 22px;
     padding: 10px 20px;
-    color: #6D6A69;
-    /* 恢复新拟态边框 */
+    color: #3D3B3A;
     border-top: 1px solid rgba(181, 177, 176, 0.5);
     border-left: 1px solid rgba(181, 177, 176, 0.5);
     border-bottom: 1px solid rgba(255, 255, 255, 0.9);
@@ -105,17 +96,15 @@ QSplitter::handle:hover {
 #UnlockScreen QLineEdit {
     text-align: center;
 }
-/* --- 核心修改 END --- */
 
-
-/* 详情页只读输入框 */
 #fieldValueDisplay {
     background: transparent;
     border: none;
     font-size: 16px;
     padding: 0;
+    color: #3D3B3A;
 }
-/* 详情字段的容器 */
+
 #detailField {
     border-radius: 15px;
     padding: 15px 20px;
@@ -129,36 +118,32 @@ QSplitter::handle:hover {
 /*******************************************************
  * 4. 按钮 (QPushButton)
  *******************************************************/
-/* 通用凸起按钮基础样式 */
 QPushButton {
-    color: #6D6A69;
+    color: #3D3B3A;
     font-weight: 600;
     font-size: 16px;
     background-color: #EDEAE9;
     padding: 10px;
-    border-radius: 22px; /* 默认圆角 */
-    border-top: 1px solid rgba(255, 255, 255, 0.8);   /* 顶部高光 */
-    border-left: 1px solid rgba(255, 255, 255, 0.8);  /* 左侧高光 */
-    border-bottom: 1px solid rgba(181, 177, 176, 0.5);/* 底部阴影 */
-    border-right: 1px solid rgba(181, 177, 176, 0.5); /* 右侧阴影 */
+    border-radius: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-left: 1px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(181, 177, 176, 0.5);
+    border-right: 1px solid rgba(181, 177, 176, 0.5);
 }
 
-/* 按下状态：模拟按钮被按进去的效果 */
 QPushButton:pressed {
-    color: #4A4847;
-    background-color: #E6E1E0; /* 凹陷背景色 */
-    border-top: 1px solid rgba(181, 177, 176, 0.5);   /* 顶部阴影 */
-    border-left: 1px solid rgba(181, 177, 176, 0.5);  /* 左侧阴影 */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.9);/* 底部高光 */
-    border-right: 1px solid rgba(255, 255, 255, 0.9); /* 右侧高光 */
+    color: #3D3B3A;
+    background-color: #E6E1E0;
+    border-top: 1px solid rgba(181, 177, 176, 0.5);
+    border-left: 1px solid rgba(181, 177, 176, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+    border-right: 1px solid rgba(255, 255, 255, 0.9);
 }
 
-/* 增强可访问性的焦点样式 */
 QPushButton:focus {
     border: 1px solid rgba(140, 134, 133, 0.4);
 }
 
-/* 特定按钮样式 */
 #mainActionButton, #unlockExitButton {
     min-width: 120px;
     font-size: 18px;
@@ -175,14 +160,10 @@ QPushButton:focus {
     border-radius: 17px;
 }
 
-#detailsActionButton {
+#detailsActionButton, #addButton {
     border-radius: 20px;
 }
-#addButton {
-    border-radius: 22px;
-}
 
-/* 行内小按钮，如"显示/隐藏" */
 #inlineButton {
     border-radius: 10px;
     font-size: 12px;
@@ -190,14 +171,13 @@ QPushButton:focus {
     margin-left: 5px;
 }
 #inlineButton:checked {
-    color: #4A4847;
+    color: #3D3B3A;
     background-color: #E6E1E0;
     border-top: 1px solid rgba(181, 177, 176, 0.5);
     border-left: 1px solid rgba(181, 177, 176, 0.5);
     border-bottom: 1px solid rgba(255, 255, 255, 0.9);
     border-right: 1px solid rgba(255, 255, 255, 0.9);
 }
-
 
 /*******************************************************
  * 5. 列表视图 (QListWidget)
@@ -208,10 +188,10 @@ QListWidget {
 }
 
 QListWidget::item {
-    padding: 0px 15px;
+    padding: 0;
     margin: 4px 0px;
     border-radius: 12px;
-    color: #6D6A69;
+    color: #3D3B3A;
     font-weight: 500;
     background-color: #EDEAE9;
     border-top: 1px solid rgba(255, 255, 255, 0.8);
@@ -219,18 +199,26 @@ QListWidget::item {
     border-bottom: 1px solid rgba(181, 177, 176, 0.5);
     border-right: 1px solid rgba(181, 177, 176, 0.5);
     min-height: 45px;
+    outline: none;
+}
+
+QListWidget::item:focus {
+    border: 1px solid transparent;
+}
+
+QListWidget::item:hover {
+    background-color: #E6E1E0;
 }
 
 QListWidget::item:selected {
     font-weight: 600;
-    color: #4A4847;
+    color: #3D3B3A;
     background-color: #E6E1E0;
     border-top: 1px solid rgba(181, 177, 176, 0.5);
     border-left: 1px solid rgba(181, 177, 176, 0.5);
     border-bottom: 1px solid rgba(255, 255, 255, 0.8);
     border-right: 1px solid rgba(255, 255, 255, 0.8);
 }
-
 
 /*******************************************************
  * 6. 对话框 (QDialog)
@@ -252,12 +240,12 @@ QListWidget::item:selected {
 #dialogTitle {
     font-size: 20px;
     font-weight: 600;
-    color: #4A4847;
+    color: #3D3B3A;
     margin-bottom: 10px;
 }
 
 #AddEditDialog QLabel {
-    color: #6D6A69;
+    color: #5E5C5B;
     font-weight: 600;
 }
 
@@ -267,7 +255,7 @@ QListWidget::item:selected {
     border-radius: 12px;
     padding: 10px 15px;
     font-size: 14px;
-    color: #6D6A69;
+    color: #3D3B3A;
     background-color: #E6E1E0;
     border-top: 1px solid rgba(181, 177, 176, 0.5);
     border-left: 1px solid rgba(181, 177, 176, 0.5);
@@ -282,12 +270,12 @@ QListWidget::item:selected {
     border-radius: 12px;
 }
 #saveButton {
-    color: #EDEAE9;
+    color: #F0E8E6;
     font-weight: bold;
     background-color: #8C8685;
 }
 #saveButton:pressed {
-    color: #4A4847;
+    color: #3D3B3A;
     background-color: #E6E1E0;
 }
 
@@ -300,7 +288,7 @@ QListWidget::item:selected {
     padding: 10px 15px;
     font-weight: 600;
     font-size: 14px;
-    color: #6D6A69;
+    color: #3D3B3A;
     background-color: #E6E1E0;
     border-top: 1px solid rgba(181, 177, 176, 0.5);
     border-left: 1px solid rgba(181, 177, 176, 0.5);
@@ -322,7 +310,7 @@ QListWidget::item:selected {
     border: 1px solid rgba(181, 177, 176, 0.8);
     border-radius: 8px;
     padding: 5px;
-    color: #6D6A69;
+    color: #5E5C5B;
     selection-background-color: #D1CBCB;
-    selection-color: #4A4847;
+    selection-color: #3D3B3A;
 }

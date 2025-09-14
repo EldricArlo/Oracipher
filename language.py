@@ -1,27 +1,18 @@
 # language.py
 
 import logging
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 
 class LanguageManager:
     """
     管理应用程序中的所有UI文本翻译。
-
-    这个类被实现为一个“事实上的”单例模式。一个全局实例 `t` 在模块末尾被创建，
-    应用程序的所有其他部分都应该导入并使用这个实例，以确保语言设置的一致性。
     """
-    def __init__(self):
-        """
-        初始化语言管理器。
-        """
-        self._language = 'en'  # 默认语言
-        # TRANSLATIONS 字典是所有翻译的中央存储库。
-        # 键是语言代码 (如 'en', 'zh_CN')，值是另一个字典，
-        # 其中包含该语言的所有翻译键和对应的文本。
-        self.TRANSLATIONS = {
+    def __init__(self) -> None:
+        self._language: str = 'en'
+        self.TRANSLATIONS: Dict[str, Dict[str, str]] = {
             'en': {
-                # --- General & Shared ---
                 'app_title': "SafeKey",
                 'button_ok': "OK",
                 'button_save': "Save",
@@ -37,8 +28,8 @@ class LanguageManager:
                 'label_pass': "Password",
                 'label_cat': "Category",
                 'label_notes': "Notes",
-
-                # --- Unlock Screen ---
+                'default_category': "Uncategorized",
+                'label_url': "URL (for icon)",
                 'setup_welcome': "Welcome to SafeKey",
                 'setup_instruction': "Please create a master password to encrypt all your data.\nThis password is very important, remember it well.",
                 'setup_placeholder': "Set Master Password (min. 8 chars, mixed)",
@@ -56,8 +47,6 @@ class LanguageManager:
                 'error_msg_weak_password': "Password must be at least 8 characters and contain uppercase, lowercase, and digits.",
                 'error_msg_mismatch': "The passwords entered do not match!",
                 'error_msg_wrong_password': "Incorrect master password!",
-
-                # --- Main Interface ---
                 'search_placeholder': "Search...",
                 'all_categories': "All Items",
                 'details_placeholder': "Select an item from the list",
@@ -79,13 +68,20 @@ class LanguageManager:
                 'msg_pass_change_fail_mismatch': "The new passwords do not match!",
                 'msg_pass_change_fail_weak': "New password is too weak. It must be at least 8 characters and contain uppercase, lowercase, and digits.",
                 'msg_pass_change_fail_empty': "All password fields are required.",
-
-                # --- Dialogs ---
                 'add_title': "Add New Entry",
                 'edit_title': "Edit Entry",
                 'placeholder_name': "e.g., Google",
                 'placeholder_user': "e.g., user@example.com",
+                'placeholder_url': "e.g., www.google.com",
                 'placeholder_cat': "e.g., Work",
+                'button_fetch_icon': "Fetch Icon",
+                'button_custom_icon': "Custom Icon",
+                'tooltip_custom_icon': "Click to set a custom icon",
+                'error_url_required': "Please enter a valid URL to fetch an icon.",
+                'error_fetch_failed': "Could not fetch an icon from this URL. Please check the URL and your network connection.",
+                'error_loading_icon': "There was an error loading the selected icon file.",
+                'dialog_select_icon': "Select an Icon File",
+                'dialog_image_files': "Image Files",
                 'gen_title': "Password Generator",
                 'gen_label_len': "Length: {length}",
                 'gen_check_upper': "Uppercase (A-Z)",
@@ -102,9 +98,24 @@ class LanguageManager:
                 'settings_title': "Settings",
                 'settings_lang_label': "Language",
                 'settings_restart_msg': "Language settings saved. Please restart the application for changes to take effect.",
+                'label_data_management': "Data Management",
+                'button_import': "Import Data",
+                'button_export': "Export Data",
+                'dialog_export_title': "Export Vault",
+                'dialog_import_title': "Import Vault",
+                'dialog_csv_files': "CSV Files",
+                'msg_export_success_title': "Export Successful",
+                'msg_export_success': "{count} entries have been successfully exported to:\n{path}",
+                'msg_export_fail_title': "Export Failed",
+                'msg_export_fail': "An error occurred during export: {error}",
+                'msg_import_confirm_title': "Confirm Import",
+                'msg_import_confirm': "You are about to import entries from a CSV file.\n\n- Entries with new names will be added.\n- Entries with names that already exist will be OVERWRITTEN.\n\nThis action cannot be undone. Are you sure you want to continue?",
+                'msg_import_success_title': "Import Successful",
+                'msg_import_success': "{count} entries have been successfully imported.",
+                'msg_import_fail_title': "Import Failed",
+                'msg_import_fail': "An error occurred during import: {error}",
             },
             'zh_CN': {
-                # --- 通用 & 共享 ---
                 'app_title': "SafeKey",
                 'button_ok': "确 定",
                 'button_save': "保 存",
@@ -120,8 +131,8 @@ class LanguageManager:
                 'label_pass': "密码",
                 'label_cat': "分类",
                 'label_notes': "备注",
-
-                # --- 解锁界面 ---
+                'default_category': "未分类",
+                'label_url': "网址 (用于获取图标)",
                 'setup_welcome': "欢迎使用 SafeKey",
                 'setup_instruction': "请创建一个用于加密您所有数据的主密码。\n这个密码非常重要，请务必牢记。",
                 'setup_placeholder': "设置主密码 (至少8位，建议包含混合字符)",
@@ -139,8 +150,6 @@ class LanguageManager:
                 'error_msg_weak_password': "密码必须至少8位，且包含大写字母、小写字母和数字。",
                 'error_msg_mismatch': "两次输入的密码不一致！",
                 'error_msg_wrong_password': "主密码错误！",
-
-                # --- 主界面 ---
                 'search_placeholder': "搜索...",
                 'all_categories': "所有项目",
                 'details_placeholder': "从列表中选择一个项目",
@@ -162,13 +171,20 @@ class LanguageManager:
                 'msg_pass_change_fail_mismatch': "两次输入的新密码不一致！",
                 'msg_pass_change_fail_weak': "新密码强度不足。必须至少8位，且包含大写字母、小写字母和数字。",
                 'msg_pass_change_fail_empty': "所有密码字段均不能为空。",
-
-                # --- 对话框 ---
                 'add_title': "添加新条目",
                 'edit_title': "编辑条目",
                 'placeholder_name': "例如: Google",
                 'placeholder_user': "例如: user@example.com",
+                'placeholder_url': "例如: www.google.com",
                 'placeholder_cat': "例如: 工作",
+                'button_fetch_icon': "获取图标",
+                'button_custom_icon': "自定义图标",
+                'tooltip_custom_icon': "点击设置自定义图标",
+                'error_url_required': "请输入有效的网址以获取图标。",
+                'error_fetch_failed': "无法从该网址获取图标，请检查网址或网络连接。",
+                'error_loading_icon': "加载所选图标文件时出错。",
+                'dialog_select_icon': "选择一个图标文件",
+                'dialog_image_files': "图片文件",
                 'gen_title': "密码生成器",
                 'gen_label_len': "长度: {length}",
                 'gen_check_upper': "大写字母 (A-Z)",
@@ -185,16 +201,26 @@ class LanguageManager:
                 'settings_title': "设置",
                 'settings_lang_label': "语言",
                 'settings_restart_msg': "语言设置已保存。请重启应用程序以使更改生效。",
+                'label_data_management': "数据管理",
+                'button_import': "导入数据",
+                'button_export': "导出数据",
+                'dialog_export_title': "导出保险库",
+                'dialog_import_title': "导入保险库",
+                'dialog_csv_files': "CSV 文件",
+                'msg_export_success_title': "导出成功",
+                'msg_export_success': "{count} 个条目已成功导出到:\n{path}",
+                'msg_export_fail_title': "导出失败",
+                'msg_export_fail': "导出过程中发生错误: {error}",
+                'msg_import_confirm_title': "确认导入",
+                'msg_import_confirm': "您即将从 CSV 文件导入条目。\n\n- 名称不重复的条目将被新增。\n- 名称已存在的条目将被覆盖。\n\n此操作无法撤销，您确定要继续吗？",
+                'msg_import_success_title': "导入成功",
+                'msg_import_success': "{count} 个条目已成功导入。",
+                'msg_import_fail_title': "导入失败",
+                'msg_import_fail': "导入过程中发生错误: {error}",
             }
         }
     
-    def set_language(self, lang_code: str):
-        """
-        设置当前要使用的语言。
-
-        Args:
-            lang_code (str): 目标语言的代码 (例如 'en', 'zh_CN')。
-        """
+    def set_language(self, lang_code: str) -> None:
         if lang_code in self.TRANSLATIONS:
             self._language = lang_code
         else:
@@ -202,19 +228,6 @@ class LanguageManager:
             self._language = 'en'
 
     def get(self, key: str, **kwargs) -> str:
-        """
-        获取指定键的翻译文本。
-
-        此方法支持带占位符的字符串格式化。
-
-        Args:
-            key (str): 翻译字典中的键。
-            **kwargs: 用于格式化字符串的键值对。
-                      例如: t.get('msg_confirm_delete', name="MyAccount")
-
-        Returns:
-            str: 翻译后的文本。如果找不到键，则返回键本身作为备用。
-        """
         try:
             translation = self.TRANSLATIONS[self._language][key]
             if kwargs:
@@ -222,20 +235,12 @@ class LanguageManager:
             return translation
         except KeyError:
             logger.warning(f"翻译键 '{key}' 在语言 '{self._language}' 中未找到。")
-            return key # Fallback to the key itself
+            return key
 
-    def get_available_languages(self) -> dict[str, str]:
-        """
-        获取所有可用语言的代码和显示名称的字典。
-
-        Returns:
-            dict[str, str]: 一个映射 {language_code: display_name} 的字典。
-        """
+    def get_available_languages(self) -> Dict[str, str]:
         return {
             'en': 'English',
             'zh_CN': '简体中文'
         }
 
-# 创建全局实例，以便在整个应用程序中轻松访问。
-# 在其他模块中，只需 `from language import t` 即可使用。
 t = LanguageManager()

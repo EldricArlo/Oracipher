@@ -1,86 +1,85 @@
 # ui/dialogs/add_edit_dialog.py
 
+import base64
 import logging
+from typing import Optional, Dict, Any
+
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QGridLayout,
-                             QLabel, QLineEdit, QPushButton, QFrame, QTextEdit)
-from PyQt6.QtCore import Qt, QPoint
+                             QLabel, QLineEdit, QPushButton, QFrame, QTextEdit, QWidget,
+                             QFileDialog)
+from PyQt6.QtCore import Qt, QPoint, QSize
+from PyQt6.QtGui import QMouseEvent, QIcon
 
 from language import t
 from .generator_dialog import GeneratorWindow
+from core.icon_fetcher import IconFetcher
+from ui.dialogs.message_box_dialog import CustomMessageBox
 
 logger = logging.getLogger(__name__)
 
 class AddEditDialog(QDialog):
     """
     一个用于添加新条目或编辑现有条目的自定义对话框。
-
-    该对话框具有无边框窗口样式，并支持鼠标拖动。
-    它会根据是否在初始化时传入 `entry` 数据来自动调整标题和内容，
-    从而在“添加模式”和“编辑模式”之间切换。
     """
-    def __init__(self, parent=None, entry: dict = None):
-        """
-        初始化添加/编辑对话框。
-
-        Args:
-            parent (QWidget, optional): 父控件。默认为 None。
-            entry (dict, optional): 如果是编辑模式，则传入要编辑的条目数据。
-                                    如果为 None，则对话框处于添加模式。
-        """
+    def __init__(self, parent: Optional[QWidget] = None, entry: Optional[Dict[str, Any]] = None):
         super().__init__(parent)
         self.entry = entry
-        
-        # --- 窗口样式设置 ---
-        # FramelessWindowHint: 移除标准的窗口标题栏和边框
-        # WA_TranslucentBackground: 允许背景透明，以便QSS中的border-radius能创建圆角窗口
+        self.current_icon_base64: Optional[str] = None
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        
-        # 设置 objectName 以便应用 QSS 样式。所有对话框共享此名称以统一外观。
         self.setObjectName("AddEditDialog")
-        self.setModal(True) # 模态对话框，阻止与其他窗口交互
-        self.setMinimumSize(450, 500)
-        
-        self.drag_pos = QPoint() # 用于窗口拖动
-        
+        self.setModal(True)
+        self.setMinimumSize(480, 580)
+        self.drag_pos: QPoint = QPoint()
         self.init_ui()
-        
-        # 如果是编辑模式，则加载现有数据到输入框中
         if self.entry:
             self.load_entry_data()
             logger.debug(f"AddEditDialog 在 '编辑模式' 下打开，条目: {self.entry.get('name')}")
         else:
+            self.current_icon_base64 = IconFetcher.get_default_icon_base64()
+            self.update_icon_preview()
             logger.debug("AddEditDialog 在 '添加模式' 下打开。")
 
-
-    def init_ui(self):
-        """
-        构建对话框的所有UI组件。
-        """
-        # --- 基础容器和主布局 ---
-        # 所有内容都放在一个 QFrame (dialogContainer) 中，以便通过 QSS 统一设置背景和边框
+    def init_ui(self) -> None:
         container = QFrame(self)
         container.setObjectName("dialogContainer")
         main_layout = QVBoxLayout(container)
         main_layout.setContentsMargins(30, 30, 30, 30)
         main_layout.setSpacing(20)
 
-        # --- 标题 ---
+        header_layout = QHBoxLayout()
+        header_layout.setSpacing(15)
+
+        self.icon_preview_button = QPushButton()
+        self.icon_preview_button.setFixedSize(64, 64)
+        self.icon_preview_button.setIconSize(QSize(48, 48))
+        self.icon_preview_button.setObjectName("detailsActionButton")
+        self.icon_preview_button.setToolTip(t.get('tooltip_custom_icon'))
+        self.icon_preview_button.clicked.connect(self._set_custom_icon)
+        
+        title_and_name_layout = QVBoxLayout()
         title_text = t.get('edit_title') if self.entry else t.get('add_title')
         title_label = QLabel(title_text)
         title_label.setObjectName("dialogTitle")
+
+        self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText(t.get('placeholder_name'))
         
-        # --- 表单布局 ---
+        title_and_name_layout.addWidget(title_label)
+        title_and_name_layout.addWidget(self.name_input)
+
+        header_layout.addWidget(self.icon_preview_button)
+        header_layout.addLayout(title_and_name_layout)
+        
         form_layout = QGridLayout()
         form_layout.setSpacing(15)
         
-        # 输入字段
-        self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText(t.get('placeholder_name'))
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText(t.get('placeholder_user'))
         
-        # 密码输入行（包含输入框和两个按钮）
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText(t.get('placeholder_url'))
+
         password_layout = QHBoxLayout()
         password_layout.setContentsMargins(0, 0, 0, 0)
         password_layout.setSpacing(10)
@@ -99,96 +98,128 @@ class AddEditDialog(QDialog):
         password_layout.addWidget(self.password_input)
         password_layout.addWidget(show_hide_button)
         password_layout.addWidget(generate_button)
+        
+        icon_actions_layout = QHBoxLayout()
+        icon_actions_layout.setContentsMargins(0,0,0,0)
+        fetch_icon_button = QPushButton(t.get('button_fetch_icon'))
+        fetch_icon_button.setObjectName("inlineButton")
+        fetch_icon_button.clicked.connect(self._fetch_icon)
+        
+        custom_icon_button = QPushButton(t.get('button_custom_icon'))
+        custom_icon_button.setObjectName("inlineButton")
+        custom_icon_button.clicked.connect(self._set_custom_icon)
+
+        icon_actions_layout.addWidget(fetch_icon_button)
+        icon_actions_layout.addWidget(custom_icon_button)
+        icon_actions_layout.addStretch()
 
         self.category_input = QLineEdit()
         self.category_input.setPlaceholderText(t.get('placeholder_cat'))
         self.notes_input = QTextEdit()
-        self.notes_input.setFixedHeight(80) # 初始高度
+        self.notes_input.setFixedHeight(80)
 
-        # 将标签和输入字段添加到表单网格布局
-        form_layout.addWidget(QLabel(t.get('label_name')), 0, 0)
-        form_layout.addWidget(self.name_input, 0, 1)
-        form_layout.addWidget(QLabel(t.get('label_user')), 1, 0)
-        form_layout.addWidget(self.username_input, 1, 1)
-        form_layout.addWidget(QLabel(t.get('label_pass')), 2, 0)
-        form_layout.addLayout(password_layout, 2, 1)
-        form_layout.addWidget(QLabel(t.get('label_cat')), 3, 0)
-        form_layout.addWidget(self.category_input, 3, 1)
-        form_layout.addWidget(QLabel(t.get('label_notes')), 4, 0)
-        form_layout.addWidget(self.notes_input, 4, 1)
+        form_layout.addWidget(QLabel(t.get('label_user')), 0, 0)
+        form_layout.addWidget(self.username_input, 0, 1)
+        form_layout.addWidget(QLabel(t.get('label_url')), 1, 0)
+        form_layout.addWidget(self.url_input, 1, 1)
+        form_layout.addLayout(icon_actions_layout, 2, 1)
+        form_layout.addWidget(QLabel(t.get('label_pass')), 3, 0)
+        form_layout.addLayout(password_layout, 3, 1)
+        form_layout.addWidget(QLabel(t.get('label_cat')), 4, 0)
+        form_layout.addWidget(self.category_input, 4, 1)
+        form_layout.addWidget(QLabel(t.get('label_notes')), 5, 0)
+        form_layout.addWidget(self.notes_input, 5, 1)
         
-        # --- 底部按钮 (取消/保存) ---
         button_layout = QHBoxLayout()
-        button_layout.addStretch() # 弹簧，将按钮推到右侧
-        
+        button_layout.addStretch()
         self.cancel_button = QPushButton(t.get('button_cancel'))
         self.cancel_button.setObjectName("cancelButton")
-        self.cancel_button.clicked.connect(self.reject) # reject() 会关闭对话框并返回 QDialog.DialogCode.Rejected
-        
+        self.cancel_button.clicked.connect(self.reject)
         self.save_button = QPushButton(t.get('button_save'))
         self.save_button.setObjectName("saveButton")
-        self.save_button.clicked.connect(self.accept) # accept() 会关闭对话框并返回 QDialog.DialogCode.Accepted
-        
+        self.save_button.clicked.connect(self.accept)
         button_layout.addWidget(self.cancel_button)
         button_layout.addWidget(self.save_button)
         
-        # --- 组装主布局 ---
-        main_layout.addWidget(title_label)
+        main_layout.addLayout(header_layout)
         main_layout.addLayout(form_layout)
-        main_layout.addStretch() # 弹簧，将按钮推到底部
+        main_layout.addStretch()
         main_layout.addLayout(button_layout)
         
-        # 最终将容器放入对话框自身的布局中
         dialog_layout = QVBoxLayout(self)
         dialog_layout.addWidget(container)
 
-    def _open_generator(self):
-        """
-        打开密码生成器对话框，并将生成的密码填入密码输入框。
-        """
+    def _open_generator(self) -> None:
         gen_dialog = GeneratorWindow(self)
         if gen_dialog.exec():
             generated_password = gen_dialog.get_password()
-            # 确保用户没有选择空的字符集
             if generated_password != t.get('gen_no_charset'):
                 self.password_input.setText(generated_password)
                 logger.debug("已使用生成器生成并填充了新密码。")
 
-    def _toggle_password_visibility(self, checked: bool):
-        """
-        切换密码输入框的可见性（星号/明文）。
-
-        Args:
-            checked (bool): 按钮是否被选中。
-        """
+    def _toggle_password_visibility(self, checked: bool) -> None:
         button = self.sender()
-        if checked:
-            self.password_input.setEchoMode(QLineEdit.EchoMode.Normal)
-            button.setText(t.get('button_hide'))
-        else:
-            self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-            button.setText(t.get('button_show'))
+        if isinstance(button, QPushButton):
+            if checked:
+                self.password_input.setEchoMode(QLineEdit.EchoMode.Normal)
+                button.setText(t.get('button_hide'))
+            else:
+                self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+                button.setText(t.get('button_show'))
     
-    def load_entry_data(self):
-        """
-        如果是编辑模式，将传入的 `entry` 数据填充到UI控件中。
-        """
+    def update_icon_preview(self) -> None:
+        icon = IconFetcher.icon_from_base64(self.current_icon_base64)
+        self.icon_preview_button.setIcon(icon)
+
+    def _fetch_icon(self) -> None:
+        url = self.url_input.text().strip()
+        if not url:
+            CustomMessageBox.information(self, t.get('msg_title_input_error'), t.get('error_url_required'))
+            return
+        logger.info(f"正在从 '{url}' 获取图标...")
+        fetched_icon_base64 = IconFetcher.fetch_icon_from_url(url)
+        if fetched_icon_base64:
+            self.current_icon_base64 = fetched_icon_base64
+            logger.info("图标获取成功。")
+        else:
+            logger.warning("图标获取失败。")
+            CustomMessageBox.information(self, t.get('msg_title_pass_change_fail'), t.get('error_fetch_failed'))
+        self.update_icon_preview()
+        
+    def _set_custom_icon(self) -> None:
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            t.get('dialog_select_icon'),
+            "",
+            f"{t.get('dialog_image_files')} (*.png *.jpg *.ico *.svg)"
+        )
+        if file_path:
+            try:
+                with open(file_path, "rb") as f:
+                    file_data = f.read()
+                    self.current_icon_base64 = base64.b64encode(file_data).decode('utf-8')
+                    self.update_icon_preview()
+                    logger.info(f"已设置自定义图标: {file_path}")
+            except Exception as e:
+                logger.error(f"加载自定义图标失败: {e}", exc_info=True)
+                CustomMessageBox.information(self, t.get('error_title_generic'), t.get('error_loading_icon'))
+
+    def load_entry_data(self) -> None:
         if not self.entry:
             return
+        details = self.entry.get("details", {})
         self.name_input.setText(self.entry.get("name", ""))
         self.category_input.setText(self.entry.get("category", ""))
-        details = self.entry.get("details", {})
         self.username_input.setText(details.get("username", ""))
         self.password_input.setText(details.get("password", ""))
         self.notes_input.setText(details.get("notes", ""))
+        self.url_input.setText(details.get("url", ""))
+        self.current_icon_base64 = details.get("icon_data")
+        if not self.current_icon_base64:
+            self.current_icon_base64 = IconFetcher.get_default_icon_base64()
+        self.update_icon_preview()
 
-    def get_data(self) -> dict:
-        """
-        从UI控件中收集用户输入的数据，并以标准字典格式返回。
-
-        Returns:
-            dict: 包含所有条目信息的字典。
-        """
+    def get_data(self) -> Dict[str, Any]:
         return {
             "category": self.category_input.text().strip(),
             "name": self.name_input.text().strip(),
@@ -196,16 +227,17 @@ class AddEditDialog(QDialog):
                 "username": self.username_input.text().strip(),
                 "password": self.password_input.text(),
                 "notes": self.notes_input.toPlainText().strip(),
+                "url": self.url_input.text().strip(),
+                "icon_data": self.current_icon_base64
             },
         }
 
-    # --- 窗口拖动事件处理 ---
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self.drag_pos = event.globalPosition().toPoint()
             event.accept()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if event.buttons() == Qt.MouseButton.LeftButton:
             self.move(self.pos() + event.globalPosition().toPoint() - self.drag_pos)
             self.drag_pos = event.globalPosition().toPoint()
