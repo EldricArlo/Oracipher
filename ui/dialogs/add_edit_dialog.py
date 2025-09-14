@@ -5,7 +5,19 @@ import re
 import base64
 from typing import Optional, Dict, Any, Tuple
 
-from PyQt6.QtWidgets import QDialog, QLineEdit, QFileDialog, QWidget
+# --- MODIFICATION START: Import necessary Qt classes for type hinting ---
+from PyQt6.QtWidgets import (
+    QDialog,
+    QLineEdit,
+    QTextEdit,
+    QPushButton,
+    QTabWidget,
+    QWidget,
+    QLabel,
+    QFileDialog,
+)
+
+# --- MODIFICATION END ---
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QMouseEvent
 
@@ -18,11 +30,15 @@ from .add_edit_dialog_ui import AddEditDialogUI
 
 logger = logging.getLogger(__name__)
 
+
 class AddEditDialog(QDialog):
     """
     用于添加或编辑密码条目的对话框。
     """
-    def __init__(self, parent: Optional[QWidget] = None, entry: Optional[Dict[str, Any]] = None):
+
+    def __init__(
+        self, parent: Optional[QWidget] = None, entry: Optional[Dict[str, Any]] = None
+    ):
         super().__init__(parent)
         self.entry = entry
         self.new_category_icon_data: Optional[Tuple[str, str]] = None
@@ -33,10 +49,35 @@ class AddEditDialog(QDialog):
         self.setModal(True)
         self.setMinimumSize(520, 620)
         self.drag_pos: QPoint = QPoint()
-        
+
+        # --- MODIFICATION START: Pre-declare all UI attributes ---
+        # 预先声明所有将由 AddEditDialogUI 创建的UI控件属性。
+        # 这消除了 Pylance 的 "reportAttributeAccessIssue" (属性未知) 错误。
+        self.icon_preview_button: QPushButton
+        self.name_input: QLineEdit
+        self.tabs: QTabWidget
+        self.cancel_btn: QPushButton
+        self.save_btn: QPushButton
+        self.username_input: QLineEdit
+        self.email_input: QLineEdit
+        self.password_input: QLineEdit
+        self.url_input: QLineEdit
+        self.category_input: QLineEdit
+        self.show_hide_btn: QPushButton
+        self.generate_btn: QPushButton
+        self.fetch_icon_btn: QPushButton
+        self.set_cat_icon_btn: QPushButton
+        self.backup_codes_input: QTextEdit
+        self.notes_input: QTextEdit
+        self.two_fa_status_label: QLabel
+        self.scan_qr_btn: QPushButton
+        self.enter_key_btn: QPushButton
+        self.remove_key_btn: QPushButton
+        # --- MODIFICATION END ---
+
         ui_builder = AddEditDialogUI()
         ui_builder.setup_ui(self)
-        
+
         self.init_logic_managers()
         self._connect_signals()
         self.load_entry_data()
@@ -45,20 +86,20 @@ class AddEditDialog(QDialog):
         self.icon_manager = IconManager(
             parent_widget=self,
             icon_preview_button=self.icon_preview_button,
-            url_input=self.url_input
+            url_input=self.url_input,
         )
-        # --- MODIFICATION START ---
         self.two_fa_manager = TwoFAManager(
             parent_widget=self,
             status_label=self.two_fa_status_label,
             scan_qr_btn=self.scan_qr_btn,
             enter_key_btn=self.enter_key_btn,
-            remove_key_btn=self.remove_key_btn
+            remove_key_btn=self.remove_key_btn,
         )
-        # --- MODIFICATION END ---
-        
+
     def _connect_signals(self) -> None:
-        self.icon_preview_button.clicked.connect(self.icon_manager.select_icon_from_file)
+        self.icon_preview_button.clicked.connect(
+            self.icon_manager.select_icon_from_file
+        )
         self.show_hide_btn.toggled.connect(self._toggle_password_visibility)
         self.generate_btn.clicked.connect(self._open_generator)
         self.fetch_icon_btn.clicked.connect(self.icon_manager.fetch_icon_from_url)
@@ -74,7 +115,7 @@ class AddEditDialog(QDialog):
             self.icon_manager.set_initial_icon(None)
             self.two_fa_manager.set_initial_secret(None)
             return
-            
+
         details = self.entry.get("details", {})
         self.name_input.setText(self.entry.get("name", ""))
         self.category_input.setText(self.entry.get("category", ""))
@@ -84,39 +125,57 @@ class AddEditDialog(QDialog):
         self.url_input.setText(details.get("url", ""))
         self.backup_codes_input.setText(details.get("backup_codes", ""))
         self.notes_input.setText(details.get("notes", ""))
-        
+
         self.icon_manager.set_initial_icon(details.get("icon_data"))
         self.two_fa_manager.set_initial_secret(details.get("totp_secret"))
 
     def _toggle_password_visibility(self, checked: bool) -> None:
-        self.password_input.setEchoMode(QLineEdit.EchoMode.Normal if checked else QLineEdit.EchoMode.Password)
-        self.show_hide_btn.setText(t.get('button_hide') if checked else t.get('button_show'))
-    
+        self.password_input.setEchoMode(
+            QLineEdit.EchoMode.Normal if checked else QLineEdit.EchoMode.Password
+        )
+        self.show_hide_btn.setText(
+            t.get("button_hide") if checked else t.get("button_show")
+        )
+
     def _open_generator(self) -> None:
         gen_dialog = GeneratorWindow(self)
         if gen_dialog.exec():
             password = gen_dialog.get_password()
-            if password != t.get('gen_no_charset'): self.password_input.setText(password)
-    
+            if password != t.get("gen_no_charset"):
+                self.password_input.setText(password)
+
     def _set_category_icon(self) -> None:
         category_name = self.category_input.text().strip()
         if not category_name:
-            CustomMessageBox.information(self, t.get('msg_title_input_error'), t.get('error_cat_name_required'))
+            CustomMessageBox.information(
+                self, t.get("msg_title_input_error"), t.get("error_cat_name_required")
+            )
             return
-        file_path, _ = QFileDialog.getOpenFileName(self, t.get('dialog_select_cat_icon'), "", f"{t.get('dialog_image_files')} (*.png *.jpg *.jpeg *.ico *.svg)")
+        file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            t.get("dialog_select_cat_icon"),
+            "",
+            f"{t.get('dialog_image_files')} (*.png *.jpg *.jpeg *.ico *.svg)",
+        )
         if file_path:
             try:
                 with open(file_path, "rb") as f:
-                    icon_base64 = base64.b64encode(f.read()).decode('utf-8')
+                    icon_base64 = base64.b64encode(f.read()).decode("utf-8")
                     self.new_category_icon_data = (category_name, icon_base64)
-                    CustomMessageBox.information(self, t.get('info_title_cat_icon_set'), t.get('info_msg_cat_icon_set', name=category_name))
+                    CustomMessageBox.information(
+                        self,
+                        t.get("info_title_cat_icon_set"),
+                        t.get("info_msg_cat_icon_set", name=category_name),
+                    )
             except Exception as e:
                 logger.error(f"Failed to load category icon: {e}", exc_info=True)
-                CustomMessageBox.information(self, t.get('error_title_generic'), t.get('error_loading_icon'))
-    
+                CustomMessageBox.information(
+                    self, t.get("error_title_generic"), t.get("error_loading_icon")
+                )
+
     def get_data(self) -> Dict[str, Any]:
         raw_codes = self.backup_codes_input.toPlainText().strip()
-        codes = re.findall(r'[\w-]+', raw_codes) if raw_codes else []
+        codes = re.findall(r"[\w-]+", raw_codes) if raw_codes else []
         backup_codes_str = "\n".join(sorted(list(set(codes))))
         return {
             "category": self.category_input.text().strip(),
@@ -133,13 +192,15 @@ class AddEditDialog(QDialog):
             },
         }
 
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.drag_pos = event.globalPosition().toPoint()
-            event.accept()
+    # v--- 修改了类型提示并增加了None检查 ---v
+    def mousePressEvent(self, a0: Optional[QMouseEvent]) -> None:
+        if a0 and a0.button() == Qt.MouseButton.LeftButton:
+            self.drag_pos = a0.globalPosition().toPoint()
+            a0.accept()
 
-    def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            self.move(self.pos() + event.globalPosition().toPoint() - self.drag_pos)
-            self.drag_pos = event.globalPosition().toPoint()
-            event.accept()
+    # v--- 修改了类型提示并增加了None检查 ---v
+    def mouseMoveEvent(self, a0: Optional[QMouseEvent]) -> None:
+        if a0 and a0.buttons() == Qt.MouseButton.LeftButton:
+            self.move(self.pos() + a0.globalPosition().toPoint() - self.drag_pos)
+            self.drag_pos = a0.globalPosition().toPoint()
+            a0.accept()

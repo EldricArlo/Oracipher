@@ -93,24 +93,22 @@ class DataHandler:
             logger.error(f"Error during CSV export: {e}", exc_info=True)
             raise
 
+    # --- MODIFICATION START: Refactored to use CryptoHandler ---
+    # 删除了本地的加密实现，转而调用 CryptoHandler 的静态方法。
+    # 这遵循了 DRY 原则，并确保了加密参数的统一。
     @staticmethod
     def import_from_encrypted_json(file_content_bytes: bytes, password: str) -> List[Dict[str, Any]]:
         logger.info("Attempting to decrypt and import from .skey file...")
         try:
             from cryptography.fernet import Fernet
-            from argon2.low_level import hash_secret_raw, Type
-            
+
             import_payload = json.loads(file_content_bytes.decode('utf-8'))
             b64_salt = import_payload["salt"]
             encrypted_data_string = import_payload["data"]
             salt = base64.b64decode(b64_salt)
             
-            raw_key = hash_secret_raw(
-                secret=password.encode('utf-8'), salt=salt,
-                time_cost=3, memory_cost=65536, parallelism=4,
-                hash_len=32, type=Type.ID
-            )
-            derived_key = base64.urlsafe_b64encode(raw_key)
+            # 重用 CryptoHandler 中定义的密钥派生逻辑
+            derived_key = CryptoHandler._derive_key(password, salt)
             fernet = Fernet(derived_key)
             
             decrypted_json_string = fernet.decrypt(encrypted_data_string.encode('utf-8'), ttl=None)
@@ -122,6 +120,7 @@ class DataHandler:
             raise ValueError("Invalid .skey file format.")
         except Exception:
             raise ValueError("Incorrect password or corrupt file.")
+    # --- MODIFICATION END ---
 
     @staticmethod
     def _parse_generic_csv(reader: csv.DictReader) -> List[Dict[str, Any]]:

@@ -57,6 +57,10 @@ translations = {
     "label_email": "Email",
     "tab_main": "Main",
     "tab_advanced": "Advanced",
+    "tab_security": "TOTP",
+    # --- MODIFICATION START: Renamed the tab ---
+    "tab_info": "Appendix",
+    # --- MODIFICATION END ---
     "add_title": "Add New Entry",
     "edit_title": "Edit Entry",
     "label_name": "Account Name",
@@ -181,8 +185,6 @@ translations = {
     "warning_include_totp_title": "Include TOTP Secrets?",
     "warning_include_totp_text": "Do you want to include 2FA/TOTP secret keys in the unencrypted CSV file?\n\nWARNING: This is extremely dangerous! Anyone with access to this file will be able to generate your two-factor codes.\n\nAre you sure you want to continue?",
     "settings_auto_lock_title": "Auto-lock Vault",
-    # "settings_auto_lock_desc": "Automatically lock the vault after a period of inactivity.",
-    # "minutes_suffix": "min",
     "settings_auto_lock_desc": "Automatically lock the vault after a period of inactivity to keep your data safe.",
     "minutes_suffix": "min",
 }

@@ -3,7 +3,7 @@
 import logging
 from typing import Optional, List, Dict
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLayout, QLabel, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLayout, QLabel, QHBoxLayout, QStyle
 from PyQt6.QtCore import pyqtSignal, Qt, QTimer, QEvent, QObject
 from PyQt6.QtGui import QPixmap, QShowEvent
 
@@ -29,9 +29,9 @@ class SidebarView(QWidget):
 
         self.init_ui()
     
-    def showEvent(self, event: QShowEvent) -> None:
+    def showEvent(self, a0: Optional[QShowEvent]) -> None:
         """在控件首次显示时，为父窗口安装事件过滤器。"""
-        super().showEvent(event)
+        super().showEvent(a0)
         if not self._filter_installed:
             parent_window = self.window()
             if parent_window:
@@ -41,22 +41,26 @@ class SidebarView(QWidget):
                 if parent_window.isActiveWindow():
                     self.hover_check_timer.start()
 
-    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
+    def eventFilter(self, a0: Optional[QObject], a1: Optional[QEvent]) -> bool:
         """
         监听父窗口的激活/非激活事件，以启动/停止悬停状态检查定时器。
         这是为了优化性能，仅在应用处于前台时才进行检查。
         """
-        if watched == self.window():
-            if event.type() == QEvent.Type.WindowActivate:
+        # 增加对 None 的检查，以确保类型安全
+        if not a0 or not a1:
+            return super().eventFilter(a0, a1)
+        
+        if a0 == self.window():
+            if a1.type() == QEvent.Type.WindowActivate:
                 if not self.hover_check_timer.isActive():
                     self.hover_check_timer.start()
-            elif event.type() == QEvent.Type.WindowDeactivate:
+            elif a1.type() == QEvent.Type.WindowDeactivate:
                 if self.hover_check_timer.isActive():
                     self.hover_check_timer.stop()
                     # 当窗口失活时，强制所有按钮收缩
                     self._force_collapse_all()
 
-        return super().eventFilter(watched, event)
+        return super().eventFilter(a0, a1)
         
     def _get_all_buttons(self) -> List[AnimatedBookmarkButton]:
         """获取侧边栏上所有动画按钮的列表。"""
@@ -134,8 +138,10 @@ class SidebarView(QWidget):
     def _clear_layout(self, layout: QLayout):
         while layout.count():
             child = layout.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
+            if child:
+                widget = child.widget()
+                if widget:
+                    widget.deleteLater()
 
     def populate_categories(self, categories: List[str], icon_map: Dict[str, str]) -> None:
         self._clear_layout(self.category_buttons_layout)
@@ -158,8 +164,11 @@ class SidebarView(QWidget):
         for name, button in self.category_buttons.items():
             is_active = (name == active_category_name)
             button.setProperty("active", is_active)
-            button.style().unpolish(button)
-            button.style().polish(button)
+            
+            style = button.style()
+            if style:
+                style.unpolish(button)
+                style.polish(button)
 
     def retranslate_ui(self) -> None:
         self.add_account_button.text_label.setText(t.get('button_add_account'))

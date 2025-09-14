@@ -1,10 +1,13 @@
 # ui/components/custom_widgets.py
 
-from PyQt6.QtWidgets import QListWidget, QTextEdit, QScrollBar
+from typing import Optional
+from PyQt6.QtCore import QEvent
+from PyQt6.QtWidgets import QListWidget, QTextEdit
 from ui.theme_manager import get_current_theme
 
 # --- 为滚动条定义的QSS样式字符串 ---
 
+# 暗色主题的滚动条样式
 SCROLLBAR_STYLE_DARK = """
     QScrollBar:vertical {
         border: none;
@@ -12,27 +15,20 @@ SCROLLBAR_STYLE_DARK = """
         width: 14px;
         margin: 0;
     }
-
-    /* 默认状态下的滑块：极细的线条 */
     QScrollBar::handle:vertical {
-        background-color: #44475a;
+        background-color: #44475a; /* 暗色滑块 */
         min-height: 30px;
         border-radius: 2px;
         width: 3px;
         margin: 0 5px;
     }
-
-    /* 鼠标悬停在整个滚动条区域时，滑块的样式 */
     QScrollBar::handle:vertical:hover, QScrollBar::handle:vertical:pressed {
-        /* --- MODIFICATION START: Softer hover color --- */
-        background-color: #51546e; /* 一个更中性的、更浅的灰色 */
-        /* --- MODIFICATION END --- */
+        background-color: #51546e; /* 暗色滑块悬停 */
         width: 12px;
         border-radius: 6px;
         margin: 0 1px;
         border: 1px solid #282a36;
     }
-    
     QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
         height: 0px;
         background: none;
@@ -42,6 +38,7 @@ SCROLLBAR_STYLE_DARK = """
     }
 """
 
+# 亮色主题的滚动条样式
 SCROLLBAR_STYLE_LIGHT = """
     QScrollBar:vertical {
         border: none;
@@ -49,21 +46,15 @@ SCROLLBAR_STYLE_LIGHT = """
         width: 14px;
         margin: 0;
     }
-
-    /* 默认状态下的滑块：极细的线条 */
     QScrollBar::handle:vertical {
-        background-color: #D1CBCB;
+        background-color: #D1CBCB; /* 亮色滑块 */
         min-height: 30px;
         border-radius: 2px;
         width: 3px;
         margin: 0 5px;
     }
-
-    /* 鼠标悬停在整个滚动条区域时，滑块的样式 */
     QScrollBar::handle:vertical:hover, QScrollBar::handle:vertical:pressed {
-        /* --- MODIFICATION START: Lighter hover color --- */
-        background-color: #C0B8B7; /* 一个比之前更浅、更柔和的灰色 */
-        /* --- MODIFICATION END --- */
+        background-color: #C0B8B7; /* 亮色滑块悬停 */
         width: 12px;
         border-radius: 6px;
         margin: 0 1px;
@@ -72,7 +63,6 @@ SCROLLBAR_STYLE_LIGHT = """
         border-bottom: 1px solid rgba(181, 177, 176, 0.6);
         border-right: 1px solid rgba(181, 177, 176, 0.6);
     }
-
     QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
         height: 0px;
         background: none;
@@ -90,9 +80,28 @@ class StyledListWidget(QListWidget):
 
     def update_scrollbar_style(self):
         theme = get_current_theme()
-        style = SCROLLBAR_STYLE_DARK if theme == 'dark' else SCROLLBAR_STYLE_LIGHT
-        self.verticalScrollBar().setStyleSheet(style)
-        self.horizontalScrollBar().setStyleSheet(style) 
+        
+        # 确保逻辑正确：如果是 'dark' 主题，则使用 SCROLLBAR_STYLE_DARK
+        if theme == 'dark':
+            style = SCROLLBAR_STYLE_DARK
+        else: # 否则（即 'light' 主题），使用 SCROLLBAR_STYLE_LIGHT
+            style = SCROLLBAR_STYLE_LIGHT
+            
+        v_scroll_bar = self.verticalScrollBar()
+        if v_scroll_bar:
+            v_scroll_bar.setStyleSheet(style)
+        
+        h_scroll_bar = self.horizontalScrollBar()
+        if h_scroll_bar:
+            h_scroll_bar.setStyleSheet(style)
+
+    def changeEvent(self, a0: Optional[QEvent]) -> None:
+        """
+        重写 changeEvent 以捕获样式变化事件。
+        """
+        super().changeEvent(a0)
+        if a0 and a0.type() == QEvent.Type.StyleChange:
+            self.update_scrollbar_style()
 
 class StyledTextEdit(QTextEdit):
     """一个自动应用自定义滚动条样式的QTextEdit。"""
@@ -102,6 +111,25 @@ class StyledTextEdit(QTextEdit):
     
     def update_scrollbar_style(self):
         theme = get_current_theme()
-        style = SCROLLBAR_STYLE_DARK if theme == 'dark' else SCROLLBAR_STYLE_LIGHT
-        self.verticalScrollBar().setStyleSheet(style)
-        self.horizontalScrollBar().setStyleSheet(style)
+
+        # 确保逻辑正确：如果是 'dark' 主题，则使用 SCROLLBAR_STYLE_DARK
+        if theme == 'dark':
+            style = SCROLLBAR_STYLE_DARK
+        else: # 否则（即 'light' 主题），使用 SCROLLBAR_STYLE_LIGHT
+            style = SCROLLBAR_STYLE_LIGHT
+
+        v_scroll_bar = self.verticalScrollBar()
+        if v_scroll_bar:
+            v_scroll_bar.setStyleSheet(style)
+            
+        h_scroll_bar = self.horizontalScrollBar()
+        if h_scroll_bar:
+            h_scroll_bar.setStyleSheet(style)
+
+    def changeEvent(self, e: Optional[QEvent]) -> None:
+        """
+        重写 changeEvent 以捕獲样式变化事件。
+        """
+        super().changeEvent(e)
+        if e and e.type() == QEvent.Type.StyleChange:
+            self.update_scrollbar_style()

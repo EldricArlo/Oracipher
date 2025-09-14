@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 from PyQt6.QtWidgets import (QWidget, QLabel, QGraphicsOpacityEffect,
                              QStyleOption, QStyle)
-from PyQt6.QtGui import QIcon, QMouseEvent, QPaintEvent, QPainter
+from PyQt6.QtGui import QIcon, QMouseEvent, QPaintEvent, QPainter, QEnterEvent
 from PyQt6.QtCore import (Qt, QSize, QPropertyAnimation, QEasingCurve,
                           QEvent, pyqtSignal)
                           
@@ -79,23 +79,25 @@ class AnimatedBookmarkButton(QWidget):
         self.opacity_animation.setEndValue(0.0)
         self.opacity_animation.start()
 
-    def paintEvent(self, event: QPaintEvent) -> None:
+    def paintEvent(self, a0: Optional[QPaintEvent]) -> None:
         opt = QStyleOption()
         opt.initFrom(self)
         p = QPainter(self)
-        self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
-        super().paintEvent(event)
+        style = self.style()
+        if style:
+            style.drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
+        super().paintEvent(a0)
 
     # 我们仍然保留 enter/leaveEvent 以便在正常情况下获得最快的响应
-    def enterEvent(self, event: QEvent) -> None:
+    def enterEvent(self, event: Optional[QEnterEvent]) -> None:
         self._expand()
         super().enterEvent(event)
 
-    def leaveEvent(self, event: QEvent) -> None:
+    def leaveEvent(self, a0: Optional[QEvent]) -> None:
         self._collapse()
-        super().leaveEvent(event)
+        super().leaveEvent(a0)
         
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.MouseButton.LeftButton:
+    def mousePressEvent(self, a0: Optional[QMouseEvent]) -> None:
+        if a0 and a0.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit()
-        super().mousePressEvent(event)
+        super().mousePressEvent(a0)

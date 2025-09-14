@@ -33,7 +33,6 @@ class CryptoHandler:
     # 一个静态的、用于验证密码正确性的“魔法字符串”。
     # 当用户解锁时，我们会尝试用派生的密钥解密验证文件，如果解密后的内容与此令牌匹配，
     # 则证明密码正确，避免了直接存储密码或其哈希值。
-    # 修正: 将品牌名从 "safekey" 改为 "oracipher"
     _VERIFICATION_TOKEN: bytes = b"oracipher-verification-token-v1-argon2"
 
     def __init__(self, data_dir: str):
@@ -48,7 +47,11 @@ class CryptoHandler:
         self.verification_path: str = os.path.join(data_dir, "verification.key")
         os.makedirs(data_dir, exist_ok=True)
 
-    def _derive_key(self, password: str, salt: bytes) -> bytes:
+    # --- MODIFICATION START: Converted to a static method ---
+    # 将此方法转换为静态方法，使其不依赖于实例 (self)。
+    # 这样就可以在 data_handler.py 中安全地重用，以确保加密参数的一致性。
+    @staticmethod
+    def _derive_key(password: str, salt: bytes) -> bytes:
         """
         使用 Argon2id 从主密码和盐派生一个 URL-safe Base64 编码的加密密钥。
         
@@ -58,13 +61,14 @@ class CryptoHandler:
         raw_key = hash_secret_raw(
             secret=password.encode('utf-8'),
             salt=salt,
-            time_cost=self._ARGON2_TIME_COST,
-            memory_cost=self._ARGON2_MEMORY_COST,
-            parallelism=self._ARGON2_PARALLELISM,
-            hash_len=self._KEY_LENGTH,
+            time_cost=CryptoHandler._ARGON2_TIME_COST,
+            memory_cost=CryptoHandler._ARGON2_MEMORY_COST,
+            parallelism=CryptoHandler._ARGON2_PARALLELISM,
+            hash_len=CryptoHandler._KEY_LENGTH,
             type=Type.ID  # 明确使用 Argon2id
         )
         return base64.urlsafe_b64encode(raw_key)
+    # --- MODIFICATION END ---
 
     def set_master_password(self, password: str) -> None:
         """
@@ -76,7 +80,8 @@ class CryptoHandler:
         logger.info("Setting a new master password for the vault...")
         try:
             salt = os.urandom(self._SALT_SIZE)
-            self.key = self._derive_key(password, salt)
+            # 现在调用的是静态方法
+            self.key = CryptoHandler._derive_key(password, salt)
             fernet = Fernet(self.key)
             
             with open(self.salt_path, "wb") as f:
@@ -101,7 +106,8 @@ class CryptoHandler:
             with open(self.salt_path, "rb") as f:
                 salt = f.read()
             
-            derived_key = self._derive_key(password, salt)
+            # 现在调用的是静态方法
+            derived_key = CryptoHandler._derive_key(password, salt)
             fernet = Fernet(derived_key)
             
             with open(self.verification_path, "rb") as f:
@@ -141,7 +147,7 @@ class CryptoHandler:
                 raise FileNotFoundError("Salt file not found during password change.")
 
             # 1. 验证旧密码是否正确，通过尝试解密验证令牌。
-            old_derived_key = self._derive_key(old_password, salt)
+            old_derived_key = CryptoHandler._derive_key(old_password, salt)
             old_fernet = Fernet(old_derived_key)
 
             with open(self.verification_path, "rb") as f:
@@ -151,7 +157,7 @@ class CryptoHandler:
             logger.info("Old master password verified successfully.")
 
             # 2. 生成新密钥，并用它重新加密验证令牌，写入文件。
-            new_derived_key = self._derive_key(new_password, salt)
+            new_derived_key = CryptoHandler._derive_key(new_password, salt)
             new_fernet = Fernet(new_derived_key)
 
             new_encrypted_verification = new_fernet.encrypt(self._VERIFICATION_TOKEN)

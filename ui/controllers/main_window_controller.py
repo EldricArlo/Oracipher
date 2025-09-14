@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 class MainWindowController(QObject):
-    settings_changed = pyqtSignal() # 新增: 用于通知主窗口设置已更改
+    settings_changed = pyqtSignal()
 
     def __init__(
         self,
@@ -94,6 +94,10 @@ class MainWindowController(QObject):
         all_categories = sorted(list(set(e['category'] for e in self.all_entries if e['category'])))
         self.sidebar_view.populate_categories(all_categories, self.category_icons)
         self.sidebar_view.set_active_category(self.current_category)
+        # --- MODIFICATION START: Centralize re-translation here ---
+        # 确保在每次侧边栏更新时（包括语言更改后），都重新翻译所有静态按钮的文本。
+        self.sidebar_view.retranslate_ui()
+        # --- MODIFICATION END ---
 
     def _filter_and_display_entries(self) -> None:
         if self.current_category == t.get('all_categories'):
@@ -109,8 +113,8 @@ class MainWindowController(QObject):
                     term in entry.get('category', '').lower() or
                     term in entry.get('details', {}).get('username', '').lower() or
                     term in entry.get('details', {}).get('url', '').lower() or
-                    term in entry.get('details', {}).get('notes', '').lower() or # 修改: 增加搜索范围
-                    term in entry.get('details', {}).get('backup_codes', '').lower() # 修改: 增加搜索范围
+                    term in entry.get('details', {}).get('notes', '').lower() or
+                    term in entry.get('details', {}).get('backup_codes', '').lower()
                 )
             ]
         else:
@@ -214,16 +218,20 @@ class MainWindowController(QObject):
         dialog.change_password_requested.connect(self._handle_change_password)
         dialog.import_requested.connect(self.io_controller.handle_import)
         dialog.export_requested.connect(lambda: self.io_controller.handle_export(self.all_entries))
-
+        dialog.theme_changed.connect(self._apply_theme)
         original_lang = t._language
         original_theme = get_current_theme()
-        original_settings = load_settings() # 新增
+        original_settings = load_settings()
 
+        def on_cancel():
+            if get_current_theme() != original_theme:
+                self._apply_theme(original_theme)
+        
+        dialog.rejected.connect(on_cancel)
+        
         if dialog.exec():
-            # 修改: 将所有设置项的获取和保存逻辑集中处理
             settings_changed = False
             new_settings = original_settings.copy()
-
             selected_lang = dialog.get_selected_language()
             if new_settings['language'] != selected_lang:
                 new_settings['language'] = selected_lang
@@ -243,24 +251,25 @@ class MainWindowController(QObject):
 
             if settings_changed:
                 save_settings(new_settings)
-                self.settings_changed.emit() # 新增: 发出信号通知主窗口
+                self.settings_changed.emit()
             
-            if selected_theme != original_theme:
-                self._apply_theme(selected_theme)
-
             if selected_lang != original_lang:
                 t.set_language(selected_lang)
-                self.main_app_window.retranslate_ui()
+                self.handle_language_change()
+        else:
+            pass
 
     def _apply_theme(self, theme_name: str) -> None:
         app = QApplication.instance()
-        if not app: return
+        if not isinstance(app, QApplication): return
         apply_theme(app, theme_name)
         
         for window in app.topLevelWindows():
             if isinstance(window, QWidget):
-                window.style().unpolish(window)
-                window.style().polish(window)
+                style = window.style()
+                if style:
+                    style.unpolish(window)
+                    style.polish(window)
         
         logger.info(f"Theme '{theme_name}' applied and UI refreshed.")
 
@@ -299,4 +308,6 @@ class MainWindowController(QObject):
     
     def handle_language_change(self):
         self.current_category = t.get('all_categories')
+        # 调用 load_initial_data() 会触发一个完整的刷新流程, 
+        # 其中包括调用 _update_sidebar(), 从而确保所有文本都被更新。
         self.load_initial_data()

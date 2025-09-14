@@ -45,6 +45,11 @@ class MainWindow(QWidget):
         main_layout.addWidget(main_splitter)
         
     def retranslate_ui(self) -> None:
-        self.sidebar_view.retranslate_ui()
+        # --- MODIFICATION START: Removed redundant call ---
+        # 我们不再直接调用 sidebar_view.retranslate_ui()
+        # self.sidebar_view.retranslate_ui()
+        # --- MODIFICATION END ---
+
+        # 只需翻译内容视图，然后让控制器处理剩下的所有逻辑
         self.content_view.retranslate_ui()
         self.controller.handle_language_change()

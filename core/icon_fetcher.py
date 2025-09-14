@@ -5,6 +5,9 @@ import io
 import logging
 import requests
 from urllib.parse import urlparse
+# --- MODIFICATION START: Import lru_cache ---
+from functools import lru_cache
+# --- MODIFICATION END ---
 
 from PyQt6.QtGui import QPixmap, QIcon, QPainter, QColor
 from PyQt6.QtCore import QByteArray, QSize, Qt, QBuffer
@@ -14,8 +17,10 @@ from .icon_processor import IconProcessor
 
 logger = logging.getLogger(__name__)
 
-# 使用内存缓存来避免对同一域名重复进行网络请求。
-ICON_CACHE: dict[str, str | None] = {}
+# --- MODIFICATION START: Removed the global ICON_CACHE dictionary ---
+# The global ICON_CACHE dictionary is no longer needed as we will use lru_cache.
+# ICON_CACHE: dict[str, str | None] = {}
+# --- MODIFICATION END ---
 
 class IconFetcher:
     """
@@ -112,12 +117,48 @@ class IconFetcher:
     def icon_from_base64(base64_str: str | None) -> QIcon:
         """从Base64字符串创建 QIcon (其内部的pixmap已是圆形)。"""
         return QIcon(IconFetcher.pixmap_from_base64(base64_str))
-
+        
+    # --- MODIFICATION START: New private method with LRU cache ---
+    # 这个新方法包含了实际的网络请求逻辑。
+    # @lru_cache 装饰器会自动为这个函数的结果创建一个LRU缓存。
+    # maxsize=128 意味着最多缓存128个不同域名的图标。
+    @staticmethod
+    @lru_cache(maxsize=128)
+    def _fetch_icon_from_services(domain: str) -> str | None:
+        """
+        对给定的域名，尝试从多个服务获取图标。此函数的结果被缓存。
+        """
+        for service_template in IconFetcher.FAVICON_SERVICES:
+            service_url = service_template.format(domain=domain)
+            logger.info(f"Attempting to fetch icon for {domain} from {service_url}...")
+            try:
+                response = requests.get(service_url, timeout=5, stream=True)
+                response.raise_for_status()
+                
+                content_type = response.headers.get('content-type', '')
+                if 'image' not in content_type:
+                    logger.warning(f"Content from {service_url} is not an image: {content_type}. Trying next service.")
+                    continue
+                    
+                icon_data = response.content
+                base64_icon = base64.b64encode(icon_data).decode('utf-8')
+                
+                logger.info(f"Successfully fetched and cached icon for {domain}.")
+                return base64_icon
+            
+            except requests.RequestException as e:
+                logger.warning(f"Network error fetching from {service_url}: {e}. Trying next service.")
+                continue
+        
+        logger.error(f"All favicon services failed for domain: {domain}")
+        return None
+    # --- MODIFICATION END ---
+        
     @staticmethod
     def fetch_icon_from_url(url: str) -> str | None:
         """
         从给定的URL获取网站图标的Base64编码。
-        此方法会自动处理缓存，并尝试多个备用图标服务以提高成功率。
+        此方法现在是一个包装器，负责解析URL并调用带缓存的抓取函数。
         """
         if not url:
             return None
@@ -131,40 +172,10 @@ class IconFetcher:
             if not domain:
                 logger.warning(f"Could not parse a valid domain from URL: '{url}'")
                 return None
-
-            if domain in ICON_CACHE:
-                logger.debug(f"Returning cached icon for {domain}.")
-                return ICON_CACHE[domain]
-
-            for service_template in IconFetcher.FAVICON_SERVICES:
-                service_url = service_template.format(domain=domain)
-                logger.info(f"Attempting to fetch icon for {domain} from {service_url}...")
-                try:
-                    response = requests.get(service_url, timeout=5, stream=True)
-                    response.raise_for_status()
-                    
-                    content_type = response.headers.get('content-type', '')
-                    if 'image' not in content_type:
-                        logger.warning(f"Content from {service_url} is not an image: {content_type}. Trying next service.")
-                        continue
-                        
-                    icon_data = response.content
-                    base64_icon = base64.b64encode(icon_data).decode('utf-8')
-                    
-                    ICON_CACHE[domain] = base64_icon
-                    logger.info(f"Successfully fetched icon for {domain}.")
-                    return base64_icon
-                
-                except requests.RequestException as e:
-                    logger.warning(f"Network error fetching from {service_url}: {e}. Trying next service.")
-                    continue
             
-            logger.error(f"All favicon services failed for domain: {domain}")
-            ICON_CACHE[domain] = None
-            return None
+            # 调用带缓存的内部方法
+            return IconFetcher._fetch_icon_from_services(domain)
             
         except Exception as e:
             logger.error(f"An unexpected error occurred while processing URL '{url}': {e}", exc_info=True)
-            if 'domain' in locals():
-                ICON_CACHE[locals()['domain']] = None
             return None

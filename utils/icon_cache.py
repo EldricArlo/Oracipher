@@ -17,6 +17,13 @@ class IconCache:
     """
     _instance = None
     
+    # --- MODIFICATION START: Pre-declare instance attributes at class level ---
+    # 在类的顶层声明实例属性及其类型。
+    # 这让 Pylance 等静态分析器能够识别 _cache 和 _initialized 属性。
+    _cache: Dict[str, QIcon]
+    _initialized: bool
+    # --- MODIFICATION END ---
+    
     # 定义所有需要预加载的图标的键和路径
     PRELOAD_ICONS = {
         "add": "ui/assets/icons/add.svg",
@@ -37,9 +44,21 @@ class IconCache:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(IconCache, cls).__new__(cls)
-            cls._instance._cache: Dict[str, QIcon] = {}
+            # --- MODIFICATION START: Initialize a flag for __init__ ---
+            # 标记实例为“未初始化”
+            cls._instance._initialized = False
+            # --- MODIFICATION END ---
             logger.info("IconCache instance created.")
         return cls._instance
+
+    # --- MODIFICATION START: Use __init__ for initialization ---
+    # __init__ 用于初始化实例。我们添加一个检查，确保它只运行一次。
+    def __init__(self):
+        if self._initialized:
+            return
+        self._cache = {}
+        self._initialized = True
+    # --- MODIFICATION END ---
 
     def preload(self) -> None:
         """
@@ -70,6 +89,7 @@ class IconCache:
         """
         从缓存中获取一个 QIcon。
         """
+        # 现在 Pylance 可以正确识别 self._cache 了
         if key not in self._cache:
             logger.warning(f"Icon key '{key}' not found in cache. Attempting to load just-in-time.")
             path = self.PRELOAD_ICONS.get(key)

@@ -57,6 +57,10 @@ translations = {
     "label_email": "邮箱",
     "tab_main": "主要",
     "tab_advanced": "高级",
+    "tab_security": "TOTP",
+    # --- MODIFICATION START: Renamed the tab ---
+    "tab_info": "附录",
+    # --- MODIFICATION END ---
     "add_title": "添加新条目",
     "edit_title": "编辑条目",
     "label_name": "账户名称",

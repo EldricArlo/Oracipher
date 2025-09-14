@@ -36,7 +36,8 @@ class ScreenQRReader(QWidget):
         primary_screen = QApplication.primaryScreen()
         if not primary_screen:
             logger.error("Could not get primary screen! QR scan feature may be unavailable.")
-            self.close()
+            # 使用 QTimer.singleShot 确保在构造函数完成后再关闭
+            QTimer.singleShot(0, self.close)
             return
             
         self.screen_geometry: QRect = primary_screen.geometry()
@@ -64,11 +65,11 @@ class ScreenQRReader(QWidget):
         margin = 20
         self.cancel_button.move(self.width() - button_size.width() - margin, margin)
 
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        super().resizeEvent(event)
+    def resizeEvent(self, a0: Optional[QResizeEvent]) -> None:
+        super().resizeEvent(a0)
         self._position_cancel_button()
 
-    def paintEvent(self, event: QPaintEvent) -> None:
+    def paintEvent(self, a0: Optional[QPaintEvent]) -> None:
         with QPainter(self) as painter:
             painter.setBrush(QBrush(QColor(0, 0, 0, 120)))
             painter.setPen(QPen(Qt.PenStyle.NoPen))
@@ -82,24 +83,32 @@ class ScreenQRReader(QWidget):
                 painter.setPen(QPen(QColor("#FFFFFF"), 2, Qt.PenStyle.DashLine))
                 painter.drawRect(selection_rect)
 
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        self.begin = event.position().toPoint()
+    def mousePressEvent(self, a0: Optional[QMouseEvent]) -> None:
+        if not a0:
+            return
+        self.begin = a0.position().toPoint()
         self.end = self.begin
         self.update()
 
-    def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        self.end = event.position().toPoint()
+    def mouseMoveEvent(self, a0: Optional[QMouseEvent]) -> None:
+        if not a0:
+            return
+        self.end = a0.position().toPoint()
         self.update()
 
-    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        if self.cancel_button.geometry().contains(event.position().toPoint()):
+    def mouseReleaseEvent(self, a0: Optional[QMouseEvent]) -> None:
+        if not a0:
+            return
+        if self.cancel_button.geometry().contains(a0.position().toPoint()):
             return
             
         self.close()
         QTimer.singleShot(50, self.capture_and_decode)
 
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_Escape:
+    def keyPressEvent(self, a0: Optional[QKeyEvent]) -> None:
+        if not a0:
+            return
+        if a0.key() == Qt.Key.Key_Escape:
             self._cancel_scan()
 
     def capture_and_decode(self) -> None:
@@ -121,7 +130,8 @@ class ScreenQRReader(QWidget):
             physical_width = int(selection_rect.width() * self.pixel_ratio)
             physical_height = int(selection_rect.height() * self.pixel_ratio)
             
-            pixmap = screen.grabWindow(0, physical_x, physical_y, physical_width, physical_height)
+            pixmap = screen.grabWindow(0, physical_x, physical_y, physical_width, physical_height) # type: ignore
+            
             image = self._convert_qpixmap_to_pil(pixmap)
             decoded_objects = decode(image)
             
@@ -141,5 +151,8 @@ class ScreenQRReader(QWidget):
         buffer = QBuffer()
         buffer.open(QBuffer.OpenModeFlag.ReadWrite)
         pixmap.save(buffer, "PNG")
-        pil_image = Image.open(io.BytesIO(buffer.data()))
+        
+        image_bytes = buffer.data().data()
+        pil_image = Image.open(io.BytesIO(image_bytes))
+        
         return pil_image.convert("RGB")

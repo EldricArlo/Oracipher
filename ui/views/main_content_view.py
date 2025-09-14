@@ -12,9 +12,7 @@ from language import t
 from .details_view import DetailsView
 from ..components.entry_list_item_widget import EntryListItemWidget
 from ..components.no_focus_delegate import NoFocusDelegate
-# --- MODIFICATION START ---
 from ..components.custom_widgets import StyledListWidget
-# --- MODIFICATION END ---
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +23,14 @@ class MainContentView(QWidget):
     def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setObjectName("contentContainer")
+        
+        # --- MODIFICATION START: Pre-declare all UI attributes ---
+        self.search_input: QLineEdit
+        self.add_button: QPushButton
+        self.entry_list: StyledListWidget
+        self.details_view: DetailsView
+        # --- MODIFICATION END ---
+        
         self.init_ui()
 
     def init_ui(self) -> None:
@@ -37,9 +43,7 @@ class MainContentView(QWidget):
         top_toolbar_layout.addWidget(self.search_input, 1); top_toolbar_layout.addStretch(0); top_toolbar_layout.addWidget(self.add_button)
         
         inner_splitter = QSplitter(Qt.Orientation.Horizontal)
-        # --- MODIFICATION START ---
-        self.entry_list = StyledListWidget() # 使用新的自定义控件
-        # --- MODIFICATION END ---
+        self.entry_list = StyledListWidget()
         self.entry_list.setItemDelegate(NoFocusDelegate(self))
         self.details_view = DetailsView()
         inner_splitter.addWidget(self.entry_list); inner_splitter.addWidget(self.details_view)
