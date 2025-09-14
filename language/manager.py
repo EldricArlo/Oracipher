@@ -8,6 +8,7 @@ from .locales import en, zh_CN
 
 logger = logging.getLogger(__name__)
 
+
 class LanguageManager:
     """
     一个单例模式的语言管理器，负责处理应用程序中的所有UI文本翻译。
@@ -26,7 +27,7 @@ class LanguageManager:
             self._language = lang_code
             logger.info(f"Application language set to '{lang_code}'.")
         else:
-            self._language = "en" # 如果指定的语言不存在，回退到英语
+            self._language = "en"  # 如果指定的语言不存在，回退到英语
             logger.warning(
                 f"Language code '{lang_code}' not found. Falling back to 'en'."
             )
@@ -45,13 +46,15 @@ class LanguageManager:
                 translation = self.TRANSLATIONS["en"].get(key)
                 if translation is None:
                     raise KeyError
-                
+
                 logger.warning(
                     f"Translation key '{key}' not found for lang '{self._language}'. Falling back to 'en'."
                 )
                 return translation.format(**kwargs) if kwargs else translation
             except KeyError:
-                logger.error(f"CRITICAL: Translation key '{key}' not found in any language.")
+                logger.error(
+                    f"CRITICAL: Translation key '{key}' not found in any language."
+                )
                 return key
 
     def get_available_languages(self) -> Dict[str, str]:

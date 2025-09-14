@@ -101,37 +101,62 @@ translations = {
     "theme_light": "卢米娜亮色",
     "theme_dark": "德古拉暗色",
     "text_import_instructions": """
-        <h2>欢迎使用 Oracipher</h2>
-        <p>本指南将为您提供关于此密码管理器的安全性、隐私保护和核心功能的关键信息。</p>
-        <hr>
-        <h4>核心安全架构</h4>
-        <p>您的安全是我们的最高优先级。Oracipher 建立在经过验证的、现代的密码学原则之上：</p>
-        <ul>
-            <li><strong>零知识 (Zero-Knowledge):</strong> 您的主密码是您的私钥。它<strong>绝不会</strong>被存储在您的设备上，也绝不会被传输到任何地方。我们无法访问、查看或为您恢复它。<em>您是唯一的控制者。</em></li>
-            <li><strong>密钥派生 (Argon2id):</strong> 我们使用 Argon2id 将您的主密码转换为一个强大的加密密钥。这是一个内存困难型函数，可以有效抵御暴力破解攻击。</li>
-            <li><strong>认证加密 (AES-256):</strong> 您保险库中的所有数据都使用 AES-256-GCM 进行加密。这同时确保了数据的机密性（您的数据是秘密的）和完整性（您的数据无法被悄悄篡改）。</li>
-        </ul>
-        <h4>您的隐私承诺</h4>
-        <p>我们坚信，您的数据只属于您自己。</p>
-        <ul>
-            <li><strong>本地优先存储:</strong> 您的整个加密保险库完全存储在您的本地设备中。没有云服务器，您的数据除非您明确导出，否则绝不会离开您的计算机。</li>
-            <li><strong>无追踪，无分析:</strong> 本应用程序不收集任何使用数据、遥测信息或崩溃报告。您在应用内的所有活动都只属于您自己。</li>
-        </ul>
-        <hr>
-        <h4>数据管理</h4>
-        <p>您可以通过设置中的导入和导出功能完全控制您的数据。</p>
-        <ul>
-            <li><strong>安全备份 (.skey):</strong> <em>.skey</em> 格式是备份保险库的推荐方式。它是一个完全加密的文件，包含了您的所有条目，并受您的主密码保护。</li>
-            <li><strong>非安全导出 (.csv):</strong> 提供CSV格式是为了与其他应用程序兼容。<strong>警告：</strong>CSV文件是一个纯文本文件。任何能访问此文件的人都可以读取您所有的用户名和密码。请极其谨慎地使用此格式。</li>
-        </ul>
-        <hr>
-        <h4>关于与联系</h4>
-        <p>Oracipher 是一个注重安全和隐私的开源项目。</p>
-        <ul>
-            <li><strong>发现问题或有功能建议？</strong>欢迎在我们的 GitHub 仓库中提交 Issue。</li>
-            <li><strong>GitHub:</strong> <a href="https://github.com/your-repo/oracipher">github.com/your-repo/oracipher</a></li>
-            <li><strong>联系开发者:</strong> <a href="mailto:developer@example.com">developer@example.com</a></li>
-        </ul>
+        <div style="text-align:center; margin-bottom: 20px;">
+    <!-- 修改: 使用占位符 -->
+    <img src="{app_icon_path}" alt="Logo" width="48" height="48">
+    <h2 style="margin: 10px 0;">Oracipher</h2>
+    <p style="margin-bottom: 15px;">简洁、安全、开源的本地密码管理器</p>
+    <div style="text-align: center; margin-bottom: 15px;">
+        <a href="https://github.com/EldricArlo/Oracipher/tree/10.8.0-version" style="text-decoration: none; margin: 0 5px;">
+            <!-- 修改: 使用占位符 -->
+            <img src="{github_icon_path}" alt="GitHub" height="20">
+        </a>
+        <a href="https://t.me/+dHEs5v_mLfNjYjk0" style="text-decoration: none; margin: 0 5px;">
+            <!-- 修改: 使用占位符 -->
+            <img src="{telegram_icon_path}" alt="Telegram" height="20">
+        </a>
+        <a href="https://www.python.org/" style="text-decoration: none; margin: 0 5px;">
+            <!-- 修改: 使用占位符 -->
+            <img src="{python_icon_path}" alt="Python" height="20">
+        </a>
+    </div>
+</div>
+<hr>
+
+<h4>核心安全架构</h4>
+<p>您的安全是我们的最高优先级。Oracipher 建立在一套经过严格验证的现代密码学原则之上，确保您的数据在任何时候都处于绝对安全的状态。</p>
+<ul>
+    <li><strong>零知识原则：</strong> 您的主密码是您唯一的私钥，它<strong>绝不会</strong>以任何形式被存储或传输。我们无法访问、查看或为您恢复它。<strong>您是您数据唯一的控制者。</strong></li>
+    <li><strong>密钥派生 (Argon2id)：</strong> 我们使用目前业界最强大的密钥派生函数 <strong>Argon2id</strong>，将您的主密码“锤炼”成一个极其强大的256位加密密钥，有效抵御暴力破解。</li>
+    <li><strong>认证加密 (AES-256-GCM)：</strong> 您的所有数据都使用 <strong>AES-256-GCM</strong> 算法进行加密，同时保证了数据的<strong>机密性</strong>（无法被读取）和<strong>完整性</strong>（无法被篡改）。</li>
+</ul>
+<hr>
+
+<h4>隐私承诺</h4>
+<p>我们坚信，您的数字身份和隐私应由您自己完全掌控。</p>
+<ul>
+    <li><strong>完全本地化存储：</strong> 您的整个加密保险库完全存储在您自己的本地设备上。没有任何云端服务器参与。</li>
+    <li><strong>无追踪，无分析：</strong> 本应用程序不包含任何形式的用户行为追踪、数据分析或遥测代码。</li>
+    <li><strong>开源透明：</strong> Oracipher 是一个开源项目，所有源代码都是公开的，任何人都可以审查我们的代码以验证我们的安全承诺。</li>
+</ul>
+<hr>
+
+<h4>数据管理</h4>
+<p>您可以通过设置中的导入和导出功能，完全掌控您的数据。</p>
+<ul>
+    <li><strong>安全备份 (<code>.skey</code> 格式)：</strong> 这是备份和迁移您保险库的<strong>唯一推荐方式</strong>。导出的 <code>.skey</code> 文件是一个完全加密的容器，受到您的主密码的保护。</li>
+    <li><strong>从其他服务导入：</strong> 我们支持从主流密码管理器（如谷歌密码、三星密码本等）导出的标准文件进行导入。</li>
+    <li><strong>非安全导出 (<code>.csv</code> 格式)：</strong> <strong>请务必谨慎使用此功能！</strong> 导出的CSV文件是一个**纯文本文件**，其中包含您所有的用户名和密码。</li>
+</ul>
+<hr>
+
+<h4>关于与支持</h4>
+<ul>
+    <li><strong>发现问题或有功能建议？</strong> 我们欢迎任何形式的反馈！请在我们的 GitHub 仓库中提交一个 Issue。</li>
+    <li><strong>GitHub 仓库：</strong> <a href="https://github.com/EldricArlo/Oracipher/tree/10.8.0-version">https://github.com/EldricArlo/Oracipher/tree/10.8.0-version</a></li>
+    <li><strong>联系开发者：</strong> <a href="mailto:eldric520lol@gmail.com">eldric520lol@gmail.com</a></li>
+    <li><strong>加入telegram群：</strong> <a href="https://t.me/+dHEs5v_mLfNjYjk0">https://t.me/+dHEs5v_mLfNjYjk0</a></li>
+</ul>
     """,
     "change_pass_title": "修改主密码",
     "label_old_pass": "旧主密码",
@@ -168,7 +193,7 @@ translations = {
     "dialog_export_title": "导出保险库",
     "dialog_import_title": "导入保险库",
     "dialog_export_filter": "Oracipher 加密文件 (*.skey);;CSV (非安全) (*.csv)",
-    "dialog_import_files": "所有支持的文件 (*.skey *.csv *.txt *.md);;Oracipher 加密文件 (*.skey);;CSV 文件 (*.csv);;文本文件 (*.txt *.md)",
+    "dialog_import_files": "所有支持的文件 (*.skey *.spass *.csv *.txt *.md);;三星密码本 (*.spass);;谷歌密码 (*.csv);;Oracipher 加密文件 (*.skey);;通用CSV文件 (*.csv);;文本文件 (*.txt *.md)",
     "msg_export_success_title": "导出成功",
     "msg_export_success": "{count} 个条目已成功导出到:\n{path}",
     "msg_export_fail_title": "导出失败",
@@ -178,8 +203,12 @@ translations = {
     "msg_import_success_title": "导入成功",
     "msg_import_success": "操作完成！\n新增: {added_count}  更新: {updated_count}  跳过: {skipped_count}",
     "msg_import_fail_title": "导入失败",
-    "dialog_input_password_title": "需要密码",
-    "dialog_input_password_label": "请输入您要导入的 .skey 文件的创建密码：",
+    # --- MODIFICATION START: Add new keys ---
+    "msg_import_fail_message": "导入过程中发生错误:\n{error}",
+    "dialog_input_password_label_skey": "请输入您要导入的 .skey 文件的创建密码：",
+    "dialog_input_password_label_spass": "请输入您要导入的 .spass 文件的创建密码：",
+    # --- MODIFICATION END ---
+    "dialog_input_password_title": "需要密码",  # 修正: 之前的版本中删除了这个键, 现在加回来
     "warning_unsecure_export_title": "安全警告",
     "warning_unsecure_export_text": "您即将将数据导出为未加密的 CSV 文件。此文件为纯文本，任何人都可以读取您的密码。如需备份，请务必使用安全的 .skey 格式。\n\n您理解此风险并确定要继续吗？",
     "warning_include_totp_title": "包含 TOTP 密钥？",

@@ -5,7 +5,6 @@ import re
 import base64
 from typing import Optional, Dict, Any, Tuple
 
-# --- MODIFICATION START: Import necessary Qt classes for type hinting ---
 from PyQt6.QtWidgets import (
     QDialog,
     QLineEdit,
@@ -16,8 +15,6 @@ from PyQt6.QtWidgets import (
     QLabel,
     QFileDialog,
 )
-
-# --- MODIFICATION END ---
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QMouseEvent
 
@@ -50,9 +47,6 @@ class AddEditDialog(QDialog):
         self.setMinimumSize(520, 620)
         self.drag_pos: QPoint = QPoint()
 
-        # --- MODIFICATION START: Pre-declare all UI attributes ---
-        # 预先声明所有将由 AddEditDialogUI 创建的UI控件属性。
-        # 这消除了 Pylance 的 "reportAttributeAccessIssue" (属性未知) 错误。
         self.icon_preview_button: QPushButton
         self.name_input: QLineEdit
         self.tabs: QTabWidget
@@ -73,7 +67,6 @@ class AddEditDialog(QDialog):
         self.scan_qr_btn: QPushButton
         self.enter_key_btn: QPushButton
         self.remove_key_btn: QPushButton
-        # --- MODIFICATION END ---
 
         ui_builder = AddEditDialogUI()
         ui_builder.setup_ui(self)
@@ -123,8 +116,11 @@ class AddEditDialog(QDialog):
         self.email_input.setText(details.get("email", ""))
         self.password_input.setText(details.get("password", ""))
         self.url_input.setText(details.get("url", ""))
+        
+        # --- MODIFICATION START: Directly set text without any conversion ---
         self.backup_codes_input.setText(details.get("backup_codes", ""))
         self.notes_input.setText(details.get("notes", ""))
+        # --- MODIFICATION END ---
 
         self.icon_manager.set_initial_icon(details.get("icon_data"))
         self.two_fa_manager.set_initial_secret(details.get("totp_secret"))
@@ -172,11 +168,13 @@ class AddEditDialog(QDialog):
                 CustomMessageBox.information(
                     self, t.get("error_title_generic"), t.get("error_loading_icon")
                 )
-
+    
     def get_data(self) -> Dict[str, Any]:
-        raw_codes = self.backup_codes_input.toPlainText().strip()
-        codes = re.findall(r"[\w-]+", raw_codes) if raw_codes else []
-        backup_codes_str = "\n".join(sorted(list(set(codes))))
+        # --- MODIFICATION START: Directly get plain text without any conversion ---
+        backup_codes_str = self.backup_codes_input.toPlainText()
+        notes_str = self.notes_input.toPlainText()
+        # --- MODIFICATION END ---
+
         return {
             "category": self.category_input.text().strip(),
             "name": self.name_input.text().strip(),
@@ -184,7 +182,7 @@ class AddEditDialog(QDialog):
                 "username": self.username_input.text().strip(),
                 "email": self.email_input.text().strip(),
                 "password": self.password_input.text(),
-                "notes": self.notes_input.toPlainText().strip(),
+                "notes": notes_str,
                 "url": self.url_input.text().strip(),
                 "icon_data": self.icon_manager.get_icon_data(),
                 "totp_secret": self.two_fa_manager.get_secret(),
@@ -192,13 +190,11 @@ class AddEditDialog(QDialog):
             },
         }
 
-    # v--- 修改了类型提示并增加了None检查 ---v
     def mousePressEvent(self, a0: Optional[QMouseEvent]) -> None:
         if a0 and a0.button() == Qt.MouseButton.LeftButton:
             self.drag_pos = a0.globalPosition().toPoint()
             a0.accept()
 
-    # v--- 修改了类型提示并增加了None检查 ---v
     def mouseMoveEvent(self, a0: Optional[QMouseEvent]) -> None:
         if a0 and a0.buttons() == Qt.MouseButton.LeftButton:
             self.move(self.pos() + a0.globalPosition().toPoint() - self.drag_pos)

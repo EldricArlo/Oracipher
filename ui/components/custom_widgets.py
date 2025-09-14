@@ -72,25 +72,27 @@ SCROLLBAR_STYLE_LIGHT = """
     }
 """
 
+
 class StyledListWidget(QListWidget):
     """一个自动应用自定义滚动条样式的QListWidget。"""
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.update_scrollbar_style()
 
     def update_scrollbar_style(self):
         theme = get_current_theme()
-        
+
         # 确保逻辑正确：如果是 'dark' 主题，则使用 SCROLLBAR_STYLE_DARK
-        if theme == 'dark':
+        if theme == "dark":
             style = SCROLLBAR_STYLE_DARK
-        else: # 否则（即 'light' 主题），使用 SCROLLBAR_STYLE_LIGHT
+        else:  # 否则（即 'light' 主题），使用 SCROLLBAR_STYLE_LIGHT
             style = SCROLLBAR_STYLE_LIGHT
-            
+
         v_scroll_bar = self.verticalScrollBar()
         if v_scroll_bar:
             v_scroll_bar.setStyleSheet(style)
-        
+
         h_scroll_bar = self.horizontalScrollBar()
         if h_scroll_bar:
             h_scroll_bar.setStyleSheet(style)
@@ -103,25 +105,27 @@ class StyledListWidget(QListWidget):
         if a0 and a0.type() == QEvent.Type.StyleChange:
             self.update_scrollbar_style()
 
+
 class StyledTextEdit(QTextEdit):
     """一个自动应用自定义滚动条样式的QTextEdit。"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.update_scrollbar_style()
-    
+
     def update_scrollbar_style(self):
         theme = get_current_theme()
 
         # 确保逻辑正确：如果是 'dark' 主题，则使用 SCROLLBAR_STYLE_DARK
-        if theme == 'dark':
+        if theme == "dark":
             style = SCROLLBAR_STYLE_DARK
-        else: # 否则（即 'light' 主题），使用 SCROLLBAR_STYLE_LIGHT
+        else:  # 否则（即 'light' 主题），使用 SCROLLBAR_STYLE_LIGHT
             style = SCROLLBAR_STYLE_LIGHT
 
         v_scroll_bar = self.verticalScrollBar()
         if v_scroll_bar:
             v_scroll_bar.setStyleSheet(style)
-            
+
         h_scroll_bar = self.horizontalScrollBar()
         if h_scroll_bar:
             h_scroll_bar.setStyleSheet(style)

@@ -22,7 +22,7 @@ from PyQt6.QtGui import QMouseEvent, QIcon, QShowEvent
 
 from language import t
 from config import load_settings
-from utils.paths import resource_path
+from utils.paths import resource_path  # 确保导入了 resource_path
 from ..theme_manager import get_current_theme
 
 logger = logging.getLogger(__name__)
@@ -327,7 +327,8 @@ class SettingsDialog(QDialog):
         if checkbox_style:
             checkbox_style.unpolish(self.auto_lock_checkbox)
             checkbox_style.polish(self.auto_lock_checkbox)
-
+    
+    # vvv--- 主要修改部分在这里 ---vvv
     def _init_instructions_tab(self, parent_tab: QWidget) -> None:
         layout = QVBoxLayout(parent_tab)
         layout.setContentsMargins(10, 10, 10, 10)
@@ -337,8 +338,27 @@ class SettingsDialog(QDialog):
         instructions_text.setTextInteractionFlags(
             Qt.TextInteractionFlag.TextBrowserInteraction
         )
-        instructions_text.setHtml(t.get("text_import_instructions"))
+        
+        # 1. 获取HTML模板字符串
+        html_template = t.get("text_import_instructions")
+        
+        # 2. 使用 resource_path() 获取每个图标的正确绝对路径
+        #    使用 .replace("\\", "/") 确保路径在所有操作系统上都与HTML兼容
+        icon_paths = {
+            "app_icon_path": resource_path("ui/assets/icons/favicon.svg").replace("\\", "/"),
+            "github_icon_path": resource_path("ui/assets/icons/GitHub.svg").replace("\\", "/"),
+            "telegram_icon_path": resource_path("ui/assets/icons/Telegram.svg").replace("\\", "/"),
+            "python_icon_path": resource_path("ui/assets/icons/Python.svg").replace("\\", "/"),
+        }
+        
+        # 3. 使用 .format() 方法填充占位符
+        formatted_html = html_template.format(**icon_paths)
+        
+        # 4. 将格式化后的最终HTML设置给QTextEdit
+        instructions_text.setHtml(formatted_html)
+        
         layout.addWidget(instructions_text)
+    # ^^^--- 主要修改部分在这里 ---^^^
 
     def get_selected_language(self) -> str:
         return str(self.lang_combo.currentData())

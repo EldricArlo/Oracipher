@@ -135,7 +135,6 @@ class DetailsView(QWidget):
         button.setToolTip(tooltip)
         return button
 
-    # --- MODIFICATION START: Reorganized the entire method ---
     def _create_details_widget_for_entry(self, entry: Dict[str, Any]) -> QWidget:
         container = QWidget()
         container_layout = QVBoxLayout(container)
@@ -143,8 +142,7 @@ class DetailsView(QWidget):
 
         tabs = QTabWidget()
         container_layout.addWidget(tabs)
-
-        # 1. 创建所有分页 (Tabs)
+        
         main_tab = QWidget()
         security_tab = QWidget()
         info_tab = QWidget()
@@ -154,8 +152,7 @@ class DetailsView(QWidget):
         tabs.addTab(info_tab, t.get("tab_info"))
 
         details = entry.get("details", {})
-
-        # 2. 为每个分页创建并配置布局
+        
         main_layout = QVBoxLayout(main_tab)
         main_layout.setContentsMargins(0, 15, 0, 0)
         main_layout.setSpacing(15)
@@ -170,8 +167,12 @@ class DetailsView(QWidget):
         info_layout.setContentsMargins(0, 15, 0, 0)
         info_layout.setSpacing(15)
         info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+        # --- MODIFICATION START: Directly get text from storage without conversion ---
+        backup_codes_text = details.get("backup_codes", "")
+        notes_text = details.get("notes", "")
+        # --- MODIFICATION END ---
 
-        # 3. 创建所有字段 (Fields)
         username_field = self._create_detail_field(
             t.get("label_user"), details.get("username", "")
         )
@@ -182,34 +183,30 @@ class DetailsView(QWidget):
             t.get("label_pass"), details.get("password", ""), is_password=True
         )
         two_fa_field = self._create_2fa_field(details.get("totp_secret", ""))
+        
         backup_codes_field = self._create_detail_field(
-            t.get("label_backup_codes"), details.get("backup_codes", ""), multiline=True
+            t.get("label_backup_codes"), backup_codes_text, multiline=True
         )
         url_field = self._create_detail_field(
             t.get("label_url"), details.get("url", "")
         )
         notes_field = self._create_detail_field(
-            t.get("label_notes"), details.get("notes", ""), multiline=True
+            t.get("label_notes"), notes_text, multiline=True
         )
-
-        # 4. 将字段添加到对应的分页布局中
-        # --- Main Tab ---
+        
         main_layout.addWidget(username_field)
         main_layout.addWidget(email_field)
         main_layout.addWidget(password_field)
         main_layout.addStretch()
-
-        # --- Security Tab ---
+        
         security_layout.addWidget(two_fa_field)
         security_layout.addWidget(backup_codes_field)
         security_layout.addStretch()
-
-        # --- Info & Notes Tab ---
+        
         info_layout.addWidget(url_field)
         info_layout.addWidget(notes_field)
         info_layout.addStretch()
-
-        # 5. 根据内容是否存在，设置字段和分页的可见性
+        
         username_field.setVisible(bool(details.get("username")))
         email_field.setVisible(bool(details.get("email")))
         password_field.setVisible(bool(details.get("password")))
@@ -217,19 +214,16 @@ class DetailsView(QWidget):
         backup_codes_field.setVisible(bool(details.get("backup_codes")))
         url_field.setVisible(bool(details.get("url")))
         notes_field.setVisible(bool(details.get("notes")))
-
-        # 如果一个分页中的所有内容都为空，则隐藏该分页
+        
         has_security_info = bool(details.get("totp_secret")) or bool(
             details.get("backup_codes")
         )
-        tabs.setTabVisible(1, has_security_info)  # Security Tab is at index 1
-
+        tabs.setTabVisible(1, has_security_info)
+        
         has_info = bool(details.get("url")) or bool(details.get("notes"))
-        tabs.setTabVisible(2, has_info)  # Info Tab is at index 2
+        tabs.setTabVisible(2, has_info)
 
         return container
-
-    # --- MODIFICATION END ---
 
     def _create_detail_field(
         self, title: str, value: str, is_password: bool = False, multiline: bool = False
@@ -243,7 +237,9 @@ class DetailsView(QWidget):
         value_display: QLineEdit | QTextEdit
 
         if multiline:
-            value_display = StyledTextEdit(value)
+            # This is the correct way to display multiline text
+            value_display = StyledTextEdit()
+            value_display.setPlainText(value)
             value_display.setReadOnly(True)
             value_display.setObjectName("fieldValueDisplay")
         else:

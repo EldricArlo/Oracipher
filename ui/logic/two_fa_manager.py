@@ -15,10 +15,12 @@ from language import t
 
 logger = logging.getLogger(__name__)
 
+
 class TwoFAManager:
     """
     负责处理添加/编辑对话框中所有与两步验证(2FA/TOTP)相关的逻辑。
     """
+
     # --- MODIFICATION START ---
     def __init__(
         self,
@@ -26,7 +28,7 @@ class TwoFAManager:
         status_label: QLabel,
         scan_qr_btn: QPushButton,
         enter_key_btn: QPushButton,
-        remove_key_btn: QPushButton
+        remove_key_btn: QPushButton,
     ):
         self.parent = parent_widget
         self.status_label = status_label
@@ -34,14 +36,15 @@ class TwoFAManager:
         self.enter_key_btn = enter_key_btn
         self.remove_key_btn = remove_key_btn
         self.totp_secret: Optional[str] = None
+
     # --- MODIFICATION END ---
 
     def set_initial_secret(self, secret: Optional[str]) -> None:
         self.totp_secret = secret
         if self.totp_secret:
-            self.status_label.setText(t.get('2fa_status_enabled'))
+            self.status_label.setText(t.get("2fa_status_enabled"))
         else:
-            self.status_label.setText(t.get('2fa_status_not_setup'))
+            self.status_label.setText(t.get("2fa_status_not_setup"))
         # --- MODIFICATION START ---
         self._update_button_visibility()
         # --- MODIFICATION END ---
@@ -52,7 +55,7 @@ class TwoFAManager:
             secret = dialog.get_secret()
             if secret:
                 self.totp_secret = secret
-                self.status_label.setText(t.get('2fa_status_enabled_pending_save'))
+                self.status_label.setText(t.get("2fa_status_enabled_pending_save"))
                 logger.info("New 2FA secret has been set manually.")
                 # --- MODIFICATION START ---
                 self._update_button_visibility()
@@ -63,7 +66,7 @@ class TwoFAManager:
     def clear_secret(self) -> None:
         """清除当前的TOTP密钥。"""
         self.totp_secret = None
-        self.status_label.setText(t.get('2fa_status_not_setup'))
+        self.status_label.setText(t.get("2fa_status_not_setup"))
         logger.info("2FA secret has been cleared by user.")
         # --- MODIFICATION START ---
         self._update_button_visibility()
@@ -75,9 +78,9 @@ class TwoFAManager:
         """
         file_path, _ = QFileDialog.getOpenFileName(
             self.parent,
-            t.get('dialog_select_icon'), 
+            t.get("dialog_select_icon"),
             "",
-            f"{t.get('dialog_image_files')} (*.png *.jpg *.jpeg *.bmp *.gif)"
+            f"{t.get('dialog_image_files')} (*.png *.jpg *.jpeg *.bmp *.gif)",
         )
 
         if not file_path:
@@ -91,7 +94,7 @@ class TwoFAManager:
                 self._show_qr_error()
                 return
 
-            qr_data = decoded_objects[0].data.decode('utf-8')
+            qr_data = decoded_objects[0].data.decode("utf-8")
             self._parse_qr_data(qr_data)
 
         except Exception as e:
@@ -106,11 +109,11 @@ class TwoFAManager:
             if qr_data.startswith("otpauth://totp/"):
                 parsed_uri = urllib.parse.urlparse(qr_data)
                 params = urllib.parse.parse_qs(parsed_uri.query)
-                secret = params.get('secret', [None])[0]
-                
+                secret = params.get("secret", [None])[0]
+
                 if secret:
                     self.totp_secret = secret.strip().replace(" ", "").upper()
-                    self.status_label.setText(t.get('2fa_status_enabled_pending_save'))
+                    self.status_label.setText(t.get("2fa_status_enabled_pending_save"))
                     logger.info("Successfully set 2FA secret from image file.")
                     # --- MODIFICATION START ---
                     self._update_button_visibility()
@@ -125,9 +128,7 @@ class TwoFAManager:
     def _show_qr_error(self) -> None:
         """显示一个统一的二维码扫描错误信息。"""
         CustomMessageBox.information(
-            self.parent,
-            t.get('error_title_generic'),
-            t.get('2fa_error_invalid_qr')
+            self.parent, t.get("error_title_generic"), t.get("2fa_error_invalid_qr")
         )
 
     # --- MODIFICATION START ---
@@ -137,6 +138,7 @@ class TwoFAManager:
         self.remove_key_btn.setVisible(has_secret)
         self.scan_qr_btn.setVisible(not has_secret)
         self.enter_key_btn.setVisible(not has_secret)
+
     # --- MODIFICATION END ---
 
     def get_secret(self) -> Optional[str]:

@@ -42,18 +42,18 @@ class AddEditDialogUI:
         main_layout.setSpacing(15)
 
         header_layout = self._create_header_layout(dialog_instance)
-        
+
         # 现在 Pylance 理解 dialog_instance 是一个可以拥有 'tabs' 属性的对象，
         # 我们可以将代码恢复到最初的、更简洁的结构。
         self._create_tabs(dialog_instance)
-        
+
         button_layout = self._create_button_layout(dialog_instance)
 
         main_layout.addLayout(header_layout)
-        
+
         # 这一行不再报错，因为 Pylance 现在知道 dialog_instance 有一个 'tabs' 属性。
         main_layout.addWidget(dialog_instance.tabs)
-        
+
         main_layout.addLayout(button_layout)
 
         dialog_layout = QVBoxLayout(dialog_instance)

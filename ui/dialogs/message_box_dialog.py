@@ -89,9 +89,7 @@ class CustomMessageBox(QDialog):
         self.adjustSize()
 
     @staticmethod
-    def information(
-        parent: Optional[QWidget], title: str, message: str
-    ) -> int:
+    def information(parent: Optional[QWidget], title: str, message: str) -> int:
         """显示一个信息对话框 (只有一个“确定”按钮)。"""
         dialog = CustomMessageBox(
             parent, CustomMessageBox.DialogType.Information, title, message
@@ -99,9 +97,7 @@ class CustomMessageBox(QDialog):
         return dialog.exec()
 
     @staticmethod
-    def question(
-        parent: Optional[QWidget], title: str, message: str
-    ) -> int:
+    def question(parent: Optional[QWidget], title: str, message: str) -> int:
         """显示一个问题对话框 (“确定”和“取消”按钮)。"""
         dialog = CustomMessageBox(
             parent, CustomMessageBox.DialogType.Question, title, message

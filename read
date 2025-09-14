@@ -1,0 +1,53 @@
+## 三星加密流程：
+
+1. 数据准备
+    - 三星将所有的密码，用户名，网址等信息整理成一个类似CSV的内部结构；
+    - 为了确保数据在传输和存储的完整性，它将每一个字段都进行了一次Base64编码；
+    - 然后将这些编码之后的字段使用分号连接起来，形成一个大的本地文本块；、
+2. 加密阶段
+    这是整个流程的核心阶段；
+    - 生成随机盐，程序会生成一个20字节的随机盐值；
+    - 生成随机IV(Initialization Vector)，程序会接着生成一个16字节的随机IV；
+    - 派生密钥，使用PBKDF2的算法，将密码转换成一个32字节的加密密钥
+        - 生成随机盐；
+        - 使用SHA-246哈希；
+        - 7万次复杂度迭代；
+    - 整体加密，加密之后在末尾自动添加PKCS#7填充，以确保长度为16字节；
+3. 组装与编码
+    - 将所有部分拼接成一个大的二进制数据块:[20字节盐] + [16字节IV] + [加密后核心数据]
+    - 最后，将这个二进制数据整体进行一次Base64编码
+
+## 加密细节：
+
+.spass文件末尾存在一个看不见的换行符，这破坏了Base64解码的严格要求；
+
+三星采用了双重Base64编码，解密后的数据块中，每一项内容被又编码了一次；
+
+## 解密过程
+
+1. 读取文件内容，用.script()清理掉末尾的空白，然后进行Base解码，得到二进制数据块；
+2. 按照拼接规则拆分组件；
+3. 重新派生密钥，索要密码，然后使用完全相同的PBKDF2算法，从文件中提取的同一个盐，SHA-256哈希以及7万次跌打，重新计算出当时使用的加密的密钥；
+4. 解密与移除填充，使用派生出的密钥和提取的IV，通过AES-256-CBC算法解密加密数据，然后移除末尾的PKCS#7填充，得到第一层的纯文本的核心数据块；
+5. 最终解析，对最后的核心数据块进行解析：
+    - 按照next_table 分割；
+    - 找到包含密码信息的块；
+    - 用分号作为分隔符进行CSV解析；
+    - 对解析出的每一个字段，在进行一次Base64解码，得到最终的信息；
+    - 对网址进行智能清洗，将安卓连接转换为通用网址；
+
+---
+
+
+## Acknowledgements
+
+The Samsung Pass (`.spass`) file decryption and import functionality in this project is based on the excellent reverse engineering work done by **0xdeb7ef** in the [**spass-manager**](https://github.com/0xdeb7ef/spass-manager) project.
+
+Our Python implementation is a direct port of the logic found in their Go library. We are grateful for their contribution to the open-source community.
+
+---
+## 致谢
+
+本项目中的三星密码本 (`.spass`) 文件解密与导入功能，是基于 **0xdeb7ef** 在其开源项目 [**spass-manager**](https://github.com/0xdeb7ef/spass-manager) 中出色的逆向工程工作。
+
+我们的 Python 实现是对其 Go 语言库中逻辑的直接移植。我们非常感谢他们为开源社区做出的贡献。

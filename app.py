@@ -3,7 +3,14 @@
 import logging
 from typing import Optional
 
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QStackedWidget, QFrame, QApplication, QWidget
+from PyQt6.QtWidgets import (
+    QMainWindow,
+    QVBoxLayout,
+    QStackedWidget,
+    QFrame,
+    QApplication,
+    QWidget,
+)
 from PyQt6.QtCore import Qt, QPoint, QTimer, QEvent, QObject
 from PyQt6.QtGui import QMouseEvent, QCloseEvent
 
@@ -18,67 +25,76 @@ from ui.task_manager import task_manager
 
 logger = logging.getLogger(__name__)
 
+
 class SafeKeyApp(QMainWindow):
     """
     应用程序的主窗口容器。
     它管理解锁屏幕和主界面之间的切换。
     """
+
     def __init__(self):
         super().__init__()
         logger.info("Initializing SafeKeyApp main window container...")
-        
-        self.setWindowTitle(t.get('app_title'))
+
+        self.setWindowTitle(t.get("app_title"))
         self.resize(1000, 700)
-        
+
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        
+
         self.drag_pos: QPoint = QPoint()
         self._is_shutting_down = False
-        
+
         self.auto_lock_timer = QTimer(self)
         self.auto_lock_timer.setSingleShot(True)
         self.auto_lock_timer.timeout.connect(self.lock_vault)
         self._auto_lock_enabled = False
         self._auto_lock_timeout_ms = 0
-        
+
         logger.info(f"Application data directory: {APP_DATA_DIR}")
         self.crypto_handler: CryptoHandler = CryptoHandler(APP_DATA_DIR)
         self.data_manager: DataManager = DataManager(APP_DATA_DIR, self.crypto_handler)
-        
+
         app_instance = QApplication.instance()
         if isinstance(app_instance, QApplication):
             apply_theme(app_instance, get_current_theme())
             app_instance.installEventFilter(self)
-        
+
         self.init_ui()
         self.center_on_screen()
-        
+
         logger.info("SafeKeyApp main window initialization complete.")
 
     def init_ui(self) -> None:
-        background_panel = QFrame(self); background_panel.setObjectName("backgroundPanel")
+        background_panel = QFrame(self)
+        background_panel.setObjectName("backgroundPanel")
         self.setCentralWidget(background_panel)
-        
-        panel_layout = QVBoxLayout(background_panel); panel_layout.setContentsMargins(0, 0, 0, 0)
-        
-        self.stacked_widget = QStackedWidget(); panel_layout.addWidget(self.stacked_widget)
-        
+
+        panel_layout = QVBoxLayout(background_panel)
+        panel_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.stacked_widget = QStackedWidget()
+        panel_layout.addWidget(self.stacked_widget)
+
         self.unlock_screen = UnlockScreen(self.crypto_handler, self)
         self.unlock_screen.unlocked.connect(self.show_main_app)
         self.unlock_screen.exit_requested.connect(self.close)
         self.stacked_widget.addWidget(self.unlock_screen)
-        
+
         self.main_widget: Optional[MainWindow] = None
 
     def show_main_app(self) -> None:
         logger.info("Unlock successful. Switching to the main application view.")
         if not self.main_widget:
             logger.info("Instantiating MainWindow for the first time...")
-            self.main_widget = MainWindow(data_manager=self.data_manager, main_app_window=self)
-            self.main_widget.controller.settings_changed.connect(self._on_settings_changed)
+            self.main_widget = MainWindow(
+                data_manager=self.data_manager, main_app_window=self
+            )
+            self.main_widget.controller.settings_changed.connect(
+                self._on_settings_changed
+            )
             self.stacked_widget.addWidget(self.main_widget)
-        
+
         self.stacked_widget.setCurrentWidget(self.main_widget)
         self._setup_auto_lock()
         logger.info("View switched to MainWindow.")
@@ -93,7 +109,7 @@ class SafeKeyApp(QMainWindow):
             self.main_widget.deleteLater()
             self.main_widget = None
         self.stacked_widget.setCurrentWidget(self.unlock_screen)
-        
+
     def _setup_auto_lock(self) -> None:
         settings = load_settings()
         self._auto_lock_enabled = settings.get("auto_lock_enabled", True)
@@ -110,16 +126,21 @@ class SafeKeyApp(QMainWindow):
     def _on_settings_changed(self) -> None:
         logger.info("Settings have changed, re-evaluating auto-lock timer.")
         self._setup_auto_lock()
-        
+
     # --- MODIFICATION START: Added "| None" to type hints to match base class stub ---
-    def eventFilter(self, a0: 'QObject | None', a1: 'QEvent | None') -> bool:
+    def eventFilter(self, a0: "QObject | None", a1: "QEvent | None") -> bool:
         watched = a0
         event = a1
-        
+
         if event and self._auto_lock_enabled and self.auto_lock_timer.isActive():
-            if event.type() in [QEvent.Type.KeyPress, QEvent.Type.MouseButtonPress, QEvent.Type.MouseMove]:
+            if event.type() in [
+                QEvent.Type.KeyPress,
+                QEvent.Type.MouseButtonPress,
+                QEvent.Type.MouseMove,
+            ]:
                 self.auto_lock_timer.start(self._auto_lock_timeout_ms)
         return super().eventFilter(watched, event)
+
     # --- MODIFICATION END ---
 
     def center_on_screen(self) -> None:
@@ -129,32 +150,32 @@ class SafeKeyApp(QMainWindow):
             center_point = screen_geometry.center()
             self.move(
                 int(center_point.x() - self.width() / 2),
-                int(center_point.y() - self.height() / 2)
+                int(center_point.y() - self.height() / 2),
             )
 
     def retranslate_ui(self) -> None:
         logger.info("Retranslating the entire application UI...")
-        self.setWindowTitle(t.get('app_title'))
-        
+        self.setWindowTitle(t.get("app_title"))
+
         if self.unlock_screen:
             self.unlock_screen.retranslate_ui()
         if self.main_widget:
             self.main_widget.retranslate_ui()
-        
+
         logger.info("UI retranslation complete.")
 
     # --- MODIFICATION START: Added "| None" to type hints to match base class stub ---
-    def mousePressEvent(self, a0: 'QMouseEvent | None') -> None:
+    def mousePressEvent(self, a0: "QMouseEvent | None") -> None:
         event = a0
         if not event:
             super().mousePressEvent(event)
             return
-            
+
         if event.button() == Qt.MouseButton.LeftButton:
             self.drag_pos = event.globalPosition().toPoint()
             event.accept()
 
-    def mouseMoveEvent(self, a0: 'QMouseEvent | None') -> None:
+    def mouseMoveEvent(self, a0: "QMouseEvent | None") -> None:
         event = a0
         if not event:
             super().mouseMoveEvent(event)
@@ -164,23 +185,23 @@ class SafeKeyApp(QMainWindow):
             self.move(self.pos() + event.globalPosition().toPoint() - self.drag_pos)
             self.drag_pos = event.globalPosition().toPoint()
             event.accept()
-            
-    def closeEvent(self, a0: 'QCloseEvent | None') -> None:
+
+    def closeEvent(self, a0: "QCloseEvent | None") -> None:
         event = a0
         if not event:
             super().closeEvent(event)
             return
-    # --- MODIFICATION END ---
+        # --- MODIFICATION END ---
         """
         Handles the shutdown process gracefully.
         """
         if self._is_shutting_down:
             event.ignore()
             return
-            
+
         logger.info("Close event received. Scheduling graceful shutdown...")
         self._is_shutting_down = True
-        
+
         self.hide()
         event.ignore()
 
@@ -193,5 +214,5 @@ class SafeKeyApp(QMainWindow):
         task_manager.run_in_background(
             task=self.data_manager.close,
             on_success=on_shutdown_finished,
-            on_error=on_shutdown_finished 
+            on_error=on_shutdown_finished,
         )

@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QMouseEvent
 
+# 修正：导入项目全局的翻译单例
 from language import t
 
 logger = logging.getLogger(__name__)
@@ -23,20 +24,30 @@ logger = logging.getLogger(__name__)
 
 class PasswordPromptDialog(QDialog):
     """
-    一个自定义的、风格化的对话框，用于在导入.skey文件时提示用户输入密码。
+    一个自定义的、风格化的对话框，用于在导入加密文件时提示用户输入密码。
     """
 
-    def __init__(self, parent: Optional[QWidget] = None):
+    # --- MODIFICATION START: Updated __init__ to accept instruction_text ---
+    def __init__(
+        self, parent: Optional[QWidget] = None, instruction_text: Optional[str] = None
+    ):
         super().__init__(parent)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setObjectName("AddEditDialog")  # 复用现有样式
+        self.setObjectName("AddEditDialog")
         self.setModal(True)
         self.setMinimumWidth(420)
         self.drag_pos: QPoint = QPoint()
 
+        # 使用传入的 instruction_text，如果未提供，则使用一个通用的后备文本
+        self.instruction_text = (
+            instruction_text or "Please enter the required password:"
+        )
+
         self.init_ui()
-        logger.debug("PasswordPromptDialog opened for .skey import.")
+        logger.debug("PasswordPromptDialog opened.")
+
+    # --- MODIFICATION END ---
 
     def init_ui(self) -> None:
         container = QFrame(self)
@@ -47,8 +58,11 @@ class PasswordPromptDialog(QDialog):
 
         title_label = QLabel(t.get("dialog_input_password_title"))
         title_label.setObjectName("dialogTitle")
-        instruction_label = QLabel(t.get("dialog_input_password_label"))
+
+        # --- MODIFICATION START: Use the dynamic instruction text ---
+        instruction_label = QLabel(self.instruction_text)
         instruction_label.setWordWrap(True)
+        # --- MODIFICATION END ---
 
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
@@ -78,28 +92,32 @@ class PasswordPromptDialog(QDialog):
         """返回用户输入的密码。"""
         return self.password_input.text()
 
+    # --- FIX START: Updated type hint to Optional[QMouseEvent] to match the base class ---
     def mousePressEvent(self, a0: Optional[QMouseEvent]) -> None:
-        if not a0:
-            return
-        if a0.button() == Qt.MouseButton.LeftButton:
+        if a0 and a0.button() == Qt.MouseButton.LeftButton:
             self.drag_pos = a0.globalPosition().toPoint()
             a0.accept()
 
     def mouseMoveEvent(self, a0: Optional[QMouseEvent]) -> None:
-        if not a0:
-            return
-        if a0.buttons() == Qt.MouseButton.LeftButton:
+        if a0 and a0.buttons() == Qt.MouseButton.LeftButton:
             self.move(self.pos() + a0.globalPosition().toPoint() - self.drag_pos)
             self.drag_pos = a0.globalPosition().toPoint()
             a0.accept()
 
+    # --- FIX END ---
+
+    # --- MODIFICATION START: Updated getPassword to pass instruction_text ---
     @staticmethod
-    def getPassword(parent: Optional[QWidget]) -> Tuple[str, bool]:
+    def getPassword(
+        parent: Optional[QWidget], instruction_text: str
+    ) -> Tuple[str, bool]:
         """
         一个静态方法，模仿 QInputDialog.getText 的用法。
         返回 (密码, 是否点击了OK)。
         """
-        dialog = PasswordPromptDialog(parent)
+        dialog = PasswordPromptDialog(parent, instruction_text=instruction_text)
         result = dialog.exec()
         password = dialog.get_password()
         return password, result == QDialog.DialogCode.Accepted
+
+    # --- MODIFICATION END ---

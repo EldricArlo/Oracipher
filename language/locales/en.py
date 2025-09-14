@@ -101,37 +101,62 @@ translations = {
     "theme_light": "Lumina Glow",
     "theme_dark": "Dracula Dark",
     "text_import_instructions": """
-        <h2>Welcome to Oracipher</h2>
-        <p>This guide provides essential information about the security, privacy, and core functions of your new password manager.</p>
-        <hr>
-        <h4>Core Security Architecture</h4>
-        <p>Your security is our highest priority. Oracipher is built on a foundation of proven, modern cryptographic principles:</p>
-        <ul>
-            <li><strong>Zero-Knowledge:</strong> Your Master Password is your private key. It is <em>never</em> stored on your device or transmitted anywhere. We cannot access, view, or recover it for you. <em>You are in sole control.</em></li>
-            <li><strong>Key Derivation (Argon2id):</strong> We use Argon2id to transform your Master Password into a powerful encryption key. This is a memory-hard function that provides strong resistance against brute-force attacks.</li>
-            <li><strong>Authenticated Encryption (AES-256):</strong> All data in your vault is encrypted using AES-256 with GCM. This ensures both confidentiality (your data is secret) and integrity (your data cannot be tampered with undetected).</li>
-        </ul>
-        <h4>Your Privacy Commitment</h4>
-        <p>We believe that your data belongs to you, and only you.</p>
-        <ul>
-            <li><strong>Local-First Storage:</strong> Your entire encrypted vault is stored exclusively on your local device. There is no cloud server, and your data never leaves your computer unless you explicitly export it.</li>
-            <li><strong>No Tracking, No Analytics:</strong> This application does not collect any usage data, telemetry, or crash reports. Your activity within the app is your business alone.</li>
-        </ul>
-        <hr>
-        <h4>Data Management</h4>
-        <p>You have full control over your data through the Import and Export functions in the settings.</p>
-        <ul>
-            <li><strong>Secure Backup (.skey):</strong> The <em>.skey</em> format is the recommended way to back up your vault. It's a fully encrypted file that contains all your entries and is protected by your master password.</li>
-            <li><strong>Unsecured Export (.csv):</strong> The CSV format is provided for compatibility with other applications. <strong>Warning:</strong> A CSV file is a plain text file. Anyone with access to it can read all your usernames and passwords. Use this format with extreme caution.</li>
-        </ul>
-        <hr>
-        <h4>About & Contact</h4>
-        <p>Oracipher is an open-source project developed with a focus on security and privacy.</p>
-        <ul>
-            <li><strong>Found an issue or have a suggestion?</strong> Please open an issue on our GitHub repository.</li>
-            <li><strong>GitHub:</strong> <a href="https://github.com/your-repo/oracipher">github.com/your-repo/oracipher</a></li>
-            <li><strong>Contact the developer:</strong> <a href="mailto:developer@example.com">developer@example.com</a></li>
-        </ul>
+        <div style="text-align:center; margin-bottom: 20px;">
+    <!-- 修改: 使用占位符 -->
+    <img src="{app_icon_path}" alt="Logo" width="48" height="48">
+    <h2 style="margin: 10px 0;">Oracipher</h2>
+    <p style="margin-bottom: 15px;">A simple, secure, and open-source local password manager.</p>
+    <div style="text-align: center; margin-bottom: 15px;">
+        <a href="https://github.com/EldricArlo/Oracipher/tree/10.8.0-version" style="text-decoration: none; margin: 0 5px;">
+            <!-- 修改: 使用占位符 -->
+            <img src="{github_icon_path}" alt="GitHub" height="20">
+        </a>
+        <a href="https://t.me/+dHEs5v_mLfNjYjk0" style="text-decoration: none; margin: 0 5px;">
+            <!-- 修改: 使用占位符 -->
+            <img src="{telegram_icon_path}" alt="Telegram" height="20">
+        </a>
+        <a href="https://www.python.org/" style="text-decoration: none; margin: 0 5px;">
+            <!-- 修改: 使用占位符 -->
+            <img src="{python_icon_path}" alt="Python" height="20">
+        </a>
+    </div>
+</div>
+<hr>
+
+<h4>Core Security Architecture</h4>
+<p>Your security is our highest priority. Oracipher is built on a set of rigorously vetted, modern cryptographic principles to ensure your data is safe at all times.</p>
+<ul>
+    <li><strong>Zero-Knowledge Principle:</strong> Your Master Password is your private key. It is <strong>never</strong> stored or transmitted in any form. We cannot access, view, or recover it for you. <strong>You are in sole control of your data.</strong></li>
+    <li><strong>Key Derivation (Argon2id):</strong> We use the industry-leading KDF <strong>Argon2id</strong> to forge your password into an incredibly strong 256-bit encryption key, providing powerful resistance against brute-force attacks.</li>
+    <li><strong>Authenticated Encryption (AES-256-GCM):</strong> All your data is encrypted using <strong>AES-256-GCM</strong>, which provides both <strong>Confidentiality</strong> (it cannot be read) and <strong>Integrity</strong> (it cannot be tampered with).</li>
+</ul>
+<hr>
+
+<h4>Privacy Commitment</h4>
+<p>We firmly believe that your digital identity and privacy should be under your complete control.</p>
+<ul>
+    <li><strong>Fully Local Storage:</strong> Your entire encrypted vault is stored exclusively on your own local device. No cloud servers are involved.</li>
+    <li><strong>No Tracking, No Analytics:</strong> This application contains no user tracking, data analytics, or telemetry code of any kind.</li>
+    <li><strong>Open-Source Transparency:</strong> Oracipher is an open-source project. All source code is publicly available for anyone to review and audit.</li>
+</ul>
+<hr>
+
+<h4>Data Management</h4>
+<p>You have full control over your data via the Import and Export functions in the settings.</p>
+<ul>
+    <li><strong>Secure Backup (<code>.skey</code> format):</strong> This is the <strong>only recommended way</strong> to back up your vault. The exported <code>.skey</code> file is a fully encrypted container protected by your Master Password.</li>
+    <li><strong>Importing from Other Services:</strong> We support importing from standard files exported by major password managers like Google Password and Samsung Pass.</li>
+    <li><strong>Unsecured Export (<code>.csv</code> format):</strong> <strong>Use with extreme caution!</strong> The exported CSV is a <strong>plain text file</strong> containing all of your usernames and passwords.</li>
+</ul>
+<hr>
+
+<h4>About & Support</h4>
+<ul>
+    <li><strong>Found an issue or have a suggestion?</strong> We welcome all feedback! Please open an Issue on our GitHub repository.</li>
+    <li><strong>GitHub Repository:</strong> <a href="https://github.com/EldricArlo/Oracipher/tree/10.8.0-version">https://github.com/EldricArlo/Oracipher/tree/10.8.0-version</a></li>
+    <li><strong>Contact the Developer:</strong> <a href="mailto:eldric520lol@gmail.com">eldric520lol@gmail.com</a></li>
+    <li><strong>Join group of Telegram</strong> <a href="https://t.me/+dHEs5v_mLfNjYjk0">https://t.me/+dHEs5v_mLfNjYjk0</a></li>
+</ul>
     """,
     "change_pass_title": "Change Master Password",
     "label_old_pass": "Old Password",
@@ -168,7 +193,7 @@ translations = {
     "dialog_export_title": "Export Vault",
     "dialog_import_title": "Import Vault",
     "dialog_export_filter": "Oracipher Encrypted File (*.skey);;CSV (Unsecure) (*.csv)",
-    "dialog_import_files": "All Supported Files (*.skey *.csv *.txt *.md);;Oracipher Encrypted File (*.skey);;CSV Files (*.csv);;Text Files (*.txt *.md)",
+    "dialog_import_files": "All Supported Files (*.skey *.spass *.csv *.txt *.md);;Samsung Pass (*.spass);;Google Chrome (*.csv);;Oracipher Encrypted File (*.skey);;Generic CSV (*.csv);;Text Files (*.txt *.md)",
     "msg_export_success_title": "Export Successful",
     "msg_export_success": "{count} entries have been successfully exported to:\n{path}",
     "msg_export_fail_title": "Export Failed",
@@ -178,8 +203,11 @@ translations = {
     "msg_import_success_title": "Import Successful",
     "msg_import_success": "Operation complete!\nAdded: {added_count}  Updated: {updated_count}  Skipped: {skipped_count}",
     "msg_import_fail_title": "Import Failed",
-    "dialog_input_password_title": "Password Required",
-    "dialog_input_password_label": "Please enter the master password for the .skey file you are importing:",
+    # --- MODIFICATION START: Add new keys ---
+    "msg_import_fail_message": "An error occurred during import:\n{error}",
+    "dialog_input_password_label_skey": "Please enter the password for the .skey file you are importing:",
+    "dialog_input_password_label_spass": "Please enter the password for the .spass file you are importing:",
+    # --- MODIFICATION END ---
     "warning_unsecure_export_title": "Security Warning",
     "warning_unsecure_export_text": "You are about to export your data as an unencrypted CSV file. This file will be human-readable and contain all your passwords in plain text. For backups, please use the secure .skey format.\n\nDo you understand the risk and wish to continue?",
     "warning_include_totp_title": "Include TOTP Secrets?",
