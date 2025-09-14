@@ -6,19 +6,19 @@ from logging.handlers import RotatingFileHandler
 import os
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtGui import QImageReader
+from PyQt6.QtGui import QImageReader, QIcon
 
 from config import APP_LOG_DIR, load_settings
 from language import t
-# 修正: 确保从正确的模块导入
 from utils import icon_cache
+from utils.paths import resource_path
 
 def setup_logging():
     """配置全局日志记录器。"""
     if not os.path.exists(APP_LOG_DIR):
         os.makedirs(APP_LOG_DIR)
     
-    log_file = os.path.join(APP_LOG_DIR, "safekey.log")
+    log_file = os.path.join(APP_LOG_DIR, "oracipher.log")
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler = RotatingFileHandler(log_file, maxBytes=1*1024*1024, backupCount=5, encoding='utf-8')
     handler.setFormatter(formatter)
@@ -30,7 +30,7 @@ def setup_logging():
     
     logger = logging.getLogger(__name__)
     logger.info("=" * 60)
-    logger.info(f"SafeKey Application Starting Up (Log Level: {log_level})")
+    logger.info(f"Oracipher Application Starting Up (Log Level: {log_level})")
     logger.info(f"Logging configured. Log file at: {log_file}")
     logger.info("=" * 60)
 
@@ -42,9 +42,8 @@ def main():
     app = QApplication(sys.argv)
     
     supported_formats = [f.data().decode('ascii').lower() for f in QImageReader.supportedImageFormats()]
-    logger.info(f"Qt Supported Image Formats: {supported_formats}")
     if 'svg' not in supported_formats:
-        logger.critical("CRITICAL ERROR: SVG image format is NOT supported by the current Qt installation.")
+        logger.critical("CRITICAL ERROR: SVG image format is NOT supported.")
 
     try:
         settings = load_settings()
@@ -53,14 +52,22 @@ def main():
         logger.critical(f"Failed to load settings or set language: {e}", exc_info=True)
         t.set_language('zh_CN')
 
-    # 在创建任何窗口之前，预加载所有图标
     icon_cache.preload()
 
     from app import SafeKeyApp
 
-    window = SafeKeyApp()
-    window.show()
+    # 修正: 添加健壮的图标加载逻辑
+    logo_path = resource_path("ui/assets/icons/logo.png")
+    app_icon = QIcon(logo_path)
+    if app_icon.isNull():
+        logger.critical(f"Failed to load application icon from path: {logo_path}. The icon will be missing.")
+    
+    app.setWindowIcon(app_icon)
 
+    window = SafeKeyApp()
+    window.setWindowIcon(app_icon)
+    window.show()
+    
     sys.exit(app.exec())
 
 if __name__ == "__main__":

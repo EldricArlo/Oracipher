@@ -26,11 +26,9 @@ class DetailsView(QWidget):
         super().__init__(parent)
         self.current_entry_group: List[Dict[str, Any]] = []
         self.active_entry_in_group: Optional[Dict[str, Any]] = None
-
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(15, 0, 0, 0)
         self.main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        
         self.clear_details()
 
     def display_entry_group(self, entries: List[Dict[str, Any]]) -> None:
@@ -69,39 +67,35 @@ class DetailsView(QWidget):
     def _on_account_tab_changed(self, index: int) -> None:
         if 0 <= index < len(self.current_entry_group):
             self.active_entry_in_group = self.current_entry_group[index]
-            logger.debug(f"Active entry switched to ID: {self.active_entry_in_group.get('id')}")
 
     def _create_shared_header(self, entry: Dict[str, Any]) -> QHBoxLayout:
         header_layout = QHBoxLayout(); header_layout.setSpacing(15)
-        
         icon_label = QLabel(); icon_label.setFixedSize(52, 52); icon_label.setScaledContents(True)
         pixmap = IconFetcher.pixmap_from_base64(entry.get("details", {}).get("icon_data"))
         icon_label.setPixmap(pixmap)
-        
         name_label = QLabel(str(entry.get("name", ""))); name_label.setObjectName("detailsNameLabel"); name_label.setWordWrap(True)
-        
         header_layout.addWidget(icon_label); header_layout.addWidget(name_label); header_layout.addStretch()
-        
         edit_button = self._create_action_button("detailsActionButton", "edit", t.get('button_edit_icon'))
         delete_button = self._create_action_button("detailsActionButton", "delete", t.get('button_delete_icon'))
-        
         edit_button.clicked.connect(lambda: self.edit_requested.emit(self.active_entry_in_group['id']) if self.active_entry_in_group else None)
         delete_button.clicked.connect(lambda: self.delete_requested.emit(self.active_entry_in_group['id']) if self.active_entry_in_group else None)
-        
         header_layout.addWidget(edit_button); header_layout.addSpacing(10); header_layout.addWidget(delete_button)
         return header_layout
     
     def _create_action_button(self, obj_name: str, icon_key: str, tooltip: str) -> QPushButton:
         button = QPushButton(); button.setObjectName(obj_name); button.setFixedSize(40, 40)
-        button.setIcon(icon_cache.get(icon_key))
-        button.setIconSize(QSize(22, 22))
-        button.setToolTip(tooltip)
+        button.setIcon(icon_cache.get(icon_key)); button.setIconSize(QSize(22, 22)); button.setToolTip(tooltip)
         return button
 
-    def _create_details_widget_for_entry(self, entry: Dict[str, Any]) -> QTabWidget:
+    def _create_details_widget_for_entry(self, entry: Dict[str, Any]) -> QWidget:
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        container_layout.setContentsMargins(0, 0, 0, 0)
+        
         tabs = QTabWidget()
         main_tab, advanced_tab = QWidget(), QWidget()
         tabs.addTab(main_tab, t.get('tab_main')); tabs.addTab(advanced_tab, t.get('tab_advanced'))
+        container_layout.addWidget(tabs)
         
         main_layout = QVBoxLayout(main_tab); main_layout.setContentsMargins(0, 15, 0, 0)
         main_layout.setSpacing(15); main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -128,7 +122,7 @@ class DetailsView(QWidget):
         tabs.setTabVisible(1, has_advanced_info)
         adv_layout.addStretch()
         
-        return tabs
+        return container
 
     def _create_detail_field(self, title: str, value: str, is_password: bool = False, multiline: bool = False) -> QFrame:
         field_frame = QFrame(); field_frame.setObjectName("detailField")
@@ -138,12 +132,13 @@ class DetailsView(QWidget):
         value_display: QLineEdit | QTextEdit
         
         if multiline:
-            value_display = QTextEdit(value); value_display.setReadOnly(True)
+            value_display = QTextEdit(value)
+            value_display.setReadOnly(True)
             value_display.setObjectName("fieldValueDisplay")
-            value_display.textChanged.connect(lambda: self._adjust_textedit_height(value_display))
-            QTimer.singleShot(0, lambda: self._adjust_textedit_height(value_display))
+            # 修正: 移除所有手动调整高度的逻辑
         else:
-            value_display = QLineEdit(value); value_display.setReadOnly(True)
+            value_display = QLineEdit(value)
+            value_display.setReadOnly(True)
             value_display.setObjectName("fieldValueDisplay")
             if is_password: value_display.setEchoMode(QLineEdit.EchoMode.Password)
         
@@ -189,11 +184,6 @@ class DetailsView(QWidget):
         button.setText(t.get('button_copied')); button.setEnabled(False)
         QTimer.singleShot(1500, lambda: (button.setText(original_text), button.setEnabled(True)))
 
-    def _adjust_textedit_height(self, text_edit: QTextEdit) -> None:
-        doc_height = int(text_edit.document().size().height())
-        margins = text_edit.contentsMargins()
-        text_edit.setFixedHeight(doc_height + margins.top() + margins.bottom() + 5)
-
     def _clear_layout_widgets(self) -> None:
         while self.main_layout.count():
             child = self.main_layout.takeAt(0)
@@ -205,3 +195,6 @@ class DetailsView(QWidget):
             child = layout.takeAt(0)
             if child.widget(): child.widget().deleteLater()
             elif child.layout(): self._clear_recursive(child.layout())
+
+    # 移除不再使用的方法
+    # def _adjust_textedit_height(...)

@@ -12,7 +12,7 @@ translations = {
     "settings_change_pass_button": "更改...",
     "label_data_management": "保险库数据",
     "settings_data_desc": "为您的保险库创建一个安全的备份，或从其他文件导入数据。",
-    "app_title": "SafeKey",
+    "app_title": "Oracipher",
     "button_ok": "确 定",
     "button_save": "保 存",
     "button_cancel": "取 消",
@@ -25,7 +25,7 @@ translations = {
     "dialog_select_cat_icon": "为分类选择图标",
     "info_title_cat_icon_set": "图标已设置",
     "info_msg_cat_icon_set": "分类 '{name}' 的图标已设置。保存此条目后，图标将生效。",
-    "setup_welcome": "欢迎使用 SafeKey",
+    "setup_welcome": "欢迎使用 Oracipher",
     "setup_instruction": "请创建一个用于加密您所有数据的主密码。\n这个密码非常重要，请务必牢记。",
     "setup_placeholder": "设置主密码 (至少8位，建议包含混合字符)",
     "setup_confirm_placeholder": "确认主密码",
@@ -96,36 +96,22 @@ translations = {
     "theme_light": "卢米娜亮色",
     "theme_dark": "德古拉暗色",
     "text_import_instructions": """
-        <h2>欢迎使用 SafeKey</h2>
+        <h2>欢迎使用 Oracipher</h2>
         <p>本指南将为您提供关于此密码管理器的安全性、隐私保护和核心功能的关键信息。</p>
         <hr>
-
         <h4>核心安全架构</h4>
-        <p>您的安全是我们的最高优先级。SafeKey 建立在经过验证的、现代的密码学原则之上：</p>
+        <p>您的安全是我们的最高优先级。Oracipher 建立在经过验证的、现代的密码学原则之上：</p>
         <ul>
-            <li><strong>零知识 (Zero-Knowledge):</strong> 您的主密码是您的私钥。它<strong>绝不会</strong>被存储在您的设备上或传输到任何地方。我们无法访问、查看或为您恢复它。<em>您是唯一的控制者。</em></li>
-            <li><strong>密钥派生 (Argon2id):</strong> 我们使用目前最先进的、内存困难型算法 Argon2id，将您的主密码转换为一个强大的加密密钥。这为抵御暴力破解攻击提供了最大程度的保护。</li>
-            <li><strong>认证加密 (AES-256-GCM via Fernet):</strong> 您保险库中的所有数据——密码、备注、网址等——都使用行业标准 AES-256 进行加密。这同时确保了数据的机密性（无法被读取）和完整性（无法被篡改）。</li>
-            <li><strong>安全剪贴板:</strong> 当您复制密码或两步验证码时，它会在30秒后自动从您的剪贴板中清除，以防止意外泄露。</li>
+            <li><strong>零知识:</strong> 您的主密码是您的私钥。它<strong>绝不会</strong>被存储在您的设备上。</li>
+            <li><strong>密钥派生 (Argon2id):</strong> 我们使用 Argon2id 将您的主密码转换为一个强大的加密密钥。</li>
+            <li><strong>认证加密 (AES-256):</strong> 您保险库中的所有数据都使用 AES-256 进行加密。</li>
         </ul>
-
         <h4>您的隐私承诺</h4>
         <p>我们坚信，您的数据只属于您自己。</p>
         <ul>
-            <li><strong>本地优先存储:</strong> 您的整个加密保险库完全存储在您本地设备的 `safekey_data` 目录中。我们<strong>不使用任何云服务器</strong>。除非您明确导出，否则您的数据永远不会离开您的计算机。</li>
-            <li><strong>无追踪，无分析:</strong> 本应用程序不收集任何使用数据、遥测信息或个人信息。您在应用内的所有活动都是完全私密的。</li>
-            <li><strong>数据可移植性:</strong> 您可以自由地迁移您的数据。我们推荐使用安全的 `.skey` 格式进行备份，同时也提供未加密的 `.csv` 格式用于迁移到其他服务。<em>请极其小心地处理 `.csv` 文件。</em></li>
+            <li><strong>本地优先存储:</strong> 您的整个加密保险库完全存储在您本地设备中。</li>
+            <li><strong>无追踪，无分析:</strong> 本应用程序不收集任何使用数据。</li>
         </ul>
-
-        <h4>关键功能逻辑</h4>
-        <ul>
-            <li><strong>2FA 身份验证器 (TOTP):</strong> SafeKey 可以作为您的两步验证应用。通过扫描二维码或输入密钥，它将生成基于时间的一次性密码 (TOTP)，将您的登录凭证和验证码安全地存放在一起。</li>
-            <li><strong>智能导入:</strong> 导入功能旨在识别多种格式，包括加密的 `.skey` 备份文件，以及来自主流浏览器和其他密码管理器（如 Chrome, Bitwarden）的纯文本 `.csv` 文件。</li>
-            <li><strong>并发图标抓取:</strong> 当导入包含网址的条目时，SafeKey 会尝试并发（并行）抓取网站图标，从而显著加快处理速度。</li>
-        </ul>
-
-        <h4>相关技术与标签</h4>
-        <p><i>密码管理器, 2FA身份验证器, TOTP, 零知识, 本地优先, 离线应用, 加密保险库, Argon2id, AES-256, 数据可移植性, 注重隐私。</i></p>
     """,
     "change_pass_title": "修改主密码",
     "label_old_pass": "旧主密码",
@@ -151,30 +137,31 @@ translations = {
     "msg_title_pass_change_fail": "操作失败",
     "msg_pass_change_fail_old_wrong": "旧主密码不正确！",
     "msg_pass_change_fail_mismatch": "两次输入的新密码不一致！",
-    "msg_pass_change_fail_weak": "新密码强度不足。必须至少8位，且包含大写字母、小写字母和数字。",
+    "msg_pass_change_fail_weak": "新密码强度不足。",
     "msg_pass_change_fail_empty": "所有密码字段均不能为空。",
     "error_url_required": "请输入有效的网址以获取图标。",
-    "error_fetch_failed": "无法从该网址获取图标，请检查网址或网络连接。",
+    "error_fetch_failed": "无法从该网址获取图标。",
     "error_loading_icon": "加载所选图标文件时出错。",
-    "settings_restart_msg": "语言设置已保存。请重启应用程序以使更改生效。",
+    "settings_restart_msg": "请重启应用程序以使更改生效。",
     "dialog_select_icon": "选择一个图标文件",
     "dialog_image_files": "图片文件",
     "dialog_export_title": "导出保险库",
     "dialog_import_title": "导入保险库",
-    "dialog_export_filter": "SafeKey 加密文件 (*.skey);;CSV (非安全) (*.csv)",
-    "dialog_import_files": "所有支持的文件 (*.skey *.csv *.txt *.md);;SafeKey 加密文件 (*.skey);;CSV 文件 (*.csv);;文本文件 (*.txt *.md)",
+    "dialog_export_filter": "Oracipher 加密文件 (*.skey);;CSV (非安全) (*.csv)",
+    "dialog_import_files": "所有支持的文件 (*.skey *.csv *.txt *.md);;Oracipher 加密文件 (*.skey);;CSV 文件 (*.csv);;文本文件 (*.txt *.md)",
     "msg_export_success_title": "导出成功",
     "msg_export_success": "{count} 个条目已成功导出到:\n{path}",
     "msg_export_fail_title": "导出失败",
     "msg_export_fail": "导出过程中发生错误: {error}",
     "msg_import_confirm_title": "确认导入",
-    "msg_import_confirm": "您即将导入条目。\n这是一个智能合并操作：新条目将被添加，信息有变化的现有条目将被更新，完全重复的条目将被跳过。是否继续？",
+    "msg_import_confirm": "您即将导入条目。\n这是一个智能合并操作。是否继续？",
     "msg_import_success_title": "导入成功",
     "msg_import_success": "操作完成！\n新增: {added_count}  更新: {updated_count}  跳过: {skipped_count}",
     "msg_import_fail_title": "导入失败",
-    "msg_import_fail": "导入过程中发生错误: {error}",
     "dialog_input_password_title": "需要密码",
-    "dialog_input_password_label": "请输入您要导入文件的创建密码：",
+    "dialog_input_password_label": "请输入您要导入的 .skey 文件的创建密码：",
     "warning_unsecure_export_title": "安全警告",
-    "warning_unsecure_export_text": "您即将将数据导出为未加密的 CSV 文件。此文件为纯文本，任何人都可以读取您的密码。\n\n此选项仅用于迁移至其他密码管理器。如需备份或在本应用间同步，请务必使用安全的 .skey 格式。\n\n您理解此风险并确定要继续吗？",
+    "warning_unsecure_export_text": "您即将将数据导出为未加密的 CSV 文件。此文件为纯文本，任何人都可以读取您的密码。如需备份，请务必使用安全的 .skey 格式。\n\n您理解此风险并确定要继续吗？",
+    "warning_include_totp_title": "包含 TOTP 密钥？",
+    "warning_include_totp_text": "您是否要在未加密的CSV文件中包含2FA/TOTP密钥？\n\n警告：这样做极度危险！任何能接触到此文件的人都将能够生成您的两步验证码。\n\n您确定要继续吗？"
 }

@@ -33,8 +33,8 @@ class CryptoHandler:
     # 一个静态的、用于验证密码正确性的“魔法字符串”。
     # 当用户解锁时，我们会尝试用派生的密钥解密验证文件，如果解密后的内容与此令牌匹配，
     # 则证明密码正确，避免了直接存储密码或其哈希值。
-    # "v2-argon2" 后缀是为了在未来升级加密方案时，能够区分旧版本的验证文件。
-    _VERIFICATION_TOKEN: bytes = b"safekey-verification-token-v2-argon2"
+    # 修正: 将品牌名从 "safekey" 改为 "oracipher"
+    _VERIFICATION_TOKEN: bytes = b"oracipher-verification-token-v1-argon2"
 
     def __init__(self, data_dir: str):
         """

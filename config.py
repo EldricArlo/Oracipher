@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # 从环境变量获取数据和日志目录路径，如果未设置，则使用默认值
-APP_DATA_DIR: str = os.getenv("SAFEKEY_DATA_PATH", "safekey_data")
-APP_LOG_DIR: str = os.getenv("SAFEKEY_LOG_PATH", "logs")
+APP_DATA_DIR: str = os.getenv("ORACIPHER_DATA_PATH", "oracipher_data")
+APP_LOG_DIR: str = os.getenv("ORACIPHER_LOG_PATH", "logs")
 
 # 设置文件的完整路径
 SETTINGS_FILE_PATH: str = os.path.join(APP_DATA_DIR, "settings.json")

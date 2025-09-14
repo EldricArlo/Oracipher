@@ -12,7 +12,7 @@ from core.data_handler import DataHandler
 from core.icon_fetcher import IconFetcher
 from language import t
 from ..dialogs.message_box_dialog import CustomMessageBox
-from ..dialogs.password_prompt_dialog import PasswordPromptDialog # 修正: 导入新的密码对话框
+from ..dialogs.password_prompt_dialog import PasswordPromptDialog
 from ..task_manager import task_manager
 
 if TYPE_CHECKING:
@@ -40,7 +40,6 @@ class DataIOController(QObject):
 
         password: Optional[str] = None
         if os.path.splitext(file_path)[1].lower() == '.skey':
-            # 修正: 使用我们自定义的、风格化的密码输入对话框
             password, ok = PasswordPromptDialog.getPassword(self.main_window)
             if not ok:
                 logger.warning("Import cancelled by user (no password provided for .skey).")
@@ -103,11 +102,10 @@ class DataIOController(QObject):
         return final_entries
 
     def handle_export(self, all_entries: List[Dict[str, Any]]) -> None:
-        file_path, selected_filter = QFileDialog.getSaveFileName(self.main_window, t.get('dialog_export_title'), "safey_export", t.get('dialog_export_filter'))
+        file_path, selected_filter = QFileDialog.getSaveFileName(self.main_window, t.get('dialog_export_title'), "oracipher_export", t.get('dialog_export_filter'))
         if not file_path: return
 
         is_csv = 'csv' in selected_filter.lower()
-        if is_csv and CustomMessageBox.question(self.main_window, t.get('warning_unsecure_export_title'), t.get('warning_unsecure_export_text')) != QDialog.DialogCode.Accepted: return
         
         def on_error(err: Exception, tb: str):
             CustomMessageBox.information(self.main_window, t.get('msg_export_fail_title'), t.get('msg_export_fail', error=str(err)))
@@ -118,8 +116,19 @@ class DataIOController(QObject):
                 with open(file_path, mode, encoding='utf-8' if mode == 'w' else None) as f: f.write(content)
                 CustomMessageBox.information(self.main_window, t.get('msg_export_success_title'), t.get('msg_export_success', count=len(all_entries), path=file_path))
             except Exception as e: on_error(e, "")
+            
+        if not is_csv:
+            task_manager.run_in_background(DataHandler.export_to_encrypted_json, on_success=on_success, on_error=on_error, entries=all_entries, crypto_handler=self.data_manager.crypto)
+            return
+
+        if CustomMessageBox.question(self.main_window, t.get('warning_unsecure_export_title'), t.get('warning_unsecure_export_text')) != QDialog.DialogCode.Accepted:
+            return
         
-        export_func = DataHandler.export_to_csv if is_csv else DataHandler.export_to_encrypted_json
-        kwargs = {"entries": all_entries}
-        if not is_csv: kwargs["crypto_handler"] = self.data_manager.crypto
-        task_manager.run_in_background(export_func, on_success=on_success, on_error=on_error, **kwargs)
+        reply = CustomMessageBox.question(self.main_window, t.get('warning_include_totp_title'), t.get('warning_include_totp_text'))
+        
+        if reply == QDialog.DialogCode.Rejected:
+             return
+
+        include_totp = (reply == QDialog.DialogCode.Accepted)
+        
+        task_manager.run_in_background(DataHandler.export_to_csv, on_success=on_success, on_error=on_error, entries=all_entries, include_totp=include_totp)

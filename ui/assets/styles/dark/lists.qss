@@ -1,32 +1,37 @@
 /*******************************************************
  * [Dark Theme] 5. 列表视图 (QListWidget)
  *******************************************************/
-QListWidget { 
-    background: transparent; 
-    border: none; 
+QListWidget {
+    background: transparent;
+    border: none;
 }
+
 QListWidget::item {
-    padding: 0; 
-    margin: 4px 0px; 
-    border-radius: 12px; 
-    color: #f8f8f2; 
+    padding: 0;
+    margin: 4px 0px;
+    border-radius: 12px;
+    color: #F8F8F2; /* Dracula Foreground */
     font-weight: 500;
-    background-color: transparent;
-    border: 1px solid #44475a;
-    min-height: 45px; 
+    background-color: #44475a; /* Dracula Current Line */
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    min-height: 45px;
     outline: none;
 }
-QListWidget::item:hover { 
-    background-color: #44475a; 
+
+QListWidget::item:hover {
+    background-color: #4d5066;
 }
+
 QListWidget::item:selected {
-    font-weight: 600; 
-    color: #f8f8f2; 
-    background-color: #44475a;
-    border: 1px solid #bd93f9; /* 紫色高亮 */
+    font-weight: 600;
+    color: #F8F8F2;
+    background-color: #282a36; /* Dracula Background */
+    border: 1px solid #bd93f9; /* Dracula Purple */
 }
+
 EntryListItemWidget QLabel {
-    background: transparent; 
+    background: transparent;
     border: none;
-    color: #f8f8f2;
+    /* 修正: 为标签明确指定浅色字体颜色 */
+    color: #F8F8F2; /* Dracula Foreground */
 }

@@ -21,7 +21,8 @@ KEY_MAP = {
     'url': ['url', 'website', 'address', 'uri', '网址', '地址'],
     'notes': ['notes', 'remark', 'extra', '备注'],
     'category': ['category', 'cat', 'group', 'folder', '分类'],
-    '2fa_app': ['2fa', '2fa authenticator app', 'authenticator', 'otpauth', '两步验证'],
+    # 修正: 统一使用 'totp' 作为键名，以匹配CSV标准
+    'totp': ['totp', 'otpauth', '2fa', '2fa_app', 'authenticator', '两步验证'],
 }
 
 class DataHandler:
@@ -51,12 +52,21 @@ class DataHandler:
             raise
 
     @staticmethod
-    def export_to_csv(entries: List[Dict[str, Any]]) -> str:
-        CSV_FIELDNAMES: List[str] = ['name', 'username', 'email', 'password', 'url', 'notes', 'category']
-        logger.info(f"Preparing to export {len(entries)} entries to standard CSV...")
+    def export_to_csv(entries: List[Dict[str, Any]], include_totp: bool = False) -> str:
+        """
+        导出为CSV文件，并提供一个选项来决定是否包含TOTP密钥。
+        修正: 确保此函数能接收 include_totp 参数。
+        """
+        BASE_FIELDNAMES: List[str] = ['name', 'username', 'email', 'password', 'url', 'notes', 'category']
+        
+        fieldnames = BASE_FIELDNAMES[:]
+        if include_totp:
+            fieldnames.append('totp') # 使用 'totp' 作为列名
+        
+        logger.info(f"Preparing to export {len(entries)} entries to CSV. Include TOTP: {include_totp}")
         try:
             output = io.StringIO()
-            writer = csv.DictWriter(output, fieldnames=CSV_FIELDNAMES)
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
             writer.writeheader()
             for entry in entries:
                 details = entry.get('details', {})
@@ -69,6 +79,14 @@ class DataHandler:
                     'notes': details.get('notes', ''),
                     'category': entry.get('category', '')
                 }
+                if include_totp:
+                    totp_secret = details.get('totp_secret', '')
+                    if totp_secret:
+                        issuer = entry.get('name', 'SafeKey').replace(':', '')
+                        account = (details.get('username') or details.get('email', 'account')).replace(':', '')
+                        row['totp'] = f"otpauth://totp/{issuer}:{account}?secret={totp_secret}&issuer={issuer}"
+                    else:
+                        row['totp'] = ''
                 writer.writerow(row)
             return output.getvalue()
         except Exception as e:
@@ -85,7 +103,6 @@ class DataHandler:
             import_payload = json.loads(file_content_bytes.decode('utf-8'))
             b64_salt = import_payload["salt"]
             encrypted_data_string = import_payload["data"]
-
             salt = base64.b64decode(b64_salt)
             
             raw_key = hash_secret_raw(
@@ -102,10 +119,8 @@ class DataHandler:
             logger.info(f"Successfully decrypted and parsed {len(entries)} entries from .skey file.")
             return entries
         except (json.JSONDecodeError, KeyError):
-            logger.error(f"Failed to parse .skey file structure. It may be corrupt or invalid.", exc_info=True)
             raise ValueError("Invalid .skey file format.")
         except Exception:
-            logger.error("Failed to decrypt .skey file. Incorrect password or corrupt file.", exc_info=True)
             raise ValueError("Incorrect password or corrupt file.")
 
     @staticmethod
@@ -125,15 +140,25 @@ class DataHandler:
 
         for row in reader:
             safe_row = {k.lower().strip(): v for k, v in row.items()}
-            
             name_val = safe_row.get(field_map['name'], '').strip()
             if not name_val: continue
                 
             details = {
                 std_key: safe_row.get(csv_key, '').strip()
                 for std_key, csv_key in field_map.items()
-                if std_key not in ['name', 'category']
+                if std_key not in ['name', 'category', 'totp']
             }
+
+            if 'totp' in field_map:
+                otp_uri = safe_row.get(field_map['totp'], '')
+                if otp_uri.startswith('otpauth://'):
+                    try:
+                        from urllib.parse import urlparse, parse_qs
+                        query = parse_qs(urlparse(otp_uri).query)
+                        if 'secret' in query:
+                            details['totp_secret'] = query['secret'][0]
+                    except Exception as e:
+                        logger.warning(f"Could not parse TOTP URI for entry '{name_val}': {e}")
 
             entry: Dict[str, Any] = {
                 "name": name_val,
@@ -213,22 +238,19 @@ class DataHandler:
     def import_from_text(content: str) -> List[Dict[str, Any]]:
         first_lines = [line for line in content.strip().split('\n')[:5] if line.strip()]
         if first_lines and '//' in first_lines[0]:
-            logger.info("Detected double-slash text format. Using new parser.")
             return DataHandler._parse_double_slash_format(content)
         else:
-            logger.info("Detected colon-separated text format. Using legacy parser.")
             return DataHandler._parse_key_colon_value_format(content)
 
     @staticmethod
-    def import_from_file(file_path: str, password: Optional[str] = None) -> List[Dict[str, Any]]: # 修正: 参数类型改变
+    def import_from_file(file_path: str, password: Optional[str] = None) -> List[Dict[str, Any]]:
         logger.info(f"Starting import from file: {file_path}")
         try:
             file_ext = os.path.splitext(file_path)[1].lower()
 
             if file_ext == '.skey':
-                if password is None: # 修正: 检查密码是否存在
+                if password is None:
                     raise ValueError("A password is required to decrypt .skey files.")
-                
                 with open(file_path, 'rb') as f:
                     file_content = f.read()
                 return DataHandler.import_from_encrypted_json(file_content, password)
@@ -236,12 +258,10 @@ class DataHandler:
             with open(file_path, mode='r', encoding='utf-8-sig', newline='') as f:
                 if file_ext == '.csv':
                     try:
-                        dialect = csv.Sniffer().sniff(f.read(2048))
-                        f.seek(0)
+                        dialect = csv.Sniffer().sniff(f.read(2048)); f.seek(0)
                         reader = csv.DictReader(f, dialect=dialect)
                     except csv.Error:
-                        f.seek(0)
-                        reader = csv.DictReader(f)
+                        f.seek(0); reader = csv.DictReader(f)
                     return DataHandler._parse_generic_csv(reader)
                 
                 elif file_ext in ('.txt', '.md'):
@@ -251,5 +271,4 @@ class DataHandler:
                 else:
                     raise ValueError(f"Unsupported file format: {file_ext}")
         except Exception as e:
-            logger.error(f"Failed to import file '{os.path.basename(file_path)}'.", exc_info=True)
             raise type(e)(f"Failed to process file: {e}") from e
