@@ -58,9 +58,7 @@ translations = {
     "tab_main": "Main",
     "tab_advanced": "Advanced",
     "tab_security": "TOTP",
-    # --- MODIFICATION START: Renamed the tab ---
     "tab_info": "Appendix",
-    # --- MODIFICATION END ---
     "add_title": "Add New Entry",
     "edit_title": "Edit Entry",
     "label_name": "Account Name",
@@ -109,15 +107,24 @@ translations = {
     <div style="text-align: center; margin-bottom: 15px;">
         <a href="https://github.com/EldricArlo/Oracipher/tree/10.8.0-version" style="text-decoration: none; margin: 0 5px;">
             <!-- 修改: 使用占位符 -->
-            <img src="{github_icon_path}" alt="GitHub" height="20">
+            <img src="./images/github.svg" alt="GitHub" height="20">
         </a>
         <a href="https://t.me/+dHEs5v_mLfNjYjk0" style="text-decoration: none; margin: 0 5px;">
             <!-- 修改: 使用占位符 -->
-            <img src="{telegram_icon_path}" alt="Telegram" height="20">
+            <img src="./images/telegram.svg" alt="Telegram" height="20">
         </a>
         <a href="https://www.python.org/" style="text-decoration: none; margin: 0 5px;">
             <!-- 修改: 使用占位符 -->
-            <img src="{python_icon_path}" alt="Python" height="20">
+            <img src="./images/python.svg" alt="Python" height="20">
+        </a>
+        <a href="https://www.qt.io/" style="text-decoration: none; margin: 0 5px;">
+            <img src="./images/qt.svg" alt="Qt" height="20">
+        </a>
+        <a href="https://www.samsung.com/" style="text-decoration: none; margin: 0 5px;">
+            <img src="./images/samsung.svg" alt="Samsung" height="20">
+        </a>
+        <a href="https://www.google.com/" style="text-decoration: none; margin: 0 5px;">
+            <img src="./images/google.svg" alt="Google" height="20">
         </a>
     </div>
 </div>
@@ -144,7 +151,7 @@ translations = {
 <h4>Data Management</h4>
 <p>You have full control over your data via the Import and Export functions in the settings.</p>
 <ul>
-    <li><strong>Secure Backup (<code>.skey</code> format):</strong> This is the <strong>only recommended way</strong> to back up your vault. The exported <code>.skey</code> file is a fully encrypted container protected by your Master Password.</li>
+    <li><strong>Secure Backup (<code>.pher</code> format):</strong> This is the <strong>only recommended way</strong> to back up your vault. The exported <code>.pher</code> file is a fully encrypted container protected by your Master Password.</li>
     <li><strong>Importing from Other Services:</strong> We support importing from standard files exported by major password managers like Google Password and Samsung Pass.</li>
     <li><strong>Unsecured Export (<code>.csv</code> format):</strong> <strong>Use with extreme caution!</strong> The exported CSV is a <strong>plain text file</strong> containing all of your usernames and passwords.</li>
 </ul>
@@ -192,8 +199,8 @@ translations = {
     "dialog_image_files": "Image Files",
     "dialog_export_title": "Export Vault",
     "dialog_import_title": "Import Vault",
-    "dialog_export_filter": "Oracipher Encrypted File (*.skey);;CSV (Unsecure) (*.csv)",
-    "dialog_import_files": "All Supported Files (*.skey *.spass *.csv *.txt *.md);;Samsung Pass (*.spass);;Google Chrome (*.csv);;Oracipher Encrypted File (*.skey);;Generic CSV (*.csv);;Text Files (*.txt *.md)",
+    "dialog_export_filter": "Oracipher Encrypted File (*.pher);;Samsung Pass Encrypted (*.spass);;CSV (Unsecure) (*.csv)",
+    "dialog_import_files": "All Supported Files (*.pher *.skey *.spass *.csv *.txt *.md);;Oracipher Encrypted File (*.pher);;Samsung Pass (*.spass);;Google Chrome (*.csv);;Legacy Oracipher File (*.skey);;Generic CSV (*.csv);;Text Files (*.txt *.md)",
     "msg_export_success_title": "Export Successful",
     "msg_export_success": "{count} entries have been successfully exported to:\n{path}",
     "msg_export_fail_title": "Export Failed",
@@ -203,16 +210,28 @@ translations = {
     "msg_import_success_title": "Import Successful",
     "msg_import_success": "Operation complete!\nAdded: {added_count}  Updated: {updated_count}  Skipped: {skipped_count}",
     "msg_import_fail_title": "Import Failed",
-    # --- MODIFICATION START: Add new keys ---
     "msg_import_fail_message": "An error occurred during import:\n{error}",
+    "dialog_input_password_label_pher": "Please enter the password for the .pher file you are importing:",
     "dialog_input_password_label_skey": "Please enter the password for the .skey file you are importing:",
     "dialog_input_password_label_spass": "Please enter the password for the .spass file you are importing:",
-    # --- MODIFICATION END ---
+    "dialog_input_password_title": "Password Required",
     "warning_unsecure_export_title": "Security Warning",
-    "warning_unsecure_export_text": "You are about to export your data as an unencrypted CSV file. This file will be human-readable and contain all your passwords in plain text. For backups, please use the secure .skey format.\n\nDo you understand the risk and wish to continue?",
+    "warning_unsecure_export_text": "You are about to export your data as an unencrypted CSV file. This file will be human-readable and contain all your passwords in plain text. For backups, please use the secure .pher format.\n\nDo you understand the risk and wish to continue?",
     "warning_include_totp_title": "Include TOTP Secrets?",
     "warning_include_totp_text": "Do you want to include 2FA/TOTP secret keys in the unencrypted CSV file?\n\nWARNING: This is extremely dangerous! Anyone with access to this file will be able to generate your two-factor codes.\n\nAre you sure you want to continue?",
     "settings_auto_lock_title": "Auto-lock Vault",
     "settings_auto_lock_desc": "Automatically lock the vault after a period of inactivity to keep your data safe.",
     "minutes_suffix": "min",
+    "error_import_file_not_found": "Import failed: The selected file could not be found.",
+    "error_import_permission_denied": "Import failed: Permission was denied to read the file.",
+    "error_import_parsing_failed": "Import failed: The file content could not be parsed. It may be corrupt or in an unsupported format.\n\nDetails: {error}",
+    "error_fetch_icon_network": "Could not fetch icon: A network error occurred. Please check your internet connection.",
+    "zxcvbn_feedback_weak": "This password is too weak.",
+    "zxcvbn_feedback_common": "This password is too common.",
+    "zxcvbn_feedback_short": "This password is too short.",
+    "acc_name_edit_entry": "Edit this entry",
+    "acc_name_delete_entry": "Delete this entry",
+    "acc_name_copy_value": "Copy value",
+    "acc_name_toggle_visibility": "Toggle password visibility",
+    "acc_name_set_category_icon": "Set custom icon for this category"
 }

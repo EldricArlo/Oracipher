@@ -1,0 +1,8 @@
+{
+  "salt_b64": "rP2+AMQs1ples8/4oeekWA==",
+  "argon2_params": {
+    "time_cost": 3,
+    "memory_cost": 65536,
+    "parallelism": 4
+  }
+}

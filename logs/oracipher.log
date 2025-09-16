@@ -1,0 +1,297 @@
+2025-09-16 21:39:51,967 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 21:39:51,967 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 21:39:51,967 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 21:39:51,967 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 21:39:51,988 - config - [INFO    ] - config             - load_settings             - Settings file not found or invalid. Creating with default settings.
+2025-09-16 21:39:51,989 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 21:39:51,989 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 21:39:51,994 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 21:39:52,207 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 21:39:52,209 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 21:39:52,217 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'light' theme...
+2025-09-16 21:39:52,221 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'light' theme applied successfully.
+2025-09-16 21:39:52,226 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 21:40:01,621 - core.crypto - [INFO    ] - crypto             - set_master_password       - Setting a new master password for the vault...
+2025-09-16 21:40:01,667 - core.crypto - [INFO    ] - crypto             - set_master_password       - Master password set successfully. Metadata and verification files created.
+2025-09-16 21:40:06,598 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 21:40:06,599 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 21:40:06,599 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 21:40:06,617 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 21:40:06,617 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 21:40:52,468 - core.data_handler - [INFO    ] - data_handler       - import_from_file          - Starting import from file: C:/Users/ricar/Desktop/oracipher_export.skey
+2025-09-16 21:40:52,469 - core.data_handler - [INFO    ] - data_handler       - import_from_encrypted_json - Attempting to decrypt and import from .skey file...
+2025-09-16 21:40:52,470 - core.data_handler - [INFO    ] - data_handler       - import_from_encrypted_json - Importing from legacy .skey format. Using default KDF parameters.
+2025-09-16 21:40:52,519 - core.data_handler - [INFO    ] - data_handler       - import_from_encrypted_json - Successfully decrypted and parsed 43 entries from .skey file.
+2025-09-16 21:40:52,527 - core.database - [INFO    ] - database           - save_multiple_entries     - Bulk save done. Added: 43, Updated: 0, Skipped: 0.
+2025-09-16 21:41:08,144 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_file' not found in any language.
+2025-09-16 21:41:08,145 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_screen' not found in any language.
+2025-09-16 21:41:10,297 - ui.components.screen_qr_reader - [WARNING ] - screen_qr_reader   - capture_and_decode        - No QR code found in the selected area.
+2025-09-16 21:41:34,224 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_file' not found in any language.
+2025-09-16 21:41:34,225 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_screen' not found in any language.
+2025-09-16 21:41:42,485 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 21:41:42,505 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 21:53:35,074 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 21:53:35,074 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 21:53:35,074 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 21:53:35,074 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 21:53:35,095 - config - [INFO    ] - config             - load_settings             - Settings file not found or invalid. Creating with default settings.
+2025-09-16 21:53:35,095 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 21:53:35,095 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 21:53:35,102 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 21:53:35,456 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 21:53:35,457 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 21:53:35,464 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'light' theme...
+2025-09-16 21:53:35,468 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'light' theme applied successfully.
+2025-09-16 21:53:35,474 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 21:53:55,955 - core.crypto - [INFO    ] - crypto             - set_master_password       - Setting a new master password for the vault...
+2025-09-16 21:53:56,001 - core.crypto - [INFO    ] - crypto             - set_master_password       - Master password set successfully. Metadata and verification files created.
+2025-09-16 21:54:00,734 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 21:54:00,735 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 21:54:00,735 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 21:54:00,753 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 21:54:00,753 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 21:54:04,389 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 21:54:04,452 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 21:54:05,315 - app - [INFO    ] - app                - _on_settings_changed      - Settings have changed, re-evaluating auto-lock timer.
+2025-09-16 21:54:05,317 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 21:54:08,407 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_file' not found in any language.
+2025-09-16 21:54:08,407 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_screen' not found in any language.
+2025-09-16 21:54:49,373 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 21:54:49,385 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:01:06,671 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:01:06,671 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:01:06,671 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:01:06,671 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:01:06,691 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:01:06,691 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:01:06,698 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:01:07,028 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:01:07,028 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:01:07,029 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:01:07,033 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:01:07,039 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:01:10,302 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:01:10,303 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:01:10,303 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:01:10,321 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:01:10,321 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:01:15,493 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 22:01:15,502 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:07:24,394 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:07:24,395 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:07:24,395 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:07:24,395 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:07:24,413 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:07:24,413 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:07:24,419 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:07:24,700 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:07:24,700 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:07:24,701 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:07:24,704 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:07:24,710 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:07:27,953 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:07:27,955 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:07:27,955 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:07:27,972 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:07:27,972 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:07:43,918 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 22:07:43,950 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:09:31,548 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:09:31,548 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:09:31,548 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:09:31,548 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:09:31,572 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:09:31,572 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:09:31,580 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:09:31,865 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:09:31,865 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:09:31,866 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:09:31,870 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:09:31,876 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:09:35,044 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:09:35,045 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:09:35,045 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:09:35,063 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:09:35,063 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:10:08,815 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 22:10:08,847 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:14:24,347 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:14:24,347 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:14:24,347 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:14:24,347 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:14:24,367 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:14:24,367 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:14:24,373 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:14:24,622 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:14:24,623 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:14:24,624 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:14:24,627 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:14:24,633 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:14:27,919 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:14:27,919 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:14:27,919 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:14:27,937 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:14:27,937 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:14:57,339 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 22:14:57,361 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:20:08,350 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:20:08,350 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:20:08,350 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:20:08,350 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:20:08,374 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:20:08,374 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:20:08,380 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:20:08,635 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:20:08,635 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:20:08,636 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:20:08,640 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:20:08,645 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:20:11,853 - core.crypto - [WARNING ] - crypto             - unlock_with_master_password - Incorrect master password (failed to decrypt verification token).
+2025-09-16 22:20:18,743 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:20:18,745 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:20:18,745 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:20:18,765 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:20:18,766 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:20:25,810 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 22:20:25,828 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:37:55,911 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:37:55,911 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:37:55,911 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:37:55,911 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:37:55,934 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:37:55,934 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:37:55,940 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:37:56,184 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:37:56,184 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:37:56,185 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:37:56,189 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:37:56,195 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:38:00,130 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:38:00,131 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:38:00,131 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:38:00,148 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:38:00,148 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:38:16,404 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 22:38:16,430 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 22:58:26,827 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:58:26,827 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 22:58:26,827 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 22:58:26,827 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 22:58:26,851 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 22:58:26,851 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 22:58:26,857 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 22:58:27,177 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 22:58:27,177 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 22:58:27,178 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 22:58:27,182 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 22:58:27,188 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 22:58:31,134 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 22:58:31,134 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 22:58:31,134 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 22:58:31,153 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 22:58:31,153 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 22:58:51,469 - core.data_handler - [INFO    ] - data_handler       - import_from_file          - Starting import from file: C:/Users/ricar/Desktop/oracipher_export.skey
+2025-09-16 22:58:51,469 - core.data_handler - [INFO    ] - data_handler       - _import_from_legacy_skey  - Attempting to import from legacy .skey file...
+2025-09-16 22:58:51,517 - core.database - [INFO    ] - database           - save_multiple_entries     - Bulk save done. Added: 43, Updated: 0, Skipped: 0.
+2025-09-16 22:59:24,094 - ui.controllers.data_io_controller - [WARNING ] - data_io_controller - handle_export             - Export to Samsung Pass Encrypted (*.spass) cancelled by user.
+2025-09-16 22:59:32,056 - ui.controllers.data_io_controller - [WARNING ] - data_io_controller - handle_export             - Export to Samsung Pass Encrypted (*.spass) cancelled by user.
+2025-09-16 22:59:37,173 - ui.controllers.data_io_controller - [WARNING ] - data_io_controller - handle_export             - Export to Samsung Pass Encrypted (*.spass) cancelled by user.
+2025-09-16 22:59:57,184 - core.exporters.samsung_pass_exporter - [INFO    ] - samsung_pass_exporter - export                    - Starting export of 43 entries to Samsung Pass format.
+2025-09-16 22:59:57,236 - core.exporters.samsung_pass_exporter - [INFO    ] - samsung_pass_exporter - export                    - Successfully encrypted data for .spass export.
+2025-09-16 23:00:00,182 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 23:00:00,199 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 23:33:06,899 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:33:06,900 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 23:33:06,900 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 23:33:06,900 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:33:07,963 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 23:33:07,963 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 23:33:08,037 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 23:35:11,667 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:35:11,667 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 23:35:11,667 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 23:35:11,668 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:35:11,720 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 23:35:11,720 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 23:35:11,734 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 23:35:12,912 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 23:35:12,912 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 23:35:12,916 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 23:35:12,923 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 23:35:12,934 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 23:35:19,701 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 23:35:19,702 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 23:35:19,702 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 23:35:19,732 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 23:35:19,732 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 23:35:27,088 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'light' theme...
+2025-09-16 23:35:27,407 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'light' theme applied successfully.
+2025-09-16 23:35:28,203 - app - [INFO    ] - app                - _on_settings_changed      - Settings have changed, re-evaluating auto-lock timer.
+2025-09-16 23:35:28,220 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 23:35:33,413 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_file' not found in any language.
+2025-09-16 23:35:33,423 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_screen' not found in any language.
+2025-09-16 23:48:13,589 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:48:13,589 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 23:48:13,589 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 23:48:13,589 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:48:13,644 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 23:48:13,644 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 23:48:13,661 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 23:48:14,112 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 23:48:14,113 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 23:48:14,114 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'light' theme...
+2025-09-16 23:48:14,119 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'light' theme applied successfully.
+2025-09-16 23:48:14,127 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 23:48:17,849 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 23:48:17,849 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 23:48:17,849 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 23:48:17,873 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 23:48:17,873 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 23:48:22,237 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 23:48:22,512 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 23:48:23,186 - app - [INFO    ] - app                - _on_settings_changed      - Settings have changed, re-evaluating auto-lock timer.
+2025-09-16 23:48:23,188 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 23:48:33,843 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_file' not found in any language.
+2025-09-16 23:48:33,845 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_screen' not found in any language.
+2025-09-16 23:48:51,030 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 23:48:51,064 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 23:49:22,757 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:49:22,757 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 23:49:22,757 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 23:49:22,757 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:49:22,804 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 23:49:22,804 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 23:49:22,819 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 23:49:23,164 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 23:49:23,165 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 23:49:23,166 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 23:49:23,171 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 23:49:23,178 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 23:49:27,562 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 23:49:27,563 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 23:49:27,563 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 23:49:27,589 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 23:49:27,589 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 23:50:01,104 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 23:50:01,130 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.
+2025-09-16 23:52:03,264 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:52:03,264 - __main__ - [INFO    ] - main               - setup_logging             - Oracipher Application Starting Up (Log Level: INFO)
+2025-09-16 23:52:03,264 - __main__ - [INFO    ] - main               - setup_logging             - Logging configured. Log file at: logs\oracipher.log
+2025-09-16 23:52:03,264 - __main__ - [INFO    ] - main               - setup_logging             - ================================================================================
+2025-09-16 23:52:03,289 - language.manager - [INFO    ] - manager            - set_language              - Application language set to 'zh_CN'.
+2025-09-16 23:52:03,289 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Preloading all application icons...
+2025-09-16 23:52:03,297 - utils.icon_cache - [INFO    ] - icon_cache         - preload                   - Successfully preloaded and cached 13/13 icons.
+2025-09-16 23:52:03,625 - app - [INFO    ] - app                - __init__                  - Initializing SafeKeyApp main window container...
+2025-09-16 23:52:03,625 - app - [INFO    ] - app                - __init__                  - Application data directory: data
+2025-09-16 23:52:03,626 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - Applying 'dark' theme...
+2025-09-16 23:52:03,631 - ui.theme_manager - [INFO    ] - theme_manager      - apply_theme               - 'dark' theme applied successfully.
+2025-09-16 23:52:03,641 - app - [INFO    ] - app                - __init__                  - SafeKeyApp main window initialization complete.
+2025-09-16 23:52:10,699 - core.crypto - [INFO    ] - crypto             - unlock_with_master_password - Vault unlocked successfully.
+2025-09-16 23:52:10,700 - app - [INFO    ] - app                - show_main_app             - Unlock successful. Switching to the main application view.
+2025-09-16 23:52:10,700 - app - [INFO    ] - app                - show_main_app             - Instantiating MainWindow for the first time...
+2025-09-16 23:52:10,725 - app - [INFO    ] - app                - _setup_auto_lock          - Auto-lock enabled. Timeout: 15 minutes.
+2025-09-16 23:52:10,725 - app - [INFO    ] - app                - show_main_app             - View switched to MainWindow.
+2025-09-16 23:52:21,255 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_file' not found in any language.
+2025-09-16 23:52:21,256 - language.manager - [ERROR   ] - manager            - get                       - CRITICAL: Translation key 'button_2fa_scan_qr_screen' not found in any language.
+2025-09-16 23:52:24,375 - app - [INFO    ] - app                - closeEvent                - Close event received. Scheduling graceful shutdown...
+2025-09-16 23:52:24,423 - app - [INFO    ] - app                - on_shutdown_finished      - Database connection closed. Exiting application.

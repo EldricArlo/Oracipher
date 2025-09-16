@@ -36,6 +36,11 @@ class SafeKeyApp(QMainWindow):
         super().__init__()
         logger.info("Initializing SafeKeyApp main window container...")
 
+        # --- MODIFICATION START ---
+        # 设置一个唯一的对象名称，以便在其他地方可以找到这个窗口实例
+        self.setObjectName("SafeKeyApp")
+        # --- MODIFICATION END ---
+        
         self.setWindowTitle(t.get("app_title"))
         self.resize(1000, 700)
 
@@ -127,7 +132,6 @@ class SafeKeyApp(QMainWindow):
         logger.info("Settings have changed, re-evaluating auto-lock timer.")
         self._setup_auto_lock()
 
-    # --- MODIFICATION START: Added "| None" to type hints to match base class stub ---
     def eventFilter(self, a0: "QObject | None", a1: "QEvent | None") -> bool:
         watched = a0
         event = a1
@@ -140,8 +144,6 @@ class SafeKeyApp(QMainWindow):
             ]:
                 self.auto_lock_timer.start(self._auto_lock_timeout_ms)
         return super().eventFilter(watched, event)
-
-    # --- MODIFICATION END ---
 
     def center_on_screen(self) -> None:
         screen = self.screen()
@@ -164,7 +166,6 @@ class SafeKeyApp(QMainWindow):
 
         logger.info("UI retranslation complete.")
 
-    # --- MODIFICATION START: Added "| None" to type hints to match base class stub ---
     def mousePressEvent(self, a0: "QMouseEvent | None") -> None:
         event = a0
         if not event:
@@ -191,10 +192,7 @@ class SafeKeyApp(QMainWindow):
         if not event:
             super().closeEvent(event)
             return
-        # --- MODIFICATION END ---
-        """
-        Handles the shutdown process gracefully.
-        """
+        
         if self._is_shutting_down:
             event.ignore()
             return

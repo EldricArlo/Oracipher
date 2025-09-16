@@ -17,6 +17,7 @@ from ..task_manager import task_manager
 
 if TYPE_CHECKING:
     from core.database import DataManager
+    from core.data_handler import Exporter # 引入Exporter类型提示
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +35,15 @@ class DataIOController(QObject):
         self.on_finish_callback = on_finish_callback
 
     def handle_import(self) -> None:
+        # vvv MODIFICATION START vvv
         file_path, _ = QFileDialog.getOpenFileName(
             self.main_window,
             t.get("dialog_import_title"),
             "",
-            t.get("dialog_import_files"),
+            DataHandler.get_import_filter(),  # 使用动态生成的过滤器
         )
+        # ^^^ MODIFICATION END ^^^
+
         if not file_path:
             return
 
@@ -56,17 +60,28 @@ class DataIOController(QObject):
         password: Optional[str] = None
         file_ext = os.path.splitext(file_path)[1].lower()
 
-        if file_ext in [".skey", ".spass"]:
-            # --- MODIFICATION START: Generate dynamic instruction text ---
-            if file_ext == ".skey":
+        # vvv MODIFICATION START vvv
+        # 简化密码逻辑：现在只需要检查扩展名是否在需要密码的导入器列表中
+        needs_password = any(
+            file_ext in importer.extensions and importer.requires_password
+            for importer in DataHandler._IMPORTERS.values()
+        )
+        if needs_password:
+        # ^^^ MODIFICATION END ^^^
+            # 根据不同的文件类型生成不同的提示文本
+            if file_ext == ".pher":
+                instruction = t.get("dialog_input_password_label_pher")
+            elif file_ext == ".skey":
                 instruction = t.get("dialog_input_password_label_skey")
-            else:  # .spass
+            elif file_ext == ".spass":
                 instruction = t.get("dialog_input_password_label_spass")
+            else:
+                # 提供一个通用的后备提示
+                instruction = "Please enter the password for the selected file:"
 
             password, ok = PasswordPromptDialog.getPassword(
                 self.main_window, instruction_text=instruction
             )
-            # --- MODIFICATION END ---
             if not ok:
                 logger.warning(
                     f"Import cancelled by user (no password provided for {file_ext})."
@@ -74,12 +89,18 @@ class DataIOController(QObject):
                 return
 
         def on_import_error(err: Exception, tb: str):
-            # --- MODIFICATION START: Correctly format the error message ---
-            error_message = t.get("msg_import_fail_message", error=str(err))
+            error_key = "msg_import_fail_message"
+            if isinstance(err, FileNotFoundError):
+                error_message = t.get("error_import_file_not_found")
+            elif isinstance(err, PermissionError):
+                error_message = t.get("error_import_permission_denied")
+            elif isinstance(err, ValueError):
+                error_message = t.get("error_import_parsing_failed", error=str(err))
+            else:
+                error_message = t.get(error_key, error=str(err))
             CustomMessageBox.information(
                 self.main_window, t.get("msg_import_fail_title"), error_message
             )
-            # --- MODIFICATION END ---
 
         def on_parse_success(parsed_entries: List[Dict[str, Any]]):
             if not parsed_entries:
@@ -115,7 +136,7 @@ class DataIOController(QObject):
             self.on_finish_callback()
 
         task_manager.run_in_background(
-            task=DataHandler.import_from_file,
+            task=DataHandler.import_from_file, # 调用统一的导入方法
             on_success=on_parse_success,
             on_error=on_import_error,
             file_path=file_path,
@@ -151,26 +172,73 @@ class DataIOController(QObject):
         return final_entries
 
     def handle_export(self, all_entries: List[Dict[str, Any]]) -> None:
+        # vvv MODIFICATION START vvv
         file_path, selected_filter = QFileDialog.getSaveFileName(
             self.main_window,
             t.get("dialog_export_title"),
-            "oracipher_export",
-            t.get("dialog_export_filter"),
+            "oracipher_export.pher",
+            DataHandler.get_export_filter(), # 使用动态生成的过滤器
         )
+        # ^^^ MODIFICATION END ^^^
+
         if not file_path:
             return
 
-        is_csv = "csv" in selected_filter.lower()
+        # vvv MODIFICATION START: 简化导出逻辑 vvv
+        # 从选择的过滤器中找到对应的导出器
+        selected_exporter: Optional["Exporter"] = next(
+            (exporter for exporter in DataHandler._EXPORTERS.values() if exporter.name == selected_filter),
+            None
+        )
+
+        if not selected_exporter:
+            logger.error(f"No exporter found for filter: {selected_filter}")
+            return
+
+        kwargs_for_exporter = {'entries': all_entries}
+
+        # 处理需要密码的导出格式 (如 Samsung Pass)
+        if selected_exporter.requires_password:
+            password, ok = PasswordPromptDialog.getPassword(
+                self.main_window, instruction_text=t.get("dialog_input_password_label_spass")
+            )
+            if not ok or not password:
+                logger.warning(f"Export to {selected_exporter.name} cancelled by user.")
+                return
+            kwargs_for_exporter['password'] = password
+
+        # 处理特殊的CSV导出选项
+        if selected_exporter.extension == ".csv":
+            if (
+                CustomMessageBox.question(
+                    self.main_window,
+                    t.get("warning_unsecure_export_title"),
+                    t.get("warning_unsecure_export_text"),
+                )
+                != QDialog.DialogCode.Accepted
+            ):
+                return
+
+            reply = CustomMessageBox.question(
+                self.main_window,
+                t.get("warning_include_totp_title"),
+                t.get("warning_include_totp_text"),
+            )
+
+            if reply == QDialog.DialogCode.Rejected:
+                return
+                
+            kwargs_for_exporter['include_totp'] = (reply == QDialog.DialogCode.Accepted)
+
+        # 添加 crypto_handler (如果需要，例如导出为.pher格式)
+        if selected_exporter.extension == ".pher":
+            kwargs_for_exporter['crypto_handler'] = self.data_manager.crypto
 
         def on_error(err: Exception, tb: str):
-            # --- MODIFICATION START: Correctly format the error message ---
-            error_message = t.get(
-                "msg_export_fail", error=str(err)
-            )  # This key was already correct
+            error_message = t.get("msg_export_fail", error=str(err))
             CustomMessageBox.information(
                 self.main_window, t.get("msg_export_fail_title"), error_message
             )
-            # --- MODIFICATION END ---
 
         def on_success(content: Any):
             mode = "w" if isinstance(content, str) else "wb"
@@ -187,41 +255,9 @@ class DataIOController(QObject):
             except Exception as e:
                 on_error(e, "")
 
-        if not is_csv:
-            task_manager.run_in_background(
-                DataHandler.export_to_encrypted_json,
-                on_success=on_success,
-                on_error=on_error,
-                entries=all_entries,
-                crypto_handler=self.data_manager.crypto,
-            )
-            return
-
-        if (
-            CustomMessageBox.question(
-                self.main_window,
-                t.get("warning_unsecure_export_title"),
-                t.get("warning_unsecure_export_text"),
-            )
-            != QDialog.DialogCode.Accepted
-        ):
-            return
-
-        reply = CustomMessageBox.question(
-            self.main_window,
-            t.get("warning_include_totp_title"),
-            t.get("warning_include_totp_text"),
-        )
-
-        if reply == QDialog.DialogCode.Rejected:
-            return
-
-        include_totp = reply == QDialog.DialogCode.Accepted
-
         task_manager.run_in_background(
-            DataHandler.export_to_csv,
+            selected_exporter.handler,
             on_success=on_success,
             on_error=on_error,
-            entries=all_entries,
-            include_totp=include_totp,
+            **kwargs_for_exporter
         )

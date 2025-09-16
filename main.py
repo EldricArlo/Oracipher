@@ -20,9 +20,12 @@ def setup_logging():
         os.makedirs(APP_LOG_DIR)
 
     log_file = os.path.join(APP_LOG_DIR, "oracipher.log")
+    
+    # 在日志格式中增加了模块和函数名，并调整了填充以对齐，便于阅读。
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        "%(asctime)s - %(name)s - [%(levelname)-8s] - %(module)-18s - %(funcName)-25s - %(message)s"
     )
+    
     handler = RotatingFileHandler(
         log_file, maxBytes=1 * 1024 * 1024, backupCount=5, encoding="utf-8"
     )
@@ -34,10 +37,10 @@ def setup_logging():
     root_logger.addHandler(handler)
 
     logger = logging.getLogger(__name__)
-    logger.info("=" * 60)
+    logger.info("=" * 80)
     logger.info(f"Oracipher Application Starting Up (Log Level: {log_level})")
     logger.info(f"Logging configured. Log file at: {log_file}")
-    logger.info("=" * 60)
+    logger.info("=" * 80)
 
 
 def main():
@@ -51,7 +54,6 @@ def main():
         f.data().decode("ascii").lower() for f in QImageReader.supportedImageFormats()
     ]
     if "svg" not in supported_formats:
-        # 修改: 在记录日志后，弹出对话框并退出
         logger.critical("CRITICAL ERROR: SVG image format is NOT supported.")
         QMessageBox.critical(
             None,

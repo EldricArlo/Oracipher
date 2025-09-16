@@ -1,11 +1,12 @@
 # ui/unlock_screen.py
 
 import logging
-from typing import Optional
+from typing import Optional, Tuple
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFrame
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QCursor
+from zxcvbn import zxcvbn
 
 from core.crypto import CryptoHandler
 from language import t
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class UnlockScreen(QWidget):
     unlocked = pyqtSignal()
-    exit_requested = pyqtSignal()  # 新增
+    exit_requested = pyqtSignal()
 
     def __init__(self, crypto_handler: CryptoHandler, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -56,7 +57,7 @@ class UnlockScreen(QWidget):
 
         self.exit_button = QPushButton()
         self.exit_button.setObjectName("unlockExitButton")
-        self.exit_button.clicked.connect(self.exit_requested.emit)  # 修改
+        self.exit_button.clicked.connect(self.exit_requested.emit)
 
         layout.addWidget(self.logo_label)
         layout.addWidget(self.welcome_label)
@@ -88,13 +89,29 @@ class UnlockScreen(QWidget):
         self.retranslate_ui()
         self.confirm_password_input.setVisible(self.is_setup_mode)
 
-    def _validate_password(self, password: str) -> bool:
-        return (
-            len(password) >= 8
-            and any(c.isupper() for c in password)
-            and any(c.islower() for c in password)
-            and any(c.isdigit() for c in password)
-        )
+    # --- MODIFICATION START: Replaced simple validation with zxcvbn ---
+    def _check_password_strength(self, password: str) -> Tuple[bool, str]:
+        """Checks password strength using zxcvbn and provides feedback."""
+        if not password:
+            # This case should be caught by the mismatch check, but as a fallback.
+            return False, t.get("error_msg_mismatch")
+
+        result = zxcvbn(password)
+
+        # We consider a score of 2 or less to be weak.
+        # (0=too guessable, 1=very guessable, 2=somewhat guessable, 3=safely unguessable, 4=very unguessable)
+        if result['score'] < 2:
+            # Extract the main warning from zxcvbn's feedback
+            warning = result.get('feedback', {}).get('warning', '')
+            if "short" in warning:
+                return False, t.get("zxcvbn_feedback_short")
+            if "common" in warning or "names" in warning or "dictionary" in warning:
+                return False, t.get("zxcvbn_feedback_common")
+            # Provide a generic "weak" message if no specific warning matches
+            return False, t.get("zxcvbn_feedback_weak")
+
+        return True, ""
+    # --- MODIFICATION END ---
 
     def _set_ui_locked(self, locked: bool) -> None:
         self.password_input.setEnabled(not locked)
@@ -108,6 +125,7 @@ class UnlockScreen(QWidget):
     def _attempt_unlock(self) -> None:
         password = self.password_input.text()
         self._set_ui_locked(True)
+
         if self.is_setup_mode:
             confirm_password = self.confirm_password_input.text()
             if password != confirm_password:
@@ -116,14 +134,19 @@ class UnlockScreen(QWidget):
                 )
                 self._set_ui_locked(False)
                 return
-            if not self._validate_password(password):
+
+            # --- MODIFICATION START: Use new strength checker and provide detailed feedback ---
+            is_strong, feedback_message = self._check_password_strength(password)
+            if not is_strong:
                 CustomMessageBox.information(
                     self,
                     t.get("error_title_weak_password"),
-                    t.get("error_msg_weak_password"),
+                    feedback_message,
                 )
                 self._set_ui_locked(False)
                 return
+            # --- MODIFICATION END ---
+
             task_manager.run_in_background(
                 self.crypto.set_master_password,
                 on_success=self._on_setup_success,

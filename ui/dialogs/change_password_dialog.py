@@ -3,7 +3,6 @@
 import logging
 from typing import Optional, Tuple
 
-# --- MODIFICATION START ---
 from PyQt6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -15,10 +14,12 @@ from PyQt6.QtWidgets import (
     QFrame,
     QWidget,
 )
-
-# --- MODIFICATION END ---
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QMouseEvent
+
+# --- MODIFICATION START: Import zxcvbn for strength checking ---
+from zxcvbn import zxcvbn
+# --- MODIFICATION END ---
 
 from language import t
 
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 class ChangePasswordDialog(QDialog):
     """
     一个用于更改主密码的专用对话框。
+    (已升级为使用 zxcvbn 进行高级密码强度验证)
     """
 
     def __init__(self, parent: Optional[QWidget] = None):
@@ -90,18 +92,36 @@ class ChangePasswordDialog(QDialog):
         dialog_layout = QVBoxLayout(self)
         dialog_layout.addWidget(container)
 
-    def _is_password_strong(self, password: str) -> bool:
-        """Checks if the password meets the required strength criteria."""
-        return (
-            len(password) >= 8
-            and any(c.isupper() for c in password)
-            and any(c.islower() for c in password)
-            and any(c.isdigit() for c in password)
-        )
+    # --- MODIFICATION START: Replaced simple validation with zxcvbn ---
+    def _check_password_strength(self, password: str) -> Tuple[bool, str]:
+        """使用 zxcvbn 检查密码强度并提供反馈。"""
+        if not password:
+            return False, t.get("msg_pass_change_fail_empty")
+
+        result = zxcvbn(password)
+
+        # 我们认为分数低于2（即0或1）的密码为弱密码。
+        # zxcvbn的分数范围是0-4。
+        if result["score"] < 2:
+            # 尝试从 zxcvbn 的反馈中获取具体的警告信息
+            warning = result.get("feedback", {}).get("warning", "")
+            if "short" in warning:
+                return False, t.get("zxcvbn_feedback_short")
+            if "common" in warning or "names" in warning or "dictionary" in warning:
+                return False, t.get("zxcvbn_feedback_common")
+
+            # 如果没有具体的警告，返回一个通用的“弱密码”提示
+            return False, t.get("zxcvbn_feedback_weak")
+
+        return True, ""
+
+    # --- MODIFICATION END ---
 
     def get_passwords(self) -> Tuple[Optional[Tuple[str, str]], Optional[str]]:
         """
         获取并验证用户输入的密码。
+        如果验证失败，返回 (None, "失败原因")。
+        失败原因可以是 "empty", "mismatch", 或 "weak:具体反馈"。
         """
         old_pass = self.old_pass_input.text()
         new_pass = self.new_pass_input.text()
@@ -111,8 +131,14 @@ class ChangePasswordDialog(QDialog):
             return None, "empty"
         if new_pass != confirm_pass:
             return None, "mismatch"
-        if not self._is_password_strong(new_pass):
-            return None, "weak"
+
+        # --- MODIFICATION START: Use new strength checker and return its feedback ---
+        is_strong, feedback = self._check_password_strength(new_pass)
+        if not is_strong:
+            # 返回一个特殊格式的字符串，其中包含具体的反馈信息，
+            # 以便调用者（控制器）可以向用户显示更详细的提示。
+            return None, f"weak:{feedback}"
+        # --- MODIFICATION END ---
 
         return (old_pass, new_pass), None
 

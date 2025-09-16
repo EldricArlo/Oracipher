@@ -58,9 +58,7 @@ translations = {
     "tab_main": "主要",
     "tab_advanced": "高级",
     "tab_security": "TOTP",
-    # --- MODIFICATION START: Renamed the tab ---
     "tab_info": "附录",
-    # --- MODIFICATION END ---
     "add_title": "添加新条目",
     "edit_title": "编辑条目",
     "label_name": "账户名称",
@@ -109,15 +107,24 @@ translations = {
     <div style="text-align: center; margin-bottom: 15px;">
         <a href="https://github.com/EldricArlo/Oracipher/tree/10.8.0-version" style="text-decoration: none; margin: 0 5px;">
             <!-- 修改: 使用占位符 -->
-            <img src="{github_icon_path}" alt="GitHub" height="20">
+            <img src="./images/github.svg" alt="GitHub" height="20">
         </a>
         <a href="https://t.me/+dHEs5v_mLfNjYjk0" style="text-decoration: none; margin: 0 5px;">
             <!-- 修改: 使用占位符 -->
-            <img src="{telegram_icon_path}" alt="Telegram" height="20">
+            <img src="./images/telegram.svg" alt="Telegram" height="20">
         </a>
         <a href="https://www.python.org/" style="text-decoration: none; margin: 0 5px;">
             <!-- 修改: 使用占位符 -->
-            <img src="{python_icon_path}" alt="Python" height="20">
+            <img src="./images/python.svg" alt="Python" height="20">
+        </a>
+        <a href="https://www.qt.io/" style="text-decoration: none; margin: 0 5px;">
+            <img src="./images/qt.svg" alt="Qt" height="20">
+        </a>
+        <a href="https://www.samsung.com/" style="text-decoration: none; margin: 0 5px;">
+            <img src="./images/samsung.svg" alt="Samsung" height="20">
+        </a>
+        <a href="https://www.google.com/" style="text-decoration: none; margin: 0 5px;">
+            <img src="./images/google.svg" alt="Google" height="20">
         </a>
     </div>
 </div>
@@ -144,7 +151,7 @@ translations = {
 <h4>数据管理</h4>
 <p>您可以通过设置中的导入和导出功能，完全掌控您的数据。</p>
 <ul>
-    <li><strong>安全备份 (<code>.skey</code> 格式)：</strong> 这是备份和迁移您保险库的<strong>唯一推荐方式</strong>。导出的 <code>.skey</code> 文件是一个完全加密的容器，受到您的主密码的保护。</li>
+    <li><strong>安全备份 (<code>.pher</code> 格式)：</strong> 这是备份和迁移您保险库的<strong>唯一推荐方式</strong>。导出的 <code>.pher</code> 文件是一个完全加密的容器，受到您的主密码的保护。</li>
     <li><strong>从其他服务导入：</strong> 我们支持从主流密码管理器（如谷歌密码、三星密码本等）导出的标准文件进行导入。</li>
     <li><strong>非安全导出 (<code>.csv</code> 格式)：</strong> <strong>请务必谨慎使用此功能！</strong> 导出的CSV文件是一个**纯文本文件**，其中包含您所有的用户名和密码。</li>
 </ul>
@@ -192,8 +199,8 @@ translations = {
     "dialog_image_files": "图片文件",
     "dialog_export_title": "导出保险库",
     "dialog_import_title": "导入保险库",
-    "dialog_export_filter": "Oracipher 加密文件 (*.skey);;CSV (非安全) (*.csv)",
-    "dialog_import_files": "所有支持的文件 (*.skey *.spass *.csv *.txt *.md);;三星密码本 (*.spass);;谷歌密码 (*.csv);;Oracipher 加密文件 (*.skey);;通用CSV文件 (*.csv);;文本文件 (*.txt *.md)",
+    "dialog_export_filter": "Oracipher 加密文件 (*.pher);;三星密码本 加密文件 (*.spass);;CSV (非安全) (*.csv)",
+    "dialog_import_files": "所有支持的文件 (*.pher *.skey *.spass *.csv *.txt *.md);;Oracipher 加密文件 (*.pher);;三星密码本 (*.spass);;谷歌密码 (*.csv);;旧版 Oracipher 文件 (*.skey);;通用CSV文件 (*.csv);;文本文件 (*.txt *.md)",
     "msg_export_success_title": "导出成功",
     "msg_export_success": "{count} 个条目已成功导出到:\n{path}",
     "msg_export_fail_title": "导出失败",
@@ -203,17 +210,28 @@ translations = {
     "msg_import_success_title": "导入成功",
     "msg_import_success": "操作完成！\n新增: {added_count}  更新: {updated_count}  跳过: {skipped_count}",
     "msg_import_fail_title": "导入失败",
-    # --- MODIFICATION START: Add new keys ---
     "msg_import_fail_message": "导入过程中发生错误:\n{error}",
+    "dialog_input_password_label_pher": "请输入您要导入的 .pher 文件的创建密码：",
     "dialog_input_password_label_skey": "请输入您要导入的 .skey 文件的创建密码：",
     "dialog_input_password_label_spass": "请输入您要导入的 .spass 文件的创建密码：",
-    # --- MODIFICATION END ---
-    "dialog_input_password_title": "需要密码",  # 修正: 之前的版本中删除了这个键, 现在加回来
+    "dialog_input_password_title": "需要密码",
     "warning_unsecure_export_title": "安全警告",
-    "warning_unsecure_export_text": "您即将将数据导出为未加密的 CSV 文件。此文件为纯文本，任何人都可以读取您的密码。如需备份，请务必使用安全的 .skey 格式。\n\n您理解此风险并确定要继续吗？",
+    "warning_unsecure_export_text": "您即将将数据导出为未加密的 CSV 文件。此文件为纯文本，任何人都可以读取您的密码。如需备份，请务必使用安全的 .pher 格式。\n\n您理解此风险并确定要继续吗？",
     "warning_include_totp_title": "包含 TOTP 密钥？",
     "warning_include_totp_text": "您是否要在未加密的CSV文件中包含2FA/TOTP密钥？\n\n警告：这样做极度危险！任何能接触到此文件的人都将能够生成您的两步验证码。\n\n您确定要继续吗？",
     "settings_auto_lock_title": "自动锁定保险库",
     "settings_auto_lock_desc": "在一段时间无操作后，自动锁定保险库以保护您的数据安全。",
     "minutes_suffix": "分钟",
+    "error_import_file_not_found": "导入失败：无法找到所选文件。",
+    "error_import_permission_denied": "导入失败：读取文件权限被拒绝。",
+    "error_import_parsing_failed": "导入失败：无法解析文件内容。文件可能已损坏或格式不受支持。\n\n详情: {error}",
+    "error_fetch_icon_network": "无法获取图标：发生网络错误。请检查您的网络连接。",
+    "zxcvbn_feedback_weak": "这个密码太弱了。",
+    "zxcvbn_feedback_common": "这是一个常用密码，不安全。",
+    "zxcvbn_feedback_short": "这个密码太短了。",
+    "acc_name_edit_entry": "编辑此条目",
+    "acc_name_delete_entry": "删除此条目",
+    "acc_name_copy_value": "复制内容",
+    "acc_name_toggle_visibility": "切换密码可见性",
+    "acc_name_set_category_icon": "为该分类设置自定义图标"
 }

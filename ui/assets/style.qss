@@ -1,31 +1,80 @@
-/******************************************************************************
- * SafeKey - 基础窗口与布局样式 (style.qss)
- *
- * 版本: 1.0
- * 描述: 定义了主窗口、解锁屏幕和主要容器的背景、边框。
- *       这是亮色主题的基础层。
- ******************************************************************************/
-
-#backgroundPanel {
-    background-color: #f0f0f0; /* 一个柔和的浅灰色作为窗口背景 */
-    border-radius: 15px; 
-}
-
-#unlockContainer {
-    max-width: 400px;
-    background-color: transparent;
-    border: none;
-}
-
-#sidebarContainer {
-    background-color: #ffffff; /* 纯白背景 */
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-    border-right: 1px solid #e0e0e0; /* 浅灰色分隔线 */
-}
-
-#contentContainer {
-    background-color: #f0f0f0; /* 窗口背景色 */
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
+/* Oracipher Light Theme v1.0 */
+#backgroundPanel{background-color:#f0f0f0;border-radius:15px}
+#unlockContainer{max-width:400px;background-color:transparent;border:none}
+#sidebarContainer{background-color:#fff;border-top-left-radius:15px;border-bottom-left-radius:15px;border-right:1px solid #e0e0e0}
+#contentContainer{background-color:#f0f0f0;border-top-right-radius:15px;border-bottom-right-radius:15px}
+#UnlockScreen,#MainWindow{background:transparent;font-family:"Segoe UI","San Francisco","Helvetica Neue",sans-serif;color:#5E5C5B}
+QSplitter::handle{background:transparent;border:none;width:5px}
+QSplitter::handle:hover{background:rgba(0,0,0,.03)}
+#logoLabel{color:#3D3B3A;font-size:32px;font-weight:700}
+#detailsNameLabel{color:#3D3B3A;font-size:28px;font-weight:600}
+#placeholderLabel{color:#A9A5A4;font-size:16px}
+#fieldTitleLabel{font-size:12px;font-weight:600;color:#A9A5A4;margin-bottom:5px}
+#dialogTitle{font-size:20px;font-weight:600;color:#3D3B3A;margin-bottom:10px}
+#AddEditDialog QLabel{color:#5E5C5B;font-weight:600}
+QPushButton{color:#3D3B3A;font-weight:600;font-size:16px;background-color:#EDEAE9;padding:10px;border-radius:22px;border-top:1px solid rgba(255,255,255,.8);border-left:1px solid rgba(255,255,255,.8);border-bottom:1px solid rgba(181,177,176,.5);border-right:1px solid rgba(181,177,176,.5)}
+QPushButton:pressed{color:#3D3B3A;background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+QPushButton:focus{border:1px solid rgba(140,134,133,.4)}
+AnimatedBookmarkButton{background-color:#EDEAE9;border-top-right-radius:18px;border-bottom-right-radius:18px;border-top:1px solid rgba(255,255,255,.8);border-right:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(181,177,176,.5);border-left:3px solid transparent}
+AnimatedBookmarkButton:hover{background-color:#E6E1E0}
+AnimatedBookmarkButton[active=true]{background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:3px solid #8C8685;border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+AnimatedBookmarkButton QLabel{background:transparent;border:none;font-weight:600;font-size:14px;color:#3D3B3A}
+#mainActionButton,#unlockExitButton{min-width:120px;font-size:18px;font-weight:700;padding:15px;border-radius:26px}
+#detailsActionButton,#addButton{border-radius:20px}
+#inlineButton{border-radius:10px;font-size:12px;font-weight:500;padding:6px 10px;margin-left:5px}
+#inlineButton:checked{color:#3D3B3A;background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+#saveButton{color:#F0E8E6;font-weight:700;background-color:#8C8685}
+#saveButton:pressed{color:#3D3B3A;background-color:#E6E1E0}
+#UnlockScreen QLineEdit,#search_input{min-height:25px;font-size:14px;background-color:#E6E1E0;border-radius:22px;padding:10px 20px;color:#3D3B3A;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+#UnlockScreen QLineEdit:focus,#search_input:focus{border:1px solid rgba(140,134,133,.4)}
+#UnlockScreen QLineEdit{text-align:center}
+#fieldValueDisplay{background:transparent;border:none;font-size:16px;padding:0;color:#3D3B3A}
+#detailField{border-radius:15px;padding:15px 20px;background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+#AddEditDialog QLineEdit,#AddEditDialog QTextEdit,#AddEditDialog QComboBox{min-height:25px;border-radius:12px;padding:10px 15px;font-size:14px;color:#3D3B3A;background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+#AddEditDialog QLineEdit:focus,#AddEditDialog QTextEdit:focus,#AddEditDialog QComboBox:focus{border:1px solid rgba(140,134,133,.4)}
+QCheckBox{color:#5E5C5B;font-weight:600;spacing:10px}
+QCheckBox::indicator{width:24px;height:24px;background-color:#fff;border-radius:8px;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+QCheckBox::indicator:hover{background-color:#F5F5F5}
+QCheckBox::indicator:checked{image:url(ui/assets/icons/check_light.svg);border:1px solid #8C8685}
+QSpinBox{min-height:25px;border-radius:12px;padding:10px 15px;font-size:14px;color:#3D3B3A;background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9);selection-background-color:#E6E1E0;selection-color:#3D3B3A}
+QSpinBox:focus{border:1px solid rgba(140,134,133,.4)}
+QSpinBox:disabled{background-color:#EDEAE9;color:#A9A5A4}
+QSpinBox::up-button,QSpinBox::down-button{subcontrol-origin:border;background:transparent;border:none;width:20px;border-radius:4px}
+QSpinBox::up-button{subcontrol-position:top right;margin:4px 6px 0 0}
+QSpinBox::down-button{subcontrol-position:bottom right;margin:0 6px 4px 0}
+QSpinBox::up-button:hover,QSpinBox::down-button:hover{background-color:#D1CBCB}
+QSpinBox::up-arrow{image:url(ui/assets/icons/chevron-up_light.svg)}
+QSpinBox::down-arrow{image:url(ui/assets/icons/chevron-down_light.svg)}
+QSpinBox::up-arrow:disabled,QSpinBox::down-arrow:disabled{image:none}
+QListWidget{background:transparent;border:none}
+QListWidget::item{padding:0;margin:4px 0;border-radius:12px;color:#3D3B3A;font-weight:500;background-color:#EDEAE9;border-top:1px solid rgba(255,255,255,.8);border-left:1px solid rgba(255,255,255,.8);border-bottom:1px solid rgba(181,177,176,.5);border-right:1px solid rgba(181,177,176,.5);min-height:45px;outline:none}
+QListWidget::item:hover{background-color:#E6E1E0}
+QListWidget::item:selected{font-weight:600;color:#3D3B3A;background-color:#E6E1E0;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.8);border-right:1px solid rgba(255,255,255,.8)}
+EntryListItemWidget QLabel{background:transparent;border:none;color:#3D3B3A}
+#AddEditDialog #dialogContainer{background-color:#EDEAE9;border-radius:20px;padding:10px;border-top:1px solid rgba(255,255,255,.9);border-left:1px solid rgba(255,255,255,.9);border-bottom:1px solid rgba(181,177,176,.6);border-right:1px solid rgba(181,177,176,.6)}
+#AddEditDialog QPushButton{min-width:80px;padding-top:10px;padding-bottom:10px;border-radius:12px}
+#AddEditDialog QComboBox::drop-down{border:none;subcontrol-origin:padding;subcontrol-position:top right;width:30px}
+#AddEditDialog QComboBox QAbstractItemView{background-color:#E6E1E0;border:1px solid rgba(181,177,176,.8);border-radius:8px;padding:5px;color:#5E5C5B;selection-background-color:#D1CBCB;selection-color:#3D3B3A}
+QTabWidget::pane{border:none;background:transparent}
+QTabBar::tab{color:#5E5C5B;font-weight:600;font-size:14px;padding:10px 20px;margin-right:4px;background-color:#EDEAE9;border-top-left-radius:12px;border-top-right-radius:12px;border-bottom:1px solid rgba(181,177,176,.5)}
+QTabBar::tab:hover{background-color:#E6E1E0}
+QTabBar::tab:selected{color:#3D3B3A;background-color:#EDEAE9;border-top:1px solid rgba(255,255,255,.8);border-left:1px solid rgba(255,255,255,.8);border-right:1px solid rgba(181,177,176,.5);border-bottom:none}
+#settingsGroupFrame{background-color:#E6E1E0;border-radius:12px;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+#sectionTitleLabel{font-size:16px;font-weight:700;color:#3D3B3A;background:transparent;border:none;padding-bottom:5px}
+#settingTitleLabel{font-size:14px;font-weight:600;color:#3D3B3A;background:transparent}
+#settingDescLabel{font-size:12px;color:#5E5C5B;background:transparent}
+#settingsGroupFrame QWidget#settingRow:not(:last-child){padding-bottom:15px;border-bottom:1px solid rgba(181,177,176,.3);margin-bottom:15px}
+#instructionsText{background-color:#E6E1E0;border-radius:12px;padding:15px;color:#5E5C5B;border-top:1px solid rgba(181,177,176,.5);border-left:1px solid rgba(181,177,176,.5);border-bottom:1px solid rgba(255,255,255,.9);border-right:1px solid rgba(255,255,255,.9)}
+#instructionsText h2{font-size:18px;font-weight:700;color:#3D3B3A;margin-bottom:10px}
+#instructionsText h4,#instructionsText p,#instructionsText ul{font-size:13px;line-height:1.5}
+#instructionsText h4{font-weight:700;color:#3D3B3A;margin-top:15px;margin-bottom:5px}
+#instructionsText ul{margin-left:20px}
+#instructionsText li{margin-bottom:5px}
+#instructionsText strong{font-weight:700;color:#3D3B3A}
+#instructionsText em{font-style:italic;color:#A9A5A4}
+#instructionsText hr{border:1px solid rgba(181,177,176,.3);margin-top:15px}
+QProgressBar{border:1px solid rgba(181,177,176,.5);border-radius:2px;background-color:transparent}
+QProgressBar::chunk{background-color:#8C8685;border-radius:2px}
+#qrCancelButton{color:#fff;font-size:14px;font-weight:600;background-color:rgba(0,0,0,.2);padding:8px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.5)}
+#qrCancelButton:hover{background-color:rgba(255,255,255,.2)}
+#qrCancelButton:pressed{background-color:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.8)}

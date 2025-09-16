@@ -99,12 +99,21 @@ class DetailsView(QWidget):
         header_layout.addWidget(icon_label)
         header_layout.addWidget(name_label)
         header_layout.addStretch()
+        
         edit_button = self._create_action_button(
             "detailsActionButton", "edit", t.get("button_edit_icon")
         )
+        # --- MODIFICATION START: Add Accessible Name ---
+        edit_button.setAccessibleName(t.get("acc_name_edit_entry"))
+        # --- MODIFICATION END ---
+        
         delete_button = self._create_action_button(
             "detailsActionButton", "delete", t.get("button_delete_icon")
         )
+        # --- MODIFICATION START: Add Accessible Name ---
+        delete_button.setAccessibleName(t.get("acc_name_delete_entry"))
+        # --- MODIFICATION END ---
+        
         edit_button.clicked.connect(
             lambda: (
                 self.edit_requested.emit(self.active_entry_in_group["id"])
@@ -168,10 +177,8 @@ class DetailsView(QWidget):
         info_layout.setSpacing(15)
         info_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         
-        # --- MODIFICATION START: Directly get text from storage without conversion ---
         backup_codes_text = details.get("backup_codes", "")
         notes_text = details.get("notes", "")
-        # --- MODIFICATION END ---
 
         username_field = self._create_detail_field(
             t.get("label_user"), details.get("username", "")
@@ -237,7 +244,6 @@ class DetailsView(QWidget):
         value_display: QLineEdit | QTextEdit
 
         if multiline:
-            # This is the correct way to display multiline text
             value_display = StyledTextEdit()
             value_display.setPlainText(value)
             value_display.setReadOnly(True)
@@ -256,6 +262,9 @@ class DetailsView(QWidget):
             show_hide_btn.setObjectName("inlineButton")
             show_hide_btn.setCheckable(True)
             show_hide_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            # --- MODIFICATION START: Add Accessible Name ---
+            show_hide_btn.setAccessibleName(t.get("acc_name_toggle_visibility"))
+            # --- MODIFICATION END ---
             show_hide_btn.toggled.connect(
                 lambda checked, v=value_display, b=show_hide_btn: (
                     self._toggle_password_visibility(checked, v, b)
@@ -267,6 +276,9 @@ class DetailsView(QWidget):
         copy_btn = QPushButton(t.get("button_copy"))
         copy_btn.setObjectName("inlineButton")
         copy_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        # --- MODIFICATION START: Add Accessible Name ---
+        copy_btn.setAccessibleName(t.get("acc_name_copy_value"))
+        # --- MODIFICATION END ---
         is_sensitive = is_password or title == t.get("label_backup_codes")
         copy_btn.clicked.connect(
             lambda: self._copy_to_clipboard(value, copy_btn, is_sensitive)

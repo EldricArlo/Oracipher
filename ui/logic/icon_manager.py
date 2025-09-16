@@ -5,6 +5,7 @@ import logging
 from typing import Optional, TYPE_CHECKING
 
 from PyQt6.QtWidgets import QFileDialog, QWidget, QPushButton, QLineEdit
+from requests.exceptions import RequestException
 
 from core.icon_fetcher import IconFetcher
 from language import t
@@ -71,9 +72,16 @@ class IconManager:
             self.icon_preview_button.setEnabled(True)
 
         def on_error(err: Exception, tb: str):
+            # --- MODIFICATION START: More specific error messages ---
+            if isinstance(err, RequestException):
+                error_message = t.get("error_fetch_icon_network")
+            else:
+                error_message = t.get("error_fetch_failed")
+
             CustomMessageBox.information(
-                self.parent, t.get("error_title_generic"), t.get("error_fetch_failed")
+                self.parent, t.get("error_title_generic"), error_message
             )
+            # --- MODIFICATION END ---
             logger.error(f"Error fetching icon: {err}\n{tb}")
             self.icon_preview_button.setEnabled(True)
 
