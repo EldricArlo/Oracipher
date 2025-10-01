@@ -1,3 +1,3 @@
 # Oracipher
 
-![Oracipher](images/oracipher_name.png)
+![Oracipher](images/Oracipher_name.png)
