@@ -3,6 +3,7 @@
 Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理器。它秉承**安全第一**和**数据本地化**的核心原则，为用户提供一个完全在自己掌控之下的密码保险库。所有数据都经过业界领先的加密算法在本地设备上加密，您的主密码是唯一密钥，它绝不会被存储或传输。
 
 <p align=center>
+    <a src=image/icon-256.png></a>
 ![Oracipher Icon](images/icon-256.png)
 </p>
 
