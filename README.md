@@ -4,7 +4,6 @@ Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理�
 
 <p align=center>
     <img src="image/icon-256.png"></a>
-![Oracipher Icon](images/icon-256.png)
 </p>
 
 ---
