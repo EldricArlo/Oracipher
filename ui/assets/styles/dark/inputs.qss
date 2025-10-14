@@ -1,0 +1,118 @@
+/*******************************************************
+ * [Dark Theme] 3. 输入框 (QLineEdit & QTextEdit)
+ *******************************************************/
+#UnlockScreen QLineEdit, #search_input {
+    min-height: 25px; 
+    font-size: 14px; 
+    background-color: #282a36; 
+    border-radius: 22px;
+    padding: 10px 20px; 
+    color: #f8f8f2;
+    border: 1px solid #44475a;
+}
+#UnlockScreen QLineEdit:focus, #search_input:focus {
+    border: 1px solid #bd93f9; /* 紫色高亮 */
+}
+#UnlockScreen QLineEdit { 
+    text-align: center; 
+}
+
+#fieldValueDisplay { 
+    background: transparent; 
+    border: none; 
+    font-size: 16px; 
+    padding: 0; 
+    color: #f8f8f2; 
+}
+
+#detailField {
+    border-radius: 15px; 
+    padding: 15px 20px; 
+    background-color: #282a36;
+    border: 1px solid #44475a;
+    color: #f8f8f2;
+}
+
+#AddEditDialog QLineEdit, #AddEditDialog QTextEdit, #AddEditDialog QComboBox {
+    min-height: 25px; 
+    border-radius: 12px; 
+    padding: 10px 15px; 
+    font-size: 14px;
+    color: #f8f8f2; 
+    background-color: #44475a;
+    border: 1px solid #282a36;
+}
+#AddEditDialog QLineEdit:focus, #AddEditDialog QTextEdit:focus, #AddEditDialog QComboBox:focus {
+    border: 1px solid #bd93f9;
+}
+
+/*******************************************************
+ * [Dark Theme] 3.5 CheckBox
+ *******************************************************/
+QCheckBox { 
+    color: #f8f8f2; 
+    font-weight: 600;
+    spacing: 10px;
+}
+QCheckBox::indicator {
+    width: 24px;
+    height: 24px;
+    background-color: #282a36;
+    border-radius: 8px;
+    border: 1px solid #44475a;
+}
+QCheckBox::indicator:hover {
+    background-color: #313342;
+}
+QCheckBox::indicator:checked {
+    image: url("ui/assets/icons/check.svg");
+    border: 1px solid #bd93f9;
+}
+
+/*******************************************************
+ * [Dark Theme] 3.6 SpinBox
+ *******************************************************/
+QSpinBox {
+    min-height: 25px; 
+    border-radius: 12px; 
+    padding: 10px 15px; 
+    font-size: 14px;
+    color: #f8f8f2; 
+    background-color: #44475a;
+    border: 1px solid #282a36;
+    /* --- MODIFICATION START --- */
+    selection-background-color: #44475a; /* 与背景色相同以隐藏选中效果 */
+    selection-color: #f8f8f2;            /* 与文本颜色相同 */
+    /* --- MODIFICATION END --- */
+}
+QSpinBox:focus {
+    border: 1px solid #bd93f9;
+}
+QSpinBox:disabled {
+    background-color: #282a36;
+    color: #6272a4;
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+    subcontrol-origin: border;
+    background: transparent;
+    border: none;
+    width: 20px;
+    border-radius: 4px;
+}
+QSpinBox::up-button { 
+    subcontrol-position: top right; 
+    margin: 4px 6px 0px 0px;
+}
+QSpinBox::down-button { 
+    subcontrol-position: bottom right; 
+    margin: 0px 6px 4px 0px;
+}
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #6272a4;
+}
+QSpinBox::up-arrow { image: url("ui/assets/icons/chevron-up.svg"); }
+QSpinBox::down-arrow { image: url("ui/assets/icons/chevron-down.svg"); }
+QSpinBox::up-arrow:disabled, QSpinBox::down-arrow:disabled {
+    image: none;
+}

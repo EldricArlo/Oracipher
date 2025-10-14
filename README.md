@@ -1,164 +1,199 @@
-# SafeKey 密码管理器
+<div align="center">
+    <h1>Oracipher</h>
+</div>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理器。它秉承**安全第一**和**数据本地化**的核心原则，为用户提供一个完全在自己掌控之下的密码保险库。所有数据都经过业界领先的加密算法在本地设备上加密，您的主密码是唯一密钥，它绝不会被存储或传输。
 
-**一款基于 Python 和 PyQt6 构建的现代化、安全且界面美观的本地密码管理器。**
-
-SafeKey 致力于提供一个纯粹的、离线的密码管理解决方案。您的所有数据都经过强大的行业标准算法加密，并仅存储在您自己的计算机上，确保了最高级别的隐私和安全。
+<div align="center">
+    <img src="./images/icon-256.png" alt="Oracipher Icon" width=102></a>
+</div>
 
 ---
 
-## 🌟 核心功能
+## ✨ 核心特性
 
-*   **端到端加密:** 所有数据在保存前均使用您的主密码通过 AES-256-GCM 进行加密。
-*   **本地优先:** 您的密码保险库永远不会离开您的设备，没有任何云同步或网络连接。
-*   **强密码生成器:** 内置可定制的密码生成器，帮助您创建高强度的随机密码。
-*   **现代化UI:** 采用柔和、干净的“新拟态”（Neumorphism）设计风格，提供卓越的视觉体验。
-*   **搜索与分类:** 通过分类和即时搜索功能，快速找到您需要的账户信息。
-*   **安全剪贴板:** 复制的密码会在30秒后自动从系统剪贴板中清除，防止泄露。
-*   **跨平台:** 基于 PyQt6 构建，理论上可在 Windows, macOS, 和 Linux 上运行。
-*   **多语言支持:** 支持语言切换（当前内置英语和简体中文）。
+*   **🛡️ 零知识安全架构**: 您的主密码是您数据的唯一钥匙，我们无法访问、查看或恢复它。
+*   **🔒 行业标准加密**:
+    *   使用 **Argon2id** 算法派生加密密钥，有效抵御暴力破解攻击。
+    *   使用 **AES-256-GCM** 对所有数据进行认证加密，确保数据的机密性和完整性。
+*   **💻 完全本地存储**: 您的所有加密数据都只存储在您自己的电脑上，没有任何云端服务器参与。
+*   **🔑 TOTP (2FA) 支持**: 可为条目设置和生成基于时间的一次性密码 (TOTP)，增强账户安全性。
+*   **🔄 安全的数据导入/导出**:
+    *   支持导出为使用主密码加密的 `.skey` 安全备份文件。
+    *   支持从 Google Chrome, Samsung Pass 等主流服务导出的文件进行导入。
+    *   提供明文 CSV 导出选项，并附有强烈的安全警告。
+*   **🎨 可定制的主题**: 内置精心设计的亮色 (Lumina Glow) 和暗色 (Dracula Dark) 主题。
+*   **🌐 多语言支持**: 目前支持简体中文和英语，并可轻松扩展。
+*   **🚀 现代化流畅UI**: 基于 PyQt6 构建，界面美观、响应迅速，并包含流畅的动画效果。
+
+---
 
 ## 📸 软件截图
 
-![unlock shot](./media/screenshot1.png)
-![main shot](./media/screenshot2.png)
+| 亮色主题 (Lumina Glow) | 暗色主题 (Dracula Dark) |
+| :----------------------------------------------------------: | :-----------------------------------------------------------: |
+| ![Light Theme Screenshot](./images/LuminaUI.png) | ![Dark Theme Screenshot](./images/DraculaUI.png) |
+
+
+---
 
 ## 🛠️ 技术栈与依赖
 
-*   **编程语言:** Python 3.8+
-*   **GUI 框架:** PyQt6
-*   **加密库:** `cryptography` (提供了 Fernet 对称加密)
-*   **数据库:** SQLite 3 (通过 Python 内置的 `sqlite3` 模块)
-*   **样式:** QSS (Qt Style Sheets)，实现了自定义的UI主题
-*   **依赖管理:** `requirements.txt`
+*   **核心框架**: [PyQt6](https://www.riverbankcomputing.com/software/pyqt/)
+*   **加密库**: [cryptography](https://cryptography.io/), [argon2-cffi](https://argon2-cffi.readthedocs.io/)
+*   **二维码处理**: [pyzbar](https://pypi.org/project/pyzbar/), [Pillow](https://python-pillow.org/)
+*   **数据库**: `sqlite3` (Python 内置)
+*   **环境配置**: `python-dotenv`
+*   **打包工具**: [PyInstaller](https://pyinstaller.org/)
 
-## 🚀 开始使用
+---
 
-请按照以下步骤在您的本地计算机上安装并运行 SafeKey。
+## 🏛️ 核心概念与架构
 
-### 先决条件
+本应用采用接近 **模型-视图-控制器 (MVC)** 的设计模式，实现了业务逻辑与用户界面的高度解耦。
 
-*   Python 3.8 或更高版本
-*   Git
+*   **模型 (Model)**: 位于 `/core` 目录。负责所有核心业务逻辑，包括加密解密 (`crypto.py`)、数据库交互 (`database.py`) 以及数据的导入导出处理 (`data_handler.py`)。这一层不依赖任何 UI 组件。
 
-### 安装步骤
+*   **视图 (View)**: 位于 `/ui/views`, `/ui/dialogs`, `/ui/components` 目录。负责所有 UI 元素的渲染和布局，它们是“哑”组件，只负责展示数据和发送用户操作信号（如点击）。
+
+*   **控制器 (Controller/Logic)**: 位于 `/ui/controllers` 和 `/ui/logic` 目录。作为视图和模型之间的桥梁，它接收来自视图的信号，调用模型处理数据，然后将结果返回给视图进行更新。`main_window_controller.py` 是整个应用 UI 逻辑的核心。
+
+*   **异步任务管理**: 为了防止因耗时操作（如数据库读写、密码验证、网络请求）导致界面卡顿，应用实现了一个全局的 `TaskManager` (`/ui/task_manager.py`)。它使用 `QThread` 将耗时任务放到后台线程执行，并通过信号与主线程安全通信，确保了 UI 的流畅性。
+
+---
+
+## 📁 项目文件结构解析
+
+```
+.
+├── config.py               # 应用程序配置，如数据路径、设置文件管理
+├── core/                   # 核心业务逻辑模块
+│   ├── crypto.py           # 封装所有加密、解密、密钥派生操作
+│   ├── database.py         # 数据库管理器 (SQLite)，负责所有CRUD操作
+│   ├── data_handler.py     # 处理数据的导入和导出逻辑
+│   ├── icon_fetcher.py     # 从网络URL抓取网站图标
+│   ├── icon_processor.py   # 图标处理（如圆形裁剪）
+│   └── importers/          # 各种导入格式的解析器
+├── images/                 # 存放应用图标、截图等静态图片
+├── language/               # 国际化模块
+│   ├── manager.py          # 语言管理器，提供全局翻译接口 `t`
+│   └── locales/            # 存放具体的语言翻译文件 (en.py, zh_CN.py)
+├── main.py                 # 应用程序主入口
+├── requirements.txt        # 项目依赖列表
+├── Oracipher.spec          # PyInstaller 打包配置文件
+├── ui/                     # 所有用户界面相关代码
+│   ├── assets/             # QSS样式表、UI图标等静态资源
+│   ├── components/         # 可复用的自定义UI小部件
+│   │   ├── animated_bookmark_button.py # 带动画的侧边栏按钮
+│   │   ├── custom_widgets.py # 带自定义样式的控件 (如滚动条)
+│   │   ├── two_fa_widget.py  # 显示和刷新TOTP代码的控件
+│   │   └── ...
+│   ├── controllers/        # UI 控制器
+│   │   ├── main_window_controller.py # 主窗口的“大脑”，连接UI和核心逻辑
+│   │   └── data_io_controller.py # 专门处理导入/导出流程的控制器
+│   ├── dialogs/            # 各种对话框窗口
+│   │   ├── add_edit_dialog.py # 添加/编辑条目的对话框
+│   │   ├── settings_dialog.py # 设置对话框
+│   │   └── ...
+│   ├── logic/              # 对话框内部的复杂逻辑管理器
+│   │   ├── icon_manager.py   # 管理添加/编辑对话框中的图标逻辑
+│   │   └── two_fa_manager.py # 管理添加/编辑对话框中的2FA逻辑
+│   ├── views/              # 主要的UI视图组件
+│   │   ├── sidebar_view.py   # 侧边栏视图
+│   │   ├── main_content_view.py # 主内容区视图（条目列表+详情）
+│   │   └── details_view.py   # 条目详情显示视图
+│   ├── theme_manager.py    # 主题管理器，负责加载和应用QSS样式
+│   └── task_manager.py     # 异步任务管理器
+├── utils/                  # 通用工具模块
+│   ├── clipboard.py        # 安全剪贴板管理器
+│   ├── icon_cache.py       # 图标缓存，避免UI卡顿
+│   └── paths.py            # 资源路径处理，兼容开发和打包环境
+└── ...
+```
+
+---
+
+## 🚀 本地运行指南
+
+**前提**: 已安装 Python 3.8+
 
 1.  **克隆仓库**
     ```bash
-    git clone https://github.com/your-username/SafeKey.git
-    cd SafeKey
+    git clone <your-repository-url>
+    cd Oracipher
     ```
 
-2.  **创建并激活虚拟环境** (强烈推荐)
-
-    *   **Windows:**
-        ```cmd
-        python -m venv venv
-        .\venv\Scripts\activate
-        ```
-    *   **macOS / Linux:**
-        ```bash
-        python3 -m venv venv
-        source venv/bin/activate
-        ```
-
-3.  **安装所有依赖项**
-    `requirements.txt` 文件包含了所有必需的 Python 包。
+2.  **创建并激活虚拟环境**
     ```bash
-    pip install -r requirements.txt
-    ```
-    *重要提示:* `PyQt6-SVG` 包是必需的，用于正确显示界面中的 SVG 图标。
+    # Windows
+    python -m venv venv
+    .\venv\Scripts\activate
 
-4.  **运行应用程序**
+    # macOS / Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **安装项目依赖**
+    *   首先，您需要生成 `requirements.txt` 文件。如果您已经安装了所有依赖，可以运行：
+        ```bash
+        pip freeze > requirements.txt
+        ``` 
+        *   然后，其他人可以通过以下命令安装：
+        ```bash
+        pip install -r requirements.txt
+        ```
+
+4.  **运行应用**
     ```bash
     python main.py
     ```
 
-### 首次使用
+---
 
-首次运行程序时，您将被引导进入“设置模式”，需要创建一个主密码。这个密码至关重要，它是您访问所有数据的唯一钥匙。**请务必牢记，一旦丢失将无法恢复！**
+## 📦 打包为可执行文件
 
-## 🔐 安全模型
+本项目使用 **PyInstaller** 进行打包。项目内已包含一个经过优化的 `Oracipher.spec` 配置文件。
 
-SafeKey 的安全性是其设计的核心。我们采用了多层保护措施来确保您的数据安全。
+1.  **准备打包图标**
+    *   确保在 `/images` 目录下有一个名为 `logo.ico` 的Windows图标文件。您可以使用在线工具从 `icon-256.png` 转换得到。
 
-1.  **主密码:**
-    您的主密码是唯一的访问凭证。它**不会**以任何形式被存储。
+2.  **安装 PyInstaller**
+    ```bash
+    pip install pyinstaller
+    ```
 
-2.  **密钥派生 (KDF):**
-    我们使用 **PBKDF2-HMAC-SHA256** 算法从您的主密码中派生出加密密钥。
-    *   **盐 (Salt):** 每个保险库都会生成一个唯一的、16字节的随机盐，与您的主密码结合，有效抵抗彩虹表攻击。
-    *   **迭代次数:** 我们设置了高达 **600,000** 次的迭代，这极大地增加了暴力破解的难度和时间成本。
+3.  **执行打包**
+    在项目根目录下打开终端，运行以下命令：
+    ```bash
+    pyinstaller Oracipher.spec
+    ```
 
-3.  **数据加密:**
-    所有敏感数据（用户名、密码、备注等）都使用派生出的密钥通过 **AES-256-GCM** 算法进行加密。`cryptography.fernet` 保证了加密和认证的完整性。
+4.  **查找结果**
+    打包成功后，所有文件将位于 `/dist/Oracipher` 文件夹下。您可以将整个文件夹分发给用户，或将其压缩。
 
-4.  **本地存储:**
-    加密后的数据库文件 (`safekey.db`)、盐文件 (`salt.key`) 和验证文件 (`verification.key`) 都存储在您本地的 `safekey_data` 目录中。
+---
 
-## 📂 项目结构
+## 🤝 贡献代码
 
-项目代码结构清晰，遵循关注点分离原则，易于理解和维护。
+欢迎您为 Oracipher 做出贡献！如果您发现了 bug 或有新的功能建议，请随时提交一个 [Issue](<your-repo-issues-link>)。如果您想贡献代码，请遵循以下步骤：
 
-```
-SafeKey/
-├── main.py                 # ✅ 应用主入口，初始化日志和语言
-├── app.py                  # 🖼️ 主应用窗口 (QMainWindow)
-├── config.py               # ⚙️ 配置文件加载/保存逻辑
-├── language.py             # 🌐 国际化语言管理器
-├── style.qss               # 🎨 全局背景样式
-├── requirements.txt        # 📦 Python依赖列表
-├── README.md               # 📖 你正在阅读的文件
-│
-├── core/                   # --- 核心后端逻辑 ---
-│   ├── crypto.py           # 🔑 加密/解密核心
-│   └── data_manager.py     # 🗄️ 数据库交互逻辑
-│
-├── ui/                     # --- 用户界面 ---
-│   ├── app_ui.qss          # 💅 统一UI组件样式
-│   ├── main_interface.py   # 🖥️ 主功能界面
-│   ├── unlock_screen.py    # 🚪 解锁/设置密码界面
-│   │
-│   └── dialogs/            # 💬 所有对话框窗口
-│       └── ...
-│
-└── logs/                   # 📜 (自动创建) 存放日志文件的目录
-```
-
-## 🌐 国际化 (i18n)
-
-应用程序的国际化由 `language.py` 文件中的 `LanguageManager` 类处理。
-
-*   **添加新语言:**
-    1.  在 `LanguageManager` 的 `TRANSLATIONS` 字典中，仿照 `'en'` 和 `'zh_CN'` 的结构，添加一个新的语言代码和对应的翻译字典。
-    2.  在 `get_available_languages` 方法中添加新语言的显示名称。
-*   **应用翻译:**
-    在代码中，使用 `from language import t` 导入全局翻译实例，然后通过 `t.get('translation_key')` 来获取文本。
-
-## 🤝 如何贡献
-
-我们欢迎任何形式的贡献！无论是提交 Bug 报告、提出功能建议还是发送 Pull Request。
-
-1.  **Fork** 本仓库。
+1.  Fork 本仓库。
 2.  创建一个新的分支 (`git checkout -b feature/AmazingFeature`)。
-3.  进行您的修改。
-4.  提交您的更改 (`git commit -m 'Add some AmazingFeature'`)。
-5.  将您的分支推送到远程仓库 (`git push origin feature/AmazingFeature`)。
-6.  打开一个 **Pull Request**。
+3.  提交您的更改 (`git commit -m 'Add some AmazingFeature'`)。
+4.  将您的分支推送到远程仓库 (`git push origin feature/AmazingFeature`)。
+5.  提交一个 Pull Request。
 
-## 📜 许可证
+---
 
-本项目采用 [MIT 许可证](LICENSE.txt)授权。详情请参阅 `LICENSE.txt` 文件。
+## 📄 许可证
 
+本项目采用 [MIT 许可证](LICENSE.md) 进行授权。
 
+---
 
+## 📫 联系方式
 
+开发者: [eldric] - [eldric520lol@gmail.com](mailto:eldric520lol@gmail.com)
 
-
-
-
-
-
+项目链接: [https://github.com/EldricArlo/Oracipher/tree/10.8.0-version](https://github.com/EldricArlo/Oracipher/tree/10.8.0-version)

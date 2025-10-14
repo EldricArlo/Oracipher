@@ -1,0 +1,128 @@
+# ui/views/main_content_view.py
+
+import logging
+from typing import List, Dict, Any, Optional
+
+from PyQt6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QListWidget,
+    QListWidgetItem,
+    QSplitter,
+    QApplication,
+)
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QCursor
+
+from language import t
+from .details_view import DetailsView
+from ..components.entry_list_item_widget import EntryListItemWidget
+from ..components.no_focus_delegate import NoFocusDelegate
+from ..components.custom_widgets import StyledListWidget
+from utils import icon_cache
+
+
+logger = logging.getLogger(__name__)
+
+
+class MainContentView(QWidget):
+    """
+    主内容区域的视图组件。
+    """
+
+    def __init__(self, parent: Optional[QWidget] = None):
+        super().__init__(parent)
+        self.setObjectName("contentContainer")
+
+        self.search_input: QLineEdit
+        self.add_button: QPushButton
+        self.entry_list: StyledListWidget
+        self.details_view: DetailsView
+
+        self.init_ui()
+
+    def init_ui(self) -> None:
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(25, 15, 25, 15)
+        layout.setSpacing(20)
+        top_toolbar_layout = QHBoxLayout()
+        self.search_input = QLineEdit()
+        self.search_input.setObjectName("search_input")
+        self.add_button = QPushButton()
+        self.add_button.setObjectName("addButton")
+        self.add_button.setFixedSize(45, 45)
+
+        self.add_button.setIcon(icon_cache.get("user_edit"))
+        self.add_button.setIconSize(QSize(22, 22))  # 设置一个合适的图标大小
+
+        top_toolbar_layout.addWidget(self.search_input, 1)
+        top_toolbar_layout.addStretch(0)
+        top_toolbar_layout.addWidget(self.add_button)
+
+        inner_splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.entry_list = StyledListWidget()
+        self.entry_list.setItemDelegate(NoFocusDelegate(self))
+        self.details_view = DetailsView()
+        inner_splitter.addWidget(self.entry_list)
+        inner_splitter.addWidget(self.details_view)
+        inner_splitter.setSizes([300, 700])
+
+        layout.addLayout(top_toolbar_layout)
+        layout.addWidget(inner_splitter)
+        self.retranslate_ui()
+
+    def populate_entry_list(
+        self,
+        entries_by_name: Dict[str, List[Dict[str, Any]]],
+        current_selection: Optional[str],
+    ) -> None:
+        self.entry_list.blockSignals(True)
+        self.entry_list.clear()
+
+        total_items = len(entries_by_name)
+        if total_items > 200:
+            QApplication.setOverrideCursor(QCursor(Qt.CursorShape.WaitCursor))
+
+        sorted_names = sorted(entries_by_name.keys())
+        item_to_select = None
+
+        for i, name in enumerate(sorted_names):
+            representative_entry = entries_by_name[name][0]
+            list_item = QListWidgetItem()
+            list_item.setData(Qt.ItemDataRole.UserRole, name)
+            list_item.setSizeHint(QSize(0, 48))
+            widget = EntryListItemWidget(representative_entry)
+            self.entry_list.addItem(list_item)
+            self.entry_list.setItemWidget(list_item, widget)
+            if name == current_selection:
+                item_to_select = list_item
+
+            if total_items > 200 and i % 100 == 0:
+                QApplication.processEvents()
+
+        if total_items > 200:
+            QApplication.restoreOverrideCursor()
+
+        self.entry_list.blockSignals(False)
+
+        if item_to_select:
+            self.entry_list.setCurrentItem(item_to_select)
+        elif self.entry_list.count() > 0:
+            self.entry_list.setCurrentRow(0)
+
+    def get_selected_entry_name(self) -> Optional[str]:
+        selected_items = self.entry_list.selectedItems()
+        return (
+            selected_items[0].data(Qt.ItemDataRole.UserRole) if selected_items else None
+        )
+
+    def retranslate_ui(self) -> None:
+        self.search_input.setPlaceholderText(t.get("search_placeholder"))
+        # <--- MODIFICATION START --->
+        # 3. 移除设置按钮文本的代码，因为它现在是图标了
+        # self.add_button.setText(t.get("button_add_icon"))
+        # <--- MODIFICATION END --->
+        self.details_view.retranslate_ui()

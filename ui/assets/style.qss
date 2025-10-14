@@ -1,0 +1,31 @@
+/******************************************************************************
+ * SafeKey - 基础窗口与布局样式 (style.qss)
+ *
+ * 版本: 1.0
+ * 描述: 定义了主窗口、解锁屏幕和主要容器的背景、边框。
+ *       这是亮色主题的基础层。
+ ******************************************************************************/
+
+#backgroundPanel {
+    background-color: #f0f0f0; /* 一个柔和的浅灰色作为窗口背景 */
+    border-radius: 15px; 
+}
+
+#unlockContainer {
+    max-width: 400px;
+    background-color: transparent;
+    border: none;
+}
+
+#sidebarContainer {
+    background-color: #ffffff; /* 纯白背景 */
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-right: 1px solid #e0e0e0; /* 浅灰色分隔线 */
+}
+
+#contentContainer {
+    background-color: #f0f0f0; /* 窗口背景色 */
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}

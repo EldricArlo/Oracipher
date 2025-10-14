@@ -1,6 +1,37 @@
-# requirements.txt
+# ===================================================================
+# Oracipher Project - Runtime Dependencies
+#
+# This file lists the direct dependencies required to run the application.
+# Install them using: pip install -r requirements.txt
+# ===================================================================
 
-PyQt6
-PyQt6-SVG
-cryptography
-python-dotenv
+# -- Core UI Framework --
+# Provides the entire graphical user interface foundation.
+PyQt6==6.9.1
+
+# -- Security & Cryptography --
+# For deriving the master key from the password (Argon2id).
+argon2-cffi==25.1.0
+
+# For encrypting/decrypting all vault data (AES-256-GCM).
+# NOTE: Your version 3.4.8 is very old. Please see the security note below.
+cryptography==3.4.8
+
+# For generating Time-based One-Time Passwords (2FA codes).
+pyotp==2.9.0
+
+# For decrypting Samsung Pass (.spass) backup files.
+pycryptodome==3.23.0
+
+# -- Utilities & Features --
+# For decoding QR codes from image files to set up 2FA.
+pyzbar==0.1.9
+
+# Image processing library, required by pyzbar to handle images.
+Pillow==11.3.0
+
+# For making HTTP requests to fetch website icons (favicons).
+requests==2.32.5
+
+# For loading configuration from a .env file during development.
+python-dotenv==1.1.1

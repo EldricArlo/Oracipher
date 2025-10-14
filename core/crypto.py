@@ -3,239 +3,247 @@
 import os
 import base64
 import logging
+from typing import Optional
+
 from cryptography.fernet import Fernet, InvalidToken
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.backends import default_backend
+from argon2.low_level import hash_secret_raw, Type
 
 logger = logging.getLogger(__name__)
 
 
 class CryptoHandler:
     """
-    处理所有与加密解密相关的操作。
+    负责处理所有与加密、解密及主密码相关的核心安全操作。
 
-    本类使用 `cryptography.fernet` 实现对称加密，并使用 PBKDF2
-    从用户主密码安全地派生加密密钥。它负责：
-    - 从主密码派生密钥。
-    - 设置初始主密码并创建保险库。
-    - 使用主密码解锁保险库。
-    - 安全地更改主密码。
-    - 加密和解密数据。
+    本模块采用业界推荐的安全实践：
+    - 密钥派生: 使用 Argon2id 算法从用户主密码中派生出加密密钥。
+        Arg2id 是一种内存困难型函数，能有效抵抗来自 GPU 的暴力破解和侧信道攻击。
+    - 对称加密: 使用 Fernet (基于 AES-128-CBC 和 HMAC-SHA256 的认证加密方案)，
+        确保数据的保密性和完整性，防止数据被篡改。
     """
 
-    _SALT_SIZE = 16  # 盐的字节数，16字节 (128位) 是标准推荐
-    _ITERATIONS = 600000  # PBKDF2的迭代次数，高迭代次数能有效抵抗暴力破解
-    _VERIFICATION_TOKEN = (
-        b"safekey-verification-token"  # 用于验证密码正确性的固定字节串
-    )
+    _SALT_SIZE: int = 16  # 128-bit 盐值，提供足够的唯一性。
+
+    # Argon2id 参数，基于 OWASP (Open Web Application Security Project) 的推荐起点。
+    # 这些参数可以在未来根据硬件发展进行调整以增强安全性。
+    _ARGON2_TIME_COST: int = 3  # 迭代次数，增加计算耗时。
+    _ARGON2_MEMORY_COST: int = 65536  # 内存消耗 (64 MiB)，有效对抗并行攻击。
+    _ARGON2_PARALLELISM: int = 4  # 并行度，利用多核处理器。
+
+    _KEY_LENGTH: int = 32  # 派生密钥长度为 256 bits (32 bytes)，用于 Fernet。
+
+    # 一个静态的、用于验证密码正确性的“魔法字符串”。
+    # 当用户解锁时，我们会尝试用派生的密钥解密验证文件，如果解密后的内容与此令牌匹配，
+    # 则证明密码正确，避免了直接存储密码或其哈希值。
+    _VERIFICATION_TOKEN: bytes = b"oracipher-verification-token-v1-argon2"
 
     def __init__(self, data_dir: str):
         """
         初始化 CryptoHandler。
 
         Args:
-            data_dir (str): 存放盐值和验证文件的应用程序数据目录。
+            data_dir: 应用程序数据目录的路径，用于存放盐值和验证文件。
         """
-        self.key = None  # 加密密钥，只有在成功解锁后才会被加载到内存
-        self.salt_path = os.path.join(data_dir, "salt.key")
-        self.verification_path = os.path.join(data_dir, "verification.key")
+        self.key: Optional[bytes] = None
+        self.salt_path: str = os.path.join(data_dir, "salt.key")
+        self.verification_path: str = os.path.join(data_dir, "verification.key")
         os.makedirs(data_dir, exist_ok=True)
 
-    def _derive_key(self, password: str, salt: bytes) -> bytes:
+    # --- MODIFICATION START: Converted to a static method ---
+    # 将此方法转换为静态方法，使其不依赖于实例 (self)。
+    # 这样就可以在 data_handler.py 中安全地重用，以确保加密参数的一致性。
+    @staticmethod
+    def _derive_key(password: str, salt: bytes) -> bytes:
         """
-        使用 PBKDF2HMAC 从主密码和盐派生一个加密密钥。
+        使用 Argon2id 从主密码和盐派生一个 URL-safe Base64 编码的加密密钥。
 
-        Args:
-            password (str): 用户输入的主密码。
-            salt (bytes): 用于密钥派生的盐。
-
-        Returns:
-            bytes: 一个 URL-safe Base64 编码的32字节密钥，可用于 Fernet。
+        这是整个安全系统的基石。相同的密码和盐值总会派生出相同的密钥。
         """
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,  # Fernet 要求32字节的密钥
+        logger.debug("Deriving encryption key using Argon2id...")
+        raw_key = hash_secret_raw(
+            secret=password.encode("utf-8"),
             salt=salt,
-            iterations=self._ITERATIONS,
-            backend=default_backend(),
+            time_cost=CryptoHandler._ARGON2_TIME_COST,
+            memory_cost=CryptoHandler._ARGON2_MEMORY_COST,
+            parallelism=CryptoHandler._ARGON2_PARALLELISM,
+            hash_len=CryptoHandler._KEY_LENGTH,
+            type=Type.ID,  # 明确使用 Argon2id
         )
-        return base64.urlsafe_b64encode(kdf.derive(password.encode()))
+        return base64.urlsafe_b64encode(raw_key)
 
-    def set_master_password(self, password: str):
+    # --- MODIFICATION END ---
+
+    def set_master_password(self, password: str) -> None:
         """
-        设置初始主密码，并创建新的盐和验证文件。
+        首次设置主密码。
 
-        此方法只应在首次设置应用程序时调用。
-
-        Args:
-            password (str): 用户设置的初始主密码。
+        此过程会生成一个全新的随机盐值，并用派生的密钥加密验证令牌，
+        然后将盐值和加密后的令牌分别存入文件。
         """
-        logger.info("正在设置新的主密码...")
-        # 1. 生成一个加密安全的随机盐
-        salt = os.urandom(self._SALT_SIZE)
+        logger.info("Setting a new master password for the vault...")
+        try:
+            salt = os.urandom(self._SALT_SIZE)
+            # 现在调用的是静态方法
+            self.key = CryptoHandler._derive_key(password, salt)
+            fernet = Fernet(self.key)
 
-        # 2. 派生密钥
-        self.key = self._derive_key(password, salt)
-        fernet = Fernet(self.key)
+            with open(self.salt_path, "wb") as f:
+                f.write(salt)
 
-        # 3. 将盐写入文件
-        with open(self.salt_path, "wb") as f:
-            f.write(salt)
+            encrypted_verification = fernet.encrypt(self._VERIFICATION_TOKEN)
+            with open(self.verification_path, "wb") as f:
+                f.write(encrypted_verification)
 
-        # 4. 加密验证令牌并写入文件
-        encrypted_verification = fernet.encrypt(self._VERIFICATION_TOKEN)
-        with open(self.verification_path, "wb") as f:
-            f.write(encrypted_verification)
-
-        logger.info("主密码设置成功，盐值和验证文件已创建。")
+            logger.info(
+                "Master password set successfully. Salt and verification files created."
+            )
+        except IOError as e:
+            logger.critical(f"Failed to write vault setup files: {e}", exc_info=True)
+            raise
 
     def unlock_with_master_password(self, password: str) -> bool:
         """
-        尝试使用提供的主密码解锁保险库。
+        使用提供的主密码尝试解锁保险库。
 
-        通过派生密钥并尝试解密验证文件来工作。如果成功且内容匹配，
-        则认为密码正确，并将密钥加载到内存中。
-
-        Args:
-            password (str): 用户尝试解锁的密码。
-
-        Returns:
-            bool: 如果密码正确且成功解锁，返回 True；否则返回 False。
+        如果成功，会将派生的密钥加载到内存中以供后续加解密操作使用。
         """
         try:
             with open(self.salt_path, "rb") as f:
                 salt = f.read()
 
-            derived_key = self._derive_key(password, salt)
+            # 现在调用的是静态方法
+            derived_key = CryptoHandler._derive_key(password, salt)
             fernet = Fernet(derived_key)
 
             with open(self.verification_path, "rb") as f:
                 encrypted_verification = f.read()
 
-            decrypted_verification = fernet.decrypt(encrypted_verification)
+            decrypted_verification = fernet.decrypt(encrypted_verification, ttl=None)
 
             if decrypted_verification == self._VERIFICATION_TOKEN:
                 self.key = derived_key
-                logger.info("保险库成功解锁。")
+                logger.info("Vault unlocked successfully.")
                 return True
             else:
-                # 这种情况理论上很少发生，除非验证文件被篡改
-                logger.warning("验证令牌不匹配。")
+                # 理论上，如果令牌不匹配，fernet.decrypt 会直接抛出 InvalidToken 异常。
+                # 但保留此分支以防万一。
+                logger.warning(
+                    "Verification token mismatch after successful decryption. This should not happen."
+                )
                 return False
         except FileNotFoundError:
-            logger.error("盐值或验证文件未找到。应用程序可能未正确设置。")
+            logger.error(
+                "Salt or verification file not found. Vault may not be initialized."
+            )
             return False
         except InvalidToken:
-            # 这是最常见的情况：密码错误导致密钥派生错误，解密失败
-            logger.warning("主密码不正确 (解密验证令牌失败)。")
+            logger.warning(
+                "Incorrect master password (failed to decrypt verification token)."
+            )
             return False
         except Exception as e:
-            logger.error(f"解锁过程中发生未知错误: {e}", exc_info=True)
+            logger.error(
+                f"An unexpected error occurred during unlock: {e}", exc_info=True
+            )
             return False
 
     def change_master_password(self, old_password: str, new_password: str) -> bool:
         """
-        安全地更改主密码。
+        更改主密码。
 
-        此过程包括：
-        1. 使用旧密码验证身份。
-        2. 使用新密码派生新密钥。
-        3. 使用新密钥重新加密验证令牌。
-        4. 更新当前会话的密钥。
-        注意：此方法只更新加密层的密钥，数据的重加密由 DataManager 负责。
-
-        Args:
-            old_password (str): 当前的主密码。
-            new_password (str): 希望设置的新主密码。
-
-        Returns:
-            bool: 如果密码更改成功，返回 True；否则返回 False。
+        此方法仅负责在验证旧密码后，用新密码重新加密验证文件并更新当前会话的密钥。
+        注意：所有保险库数据的重新加密是由 DataManager 协调完成的。
         """
         try:
-            # 1. 读取盐并验证旧密码
-            with open(self.salt_path, "rb") as f:
-                salt = f.read()
+            salt = self.get_salt()
+            if salt is None:
+                raise FileNotFoundError("Salt file not found during password change.")
 
-            old_derived_key = self._derive_key(old_password, salt)
+            # 1. 验证旧密码是否正确，通过尝试解密验证令牌。
+            old_derived_key = CryptoHandler._derive_key(old_password, salt)
             old_fernet = Fernet(old_derived_key)
 
             with open(self.verification_path, "rb") as f:
                 encrypted_verification = f.read()
 
-            # 这一步如果失败，会抛出 InvalidToken 异常，从而验证失败
-            old_fernet.decrypt(encrypted_verification)
-            logger.info("旧主密码验证成功。")
+            old_fernet.decrypt(
+                encrypted_verification, ttl=None
+            )  # 如果失败会抛出 InvalidToken
+            logger.info("Old master password verified successfully.")
 
-            # 2. 旧密码验证成功，派生新密钥 (使用相同的盐)
-            new_derived_key = self._derive_key(new_password, salt)
+            # 2. 生成新密钥，并用它重新加密验证令牌，写入文件。
+            new_derived_key = CryptoHandler._derive_key(new_password, salt)
             new_fernet = Fernet(new_derived_key)
 
-            # 3. 使用新密钥重新加密验证令牌并写入文件
             new_encrypted_verification = new_fernet.encrypt(self._VERIFICATION_TOKEN)
             with open(self.verification_path, "wb") as f:
                 f.write(new_encrypted_verification)
 
-            # 4. 更新当前会话的密钥
+            # 3. 更新当前会话的密钥，以便后续操作使用新密钥。
             self.key = new_derived_key
-            logger.info("主密码在加密层已成功更改。")
+            logger.info("Master key has been successfully changed at the crypto layer.")
             return True
-
         except InvalidToken:
-            logger.warning("提供的旧主密码不正确。")
+            logger.warning(
+                "The provided 'old' master password was incorrect during change attempt."
+            )
             return False
         except FileNotFoundError:
-            logger.error("无法更改密码，找不到保险库文件。")
+            logger.error("Cannot change password, vault setup files not found.")
             return False
         except Exception as e:
-            logger.error(f"更改主密码时发生未知错误: {e}", exc_info=True)
+            logger.error(
+                f"An unknown error occurred while changing master password: {e}",
+                exc_info=True,
+            )
             return False
 
     def encrypt(self, data: str) -> str:
         """
-        使用当前加载的密钥加密字符串数据。
-
-        Args:
-            data (str): 要加密的明文字符串。
-
-        Returns:
-            str: 加密后的密文字符串。
+        使用当前会话的密钥加密字符串数据。
 
         Raises:
-            ValueError: 如果密钥未加载（即未解锁），则抛出异常。
+            ValueError: 如果密钥未加载 (保险库未解锁)。
         """
         if not self.key:
-            logger.error("加密失败：密钥未加载。请先解锁。")
-            raise ValueError("Key is not loaded. Please unlock first.")
+            logger.error(
+                "Encryption failed: Key is not loaded. The vault must be unlocked first."
+            )
+            raise ValueError("Encryption key is not loaded. Please unlock the vault.")
         fernet = Fernet(self.key)
-        return fernet.encrypt(data.encode()).decode()
+        return fernet.encrypt(data.encode("utf-8")).decode("utf-8")
 
     def decrypt(self, encrypted_data: str) -> str:
         """
-        使用当前加载的密钥解密字符串数据。
-
-        Args:
-            encrypted_data (str): 要解密的密文字符串。
-
-        Returns:
-            str: 解密后的明文字符串。
+        使用当前会话的密钥解密字符串数据。
 
         Raises:
-            ValueError: 如果密钥未加载（即未解锁），则抛出异常。
+            ValueError: 如果密钥未加载 (保险库未解锁)。
+            InvalidToken: 如果数据损坏或密钥不正确。
         """
         if not self.key:
-            logger.error("解密失败：密钥未加载。请先解锁。")
-            raise ValueError("Key is not loaded. Please unlock first.")
+            logger.error(
+                "Decryption failed: Key is not loaded. The vault must be unlocked first."
+            )
+            raise ValueError("Decryption key is not loaded. Please unlock the vault.")
         fernet = Fernet(self.key)
-        return fernet.decrypt(encrypted_data.encode()).decode()
+        return fernet.decrypt(encrypted_data.encode("utf-8"), ttl=None).decode("utf-8")
 
     def is_key_setup(self) -> bool:
         """
-        检查保险库是否已经初始化。
-
-        通过检查盐值和验证文件是否存在来判断。
-
-        Returns:
-            bool: 如果文件存在，返回 True；否则返回 False。
+        检查保险库是否已经初始化 (通过检查盐值和验证文件是否存在)。
         """
         return os.path.exists(self.salt_path) and os.path.exists(self.verification_path)
+
+    def get_salt(self) -> Optional[bytes]:
+        """
+        安全地读取并返回盐值文件的内容。
+        """
+        if not self.is_key_setup():
+            return None
+        try:
+            with open(self.salt_path, "rb") as f:
+                return f.read()
+        except IOError as e:
+            logger.error(f"Could not read salt file: {e}", exc_info=True)
+            return None

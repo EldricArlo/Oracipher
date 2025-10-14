@@ -1,0 +1,52 @@
+/*******************************************************
+ * [Light Theme] 6. 对话框 (QDialog)
+ *******************************************************/
+#AddEditDialog #dialogContainer {
+    background-color: #EDEAE9; border-radius: 20px; padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.9); border-left: 1px solid rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(181, 177, 176, 0.6); border-right: 1px solid rgba(181, 177, 176, 0.6);
+}
+#AddEditDialog QPushButton { min-width: 80px; padding-top: 10px; padding-bottom: 10px; border-radius: 12px; }
+
+/*******************************************************
+ * [Light Theme] 7. 下拉/复选框/标签页
+ *******************************************************/
+
+/* --- MODIFICATION START: Removed parent ID selector --- */
+/*
+ * 修正: 移除了 #AddEditDialog，使样式能正确应用到作为独立窗口的弹出列表上。
+ * 这个选择器现在会影响应用中所有 QComboBox 的弹出列表。
+ */
+QComboBox QAbstractItemView {
+    background-color: #E6E1E0; border: 1px solid rgba(181, 177, 176, 0.8); border-radius: 8px;
+    padding: 5px; color: #5E5C5B;
+    selection-background-color: #D1CBCB; selection-color: #3D3B3A;
+    outline: 0px; /* 移除选择项周围的焦点虚线框 */
+}
+/* --- MODIFICATION END --- */
+
+/* 
+ * 修正: 将 QComboBox 的下拉箭头样式也从 #AddEditDialog 中解放出来，
+ * 但保留对 SettingsDialog 内 ComboBox 的特定样式约束，以避免影响其他地方。
+ */
+#SettingsDialog QComboBox::drop-down,
+#AddEditDialog QComboBox::drop-down { 
+    border: none; 
+    subcontrol-origin: padding; 
+    subcontrol-position: top right; 
+    width: 30px; 
+}
+
+QCheckBox { color: #5E5C5B; font-weight: 600; }
+QTabWidget::pane { border: none; background: transparent; }
+QTabBar::tab {
+    color: #5E5C5B; font-weight: 600; font-size: 14px; padding: 10px 20px; margin-right: 4px;
+    background-color: #EDEAE9; border-top-left-radius: 12px; border-top-right-radius: 12px;
+    border-bottom: 1px solid rgba(181, 177, 176, 0.5);
+}
+QTabBar::tab:hover { background-color: #E6E1E0; }
+QTabBar::tab:selected {
+    color: #3D3B3A; background-color: #EDEAE9;
+    border-top: 1px solid rgba(255, 255, 255, 0.8); border-left: 1px solid rgba(255, 255, 255, 0.8);
+    border-right: 1px solid rgba(181, 177, 176, 0.5); border-bottom: none;
+}

@@ -1,0 +1,61 @@
+/*******************************************************
+ * [Dark Theme] 1. 基础容器与窗口
+ *******************************************************/
+
+#UnlockScreen, #MainWindow {
+    background: transparent;
+    font-family: "Segoe UI", "San Francisco", "Helvetica Neue", sans-serif;
+    color: #6272a4; /* 次文本色 */
+}
+
+QSplitter, #sidebarContainer, #contentContainer {
+    background: transparent;
+}
+QSplitter::handle { 
+    background: transparent; 
+    border: none; 
+}
+QSplitter::handle:horizontal { 
+    width: 5px; 
+}
+QSplitter::handle:hover { 
+    background: rgba(189, 147, 249, 0.1); /* 紫色高亮 */
+}
+
+/*******************************************************
+ * [Dark Theme] 2. 文本与标题
+ *******************************************************/
+#UnlockScreen QLabel { 
+    color: #f8f8f2; 
+    background-color: transparent; 
+}
+#logoLabel { 
+    color: #f8f8f2; 
+    font-size: 32px; 
+    font-weight: bold; 
+}
+#detailsNameLabel { 
+    color: #f8f8f2; 
+    font-size: 28px; 
+    font-weight: 600; 
+}
+#placeholderLabel { 
+    color: #6272a4; 
+    font-size: 16px; 
+}
+#fieldTitleLabel { 
+    font-size: 12px; 
+    font-weight: 600; 
+    color: #6272a4; 
+    margin-bottom: 5px; 
+}
+#dialogTitle { 
+    font-size: 20px; 
+    font-weight: 600; 
+    color: #f8f8f2; 
+    margin-bottom: 10px; 
+}
+#AddEditDialog QLabel { 
+    color: #f8f8f2; 
+    font-weight: 600; 
+}

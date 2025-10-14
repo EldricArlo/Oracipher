@@ -1,0 +1,91 @@
+/*******************************************************
+ * [Dark Theme] 4. 按钮 (QPushButton & AnimatedBookmarkButton)
+ *******************************************************/
+QPushButton {
+    color: #f8f8f2; 
+    font-weight: 600; 
+    font-size: 16px; 
+    background-color: #44475a;
+    padding: 10px; 
+    border-radius: 22px;
+    border: 1px solid transparent;
+}
+QPushButton:hover {
+    background-color: #51546e; /* 稍亮的次背景色 */
+}
+QPushButton:pressed {
+    color: #f8f8f2; 
+    background-color: #282a36;
+    border: 1px solid #44475a;
+}
+QPushButton:focus { 
+    border: 1px solid #bd93f9; /* 紫色高亮 */
+}
+
+AnimatedBookmarkButton {
+    background-color: transparent; 
+    border-top: 1px solid #44475a;
+    border-right: 1px solid #44475a;
+    border-bottom: 1px solid #44475a;
+    border-left: 3px solid transparent;
+    border-top-right-radius: 18px; 
+    border-bottom-right-radius: 18px;
+    border-top-left-radius: 0px; 
+    border-bottom-left-radius: 0px;
+}
+AnimatedBookmarkButton:hover { 
+    background-color: rgba(68, 71, 90, 0.5); 
+}
+AnimatedBookmarkButton[active=true] {
+    background-color: #44475a; 
+    border: 1px solid #bd93f9;
+    border-left-width: 3px;
+}
+AnimatedBookmarkButton QLabel {
+    background: transparent; 
+    border: none; 
+    font-weight: 600; 
+    font-size: 14px; 
+    color: #f8f8f2;
+}
+
+#mainActionButton, #unlockExitButton { 
+    min-width: 120px; 
+    font-size: 18px; 
+    font-weight: bold; 
+    padding: 15px; 
+    border-radius: 26px; 
+    background-color: #bd93f9; /* 紫色 */
+    color: #f8f8f2;
+}
+#mainActionButton:hover, #unlockExitButton:hover {
+    background-color: #caa9ff; /* 亮紫色 */
+}
+#detailsActionButton, #addButton { 
+    border-radius: 20px; 
+}
+#inlineButton { 
+    border-radius: 10px; 
+    font-size: 12px; 
+    font-weight: 500; 
+    padding: 6px 10px; 
+    margin-left: 5px;
+    background-color: #44475a;
+}
+#inlineButton:checked {
+    color: #f8f8f2; 
+    background-color: #6272a4;
+}
+
+#saveButton { 
+    color: #f8f8f2; 
+    font-weight: bold; 
+    background-color: #bd93f9; /* 紫色 */
+}
+#saveButton:hover {
+    background-color: #caa9ff; /* 亮紫色 */
+}
+#saveButton:pressed { 
+    color: #f8f8f2; 
+    background-color: #9f78e6; /* 暗紫色 */
+}

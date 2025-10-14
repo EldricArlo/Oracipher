@@ -1,133 +1,414 @@
 # ui/dialogs/settings_dialog.py
 
 import logging
-from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QGridLayout,
-                             QLabel, QPushButton, QFrame, QComboBox)
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal
+from typing import Optional, Tuple
+
+from PyQt6.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QFrame,
+    QWidget,
+    QTextEdit,
+    QTabWidget,
+    QComboBox,
+    QCheckBox,
+    QSpinBox,
+)
+from PyQt6.QtCore import Qt, QPoint, pyqtSignal, QEvent, QObject
+from PyQt6.QtGui import QMouseEvent, QIcon, QShowEvent
 
 from language import t
 from config import load_settings
+from utils.paths import resource_path  # 确保导入了 resource_path
+from ..theme_manager import get_current_theme
 
 logger = logging.getLogger(__name__)
 
+
+class PopupBlockingComboBox(QComboBox):
+    """
+    一个自定义的QComboBox，它能发出信号来通知父窗口其弹出列表的显示和隐藏状态。
+    这对于帮助无边框父窗口锁定其拖动机制至关重要。
+    """
+
+    popupOpened = pyqtSignal()
+    popupClosed = pyqtSignal()
+
+    def __init__(self, parent: Optional[QWidget] = None):
+        super().__init__(parent)
+        # 弹出列表（view）本身是另一个窗口的一部分。我们需要在那个窗口上安装事件过滤器
+        # 来可靠地捕获其隐藏事件。
+        view = self.view()
+        if view:
+            view_parent = view.parentWidget()
+            if view_parent:
+                view_parent.installEventFilter(self)
+
+    def showPopup(self) -> None:
+        """重写 showPopup，在显示时发出信号。"""
+        self.popupOpened.emit()
+        super().showPopup()
+
+    def hidePopup(self) -> None:
+        """
+        重写 hidePopup。注意：此方法不总是在用户点击别处时被调用，
+        因此 eventFilter 是更可靠的方式。
+        """
+        super().hidePopup()
+        self.popupClosed.emit()
+
+    def eventFilter(self, a0: Optional[QObject], a1: Optional[QEvent]) -> bool:
+        """
+        在弹出列表的父窗口上监听事件。
+        """
+        view = self.view()
+        if view and a1 and a0 == view.parentWidget() and a1.type() == QEvent.Type.Hide:
+            # 当弹出列表的窗口被隐藏时，发出 closed 信号。
+            self.popupClosed.emit()
+        return super().eventFilter(a0, a1)
+
+
 class SettingsDialog(QDialog):
-    """
-    一个用于更改应用程序设置的自定义对话框。
-    
-    目前支持：
-    - 更改界面语言。
-    - 提供一个入口来触发“更改主密码”流程。
-
-    Signals:
-        change_password_requested: 当用户点击“更改主密码”按钮时发射此信号。
-                                   主窗口 (MainWindow) 会监听这个信号来打开
-                                   ChangePasswordDialog。
-    """
-    # 定义一个自定义信号。这是子窗口(对话框)与父窗口(主界面)通信的最佳实践之一。
     change_password_requested = pyqtSignal()
+    import_requested = pyqtSignal()
+    export_requested = pyqtSignal()
+    theme_changed = pyqtSignal(str)
+    settings_cancelled = pyqtSignal()
 
-    def __init__(self, parent=None):
-        """
-        初始化设置对话框。
-
-        Args:
-            parent (QWidget, optional): 父控件。默认为 None。
-        """
+    def __init__(self, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.Dialog)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setObjectName("AddEditDialog")  # 共享样式
+        self.setObjectName("AddEditDialog")
         self.setModal(True)
-        self.setMinimumSize(450, 250)
-        self.drag_pos = QPoint()
-        
-        self.init_ui()
-        logger.debug("SettingsDialog 打开。")
+        self.setMinimumSize(600, 550)
+        self.drag_pos: QPoint = QPoint()
+        self._is_first_show = True
 
-    def init_ui(self):
-        """
-        构建对话框的所有UI组件。
-        """
+        # 用于锁定拖动的标志
+        self._is_dragging_locked = False
+        
+        # --- MODIFICATION START: 添加拖动状态标志 ---
+        self._is_dragging = False
+        # --- MODIFICATION END ---
+
+        self.init_ui()
+        logger.debug("SettingsDialog opened.")
+
+    def showEvent(self, a0: Optional[QShowEvent]) -> None:
+        super().showEvent(a0)
+        if self._is_first_show:
+            settings = load_settings()
+            is_enabled = settings.get("auto_lock_enabled", True)
+            timeout_minutes = settings.get("auto_lock_timeout_minutes", 15)
+            self.auto_lock_checkbox.setChecked(is_enabled)
+            self.auto_lock_spinbox.setValue(timeout_minutes)
+            self._is_first_show = False
+            self._update_auto_lock_controls(self.auto_lock_checkbox.checkState())
+
+    def _lock_dragging(self):
+        self._is_dragging_locked = True
+
+    def _unlock_dragging(self):
+        self._is_dragging_locked = False
+
+    def init_ui(self) -> None:
         container = QFrame(self)
         container.setObjectName("dialogContainer")
         main_layout = QVBoxLayout(container)
-        main_layout.setContentsMargins(30, 30, 30, 30)
-        main_layout.setSpacing(20)
+        main_layout.setContentsMargins(25, 25, 25, 25)
+        main_layout.setSpacing(15)
 
-        title_label = QLabel(t.get('settings_title'))
+        title_label = QLabel(t.get("settings_title"))
         title_label.setObjectName("dialogTitle")
-        
-        # --- 设置项表单 ---
-        form_layout = QGridLayout()
-        form_layout.setSpacing(15)
-        form_layout.setColumnStretch(1, 1) # 让第二列自动伸展
 
-        # --- 语言选择 ---
-        self.lang_combo = QComboBox()
-        available_languages = t.get_available_languages()
-        current_settings = load_settings()
-        current_lang_code = current_settings.get('language', 'en')
-        
-        for code, name in available_languages.items():
-            # addItem 可以存储一个显示名称和一个关联的用户数据 (这里是语言代码)
-            self.lang_combo.addItem(name, userData=code)
-            if code == current_lang_code:
-                # 设置当前显示的项
-                self.lang_combo.setCurrentText(name)
+        self.tabs = QTabWidget()
+        settings_tab, instructions_tab = QWidget(), QWidget()
+        self.tabs.addTab(settings_tab, t.get("tab_settings"))
+        self.tabs.addTab(instructions_tab, t.get("tab_instructions"))
 
-        form_layout.addWidget(QLabel(t.get('settings_lang_label')), 0, 0)
-        form_layout.addWidget(self.lang_combo, 0, 1)
+        self._init_settings_tab(settings_tab)
+        self._init_instructions_tab(instructions_tab)
 
-        # --- 更改主密码 ---
-        change_pass_button = QPushButton(t.get('change_pass_title'))
-        change_pass_button.setObjectName("inlineButton")
-        # 将按钮的点击事件连接到自定义信号的发射
-        change_pass_button.clicked.connect(self.change_password_requested.emit)
-        
-        form_layout.addWidget(QLabel(t.get('label_pass')), 1, 0)
-        form_layout.addWidget(change_pass_button, 1, 1)
-
-        # --- 对话框底部按钮 (取消/保存) ---
         button_layout = QHBoxLayout()
         button_layout.addStretch()
-        cancel_button = QPushButton(t.get('button_cancel'))
-        cancel_button.setObjectName("cancelButton")
-        cancel_button.clicked.connect(self.reject)
-        
-        save_button = QPushButton(t.get('button_save'))
-        save_button.setObjectName("saveButton")
-        save_button.clicked.connect(self.accept)
-        
-        button_layout.addWidget(cancel_button)
-        button_layout.addWidget(save_button)
-        
-        # --- 组装布局 ---
+        done_button = QPushButton(t.get("button_done"))
+        done_button.setObjectName("saveButton")
+        done_button.clicked.connect(self.accept)
+        button_layout.addWidget(done_button)
+
         main_layout.addWidget(title_label)
-        main_layout.addLayout(form_layout)
-        main_layout.addStretch()
+        main_layout.addWidget(self.tabs)
         main_layout.addLayout(button_layout)
-        
         dialog_layout = QVBoxLayout(self)
         dialog_layout.addWidget(container)
 
+    def _create_section_widget(self, title_text: str) -> tuple[QWidget, QVBoxLayout]:
+        section_container = QWidget()
+        section_layout = QVBoxLayout(section_container)
+        section_layout.setContentsMargins(0, 0, 0, 0)
+        section_layout.setSpacing(10)
+        title_label = QLabel(title_text)
+        title_label.setObjectName("sectionTitleLabel")
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        card_frame = QFrame()
+        card_frame.setObjectName("settingsGroupFrame")
+        card_layout = QVBoxLayout(card_frame)
+        card_layout.setContentsMargins(20, 20, 20, 20)
+        card_layout.setSpacing(20)
+        section_layout.addWidget(title_label)
+        section_layout.addWidget(card_frame)
+        return section_container, card_layout
+
+    def _create_setting_row(
+        self, title_text: str, desc_text: str, control_widget: QWidget
+    ) -> QWidget:
+        row_widget = QWidget()
+        row_widget.setObjectName("settingRow")
+        layout = QHBoxLayout(row_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(20)
+        text_widget = QWidget()
+        text_layout = QVBoxLayout(text_widget)
+        text_layout.setContentsMargins(0, 0, 0, 0)
+        text_layout.setSpacing(2)
+        title_label = QLabel(title_text)
+        title_label.setObjectName("settingTitleLabel")
+        desc_label = QLabel(desc_text)
+        desc_label.setObjectName("settingDescLabel")
+        desc_label.setWordWrap(True)
+        text_layout.addWidget(title_label)
+        text_layout.addWidget(desc_label)
+        layout.addWidget(text_widget, 1)
+        layout.addWidget(control_widget, 0, Qt.AlignmentFlag.AlignVCenter)
+        return row_widget
+
+    def _init_settings_tab(self, parent_tab: QWidget) -> None:
+        settings = load_settings()
+        settings_layout = QVBoxLayout(parent_tab)
+        settings_layout.setSpacing(25)
+        settings_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+        # --- 常规设置 ---
+        general_section, general_card_layout = self._create_section_widget(
+            t.get("settings_section_general")
+        )
+
+        self.lang_combo = PopupBlockingComboBox()
+        self.lang_combo.setFixedWidth(200)
+
+        available_languages = t.get_available_languages()
+        for code, name in available_languages.items():
+            self.lang_combo.addItem(name, userData=code)
+        index = self.lang_combo.findData(settings.get("language", "zh_CN"))
+        if index != -1:
+            self.lang_combo.setCurrentIndex(index)
+        lang_row = self._create_setting_row(
+            t.get("settings_lang_title"), t.get("settings_lang_desc"), self.lang_combo
+        )
+        general_card_layout.addWidget(lang_row)
+
+        self.theme_combo = PopupBlockingComboBox()
+        self.theme_combo.setFixedWidth(200)
+
+        self.theme_combo.addItem(t.get("theme_light"), userData="light")
+        self.theme_combo.addItem(t.get("theme_dark"), userData="dark")
+        theme_index = self.theme_combo.findData(get_current_theme())
+        if theme_index != -1:
+            self.theme_combo.setCurrentIndex(theme_index)
+        self.theme_combo.currentIndexChanged.connect(
+            lambda: self.theme_changed.emit(self.get_selected_theme())
+        )
+        theme_row = self._create_setting_row(
+            t.get("settings_theme_title"),
+            t.get("settings_theme_desc"),
+            self.theme_combo,
+        )
+        general_card_layout.addWidget(theme_row)
+        settings_layout.addWidget(general_section)
+
+        self.lang_combo.popupOpened.connect(self._lock_dragging)
+        self.lang_combo.popupClosed.connect(self._unlock_dragging)
+        self.theme_combo.popupOpened.connect(self._lock_dragging)
+        self.theme_combo.popupClosed.connect(self._unlock_dragging)
+
+        # --- 安全设置 ---
+        security_section, security_card_layout = self._create_section_widget(
+            t.get("settings_section_security")
+        )
+        change_pass_button = QPushButton(t.get("settings_change_pass_button"))
+        change_pass_button.setObjectName("inlineButton")
+        change_pass_button.setFixedWidth(200)
+        change_pass_button.clicked.connect(self.change_password_requested.emit)
+        pass_row = self._create_setting_row(
+            t.get("change_pass_title"),
+            t.get("settings_change_pass_desc"),
+            change_pass_button,
+        )
+        security_card_layout.addWidget(pass_row)
+
+        # --- 自动锁定设置UI ---
+        self.auto_lock_checkbox = QCheckBox()
+        self.auto_lock_checkbox.stateChanged.connect(
+            lambda state: self._update_auto_lock_controls(Qt.CheckState(state))
+        )
+        self.auto_lock_spinbox = QSpinBox()
+        self.auto_lock_spinbox.setRange(1, 120)
+        self.auto_lock_spinbox.setSuffix(f" {t.get('minutes_suffix')}")
+        self.auto_lock_spinbox.setFixedWidth(120)
+        line_edit = self.auto_lock_spinbox.lineEdit()
+        if line_edit:
+            line_edit.setReadOnly(True)
+        auto_lock_controls_widget = QWidget()
+        auto_lock_controls_layout = QHBoxLayout(auto_lock_controls_widget)
+        auto_lock_controls_layout.setContentsMargins(0, 0, 0, 0)
+        auto_lock_controls_layout.setSpacing(15)
+        auto_lock_controls_layout.addWidget(self.auto_lock_spinbox)
+        auto_lock_controls_layout.addWidget(self.auto_lock_checkbox)
+        auto_lock_controls_layout.addStretch()
+        auto_lock_row = self._create_setting_row(
+            t.get("settings_auto_lock_title"),
+            t.get("settings_auto_lock_desc"),
+            auto_lock_controls_widget,
+        )
+        security_card_layout.addWidget(auto_lock_row)
+        settings_layout.addWidget(security_section)
+
+        # --- 数据管理 ---
+        data_section, data_card_layout = self._create_section_widget(
+            t.get("settings_section_data")
+        )
+        import_button = QPushButton(f" {t.get('button_import')}")
+        import_button.setIcon(QIcon(str(resource_path("ui/assets/icons/import.svg"))))
+        import_button.setFixedWidth(150)
+        import_button.clicked.connect(self.import_requested.emit)
+        export_button = QPushButton(f" {t.get('button_export')}")
+        export_button.setIcon(QIcon(str(resource_path("ui/assets/icons/export.svg"))))
+        export_button.setFixedWidth(150)
+        export_button.clicked.connect(self.export_requested.emit)
+        buttons_widget = QWidget()
+        buttons_layout = QHBoxLayout(buttons_widget)
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_layout.setSpacing(10)
+        buttons_layout.addWidget(import_button)
+        buttons_layout.addWidget(export_button)
+        data_row = self._create_setting_row(
+            t.get("label_data_management"), t.get("settings_data_desc"), buttons_widget
+        )
+        data_card_layout.addWidget(data_row)
+        settings_layout.addWidget(data_section)
+
+        settings_layout.addStretch()
+
+    def _update_auto_lock_controls(self, state: Qt.CheckState) -> None:
+        is_checked = state == Qt.CheckState.Checked
+        self.auto_lock_spinbox.setEnabled(is_checked)
+
+        spinbox_style = self.auto_lock_spinbox.style()
+        if spinbox_style:
+            spinbox_style.unpolish(self.auto_lock_spinbox)
+            spinbox_style.polish(self.auto_lock_spinbox)
+        self.auto_lock_spinbox.update()
+
+        checkbox_style = self.auto_lock_checkbox.style()
+        if checkbox_style:
+            checkbox_style.unpolish(self.auto_lock_checkbox)
+            checkbox_style.polish(self.auto_lock_checkbox)
+    
+    def _init_instructions_tab(self, parent_tab: QWidget) -> None:
+        layout = QVBoxLayout(parent_tab)
+        layout.setContentsMargins(10, 10, 10, 10)
+        instructions_text = QTextEdit()
+        instructions_text.setReadOnly(True)
+        instructions_text.setObjectName("instructionsText")
+        instructions_text.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextBrowserInteraction
+        )
+        
+        html_template = t.get("text_import_instructions")
+        
+        icon_paths = {
+            "app_icon_path": resource_path("ui/assets/icons/favicon.svg").replace("\\", "/"),
+            "github_icon_path": resource_path("ui/assets/icons/GitHub.svg").replace("\\", "/"),
+            "telegram_icon_path": resource_path("ui/assets/icons/Telegram.svg").replace("\\", "/"),
+            "python_icon_path": resource_path("ui/assets/icons/Python.svg").replace("\\", "/"),
+        }
+        
+        formatted_html = html_template.format(**icon_paths)
+        
+        instructions_text.setHtml(formatted_html)
+        
+        layout.addWidget(instructions_text)
+
     def get_selected_language(self) -> str:
-        """
-        获取用户在下拉框中选择的语言代码。
+        return str(self.lang_combo.currentData())
 
-        Returns:
-            str: 选中的语言代码 (例如 'en', 'zh_CN')。
-        """
-        # currentData() 返回与当前选中项关联的用户数据
-        return self.lang_combo.currentData()
+    def get_selected_theme(self) -> str:
+        return str(self.theme_combo.currentData())
 
-    # --- 窗口拖动事件处理 ---
-    def mousePressEvent(self, event):
+    def get_auto_lock_settings(self) -> Tuple[bool, int]:
+        is_enabled = self.auto_lock_checkbox.isChecked()
+        minutes = self.auto_lock_spinbox.value()
+        return is_enabled, minutes
+
+    # --- MODIFICATION START: 修复窗口拖动逻辑 ---
+    def mousePressEvent(self, a0: Optional[QMouseEvent]) -> None:
+        event = a0
+        # 如果拖动被锁定 (如下拉菜单展开) 或事件为空，则不处理
+        if self._is_dragging_locked or not event:
+            super().mousePressEvent(event)
+            return
+
         if event.button() == Qt.MouseButton.LeftButton:
-            self.drag_pos = event.globalPosition().toPoint()
-            event.accept()
+            # 找到背景容器
+            container = self.findChild(QFrame, "dialogContainer")
+            # 检查点击位置的子控件
+            child_at_click = self.childAt(event.position().toPoint())
 
-    def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton:
+            # 只有当点击位置没有子控件，或者子控件就是背景容器本身时，才启动拖动
+            if not child_at_click or child_at_click == container:
+                self.drag_pos = event.globalPosition().toPoint()
+                self._is_dragging = True
+                event.accept()
+            else:
+                # 否则，将拖动标志设为False，并将事件交由父类处理（允许控件正常响应点击）
+                self._is_dragging = False
+                super().mousePressEvent(event)
+        else:
+            super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, a0: Optional[QMouseEvent]) -> None:
+        event = a0
+        # 如果拖动被锁定或事件为空，则不处理
+        if self._is_dragging_locked or not event:
+            super().mouseMoveEvent(event)
+            return
+            
+        # 必须同时检查鼠标左键是否按下以及拖动标志是否为True
+        if event.buttons() == Qt.MouseButton.LeftButton and self._is_dragging:
             self.move(self.pos() + event.globalPosition().toPoint() - self.drag_pos)
             self.drag_pos = event.globalPosition().toPoint()
             event.accept()
+        else:
+            super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, a0: Optional[QMouseEvent]) -> None:
+        """当鼠标按键松开时，重置拖动标志。"""
+        event = a0
+        if not event:
+            super().mouseReleaseEvent(event)
+            return
+
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._is_dragging = False
+            event.accept()
+        else:
+            super().mouseReleaseEvent(event)
+    # --- MODIFICATION END ---
+    
+    def reject(self) -> None:
+        self.settings_cancelled.emit()
+        super().reject()

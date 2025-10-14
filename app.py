@@ -1,178 +1,241 @@
 # app.py
 
 import logging
-from pathlib import Path
-from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QStackedWidget, QFrame
-from PyQt6.QtCore import Qt, QPoint
+from typing import Optional
 
-from config import APP_DATA_DIR
+from PyQt6.QtWidgets import (
+    QMainWindow,
+    QVBoxLayout,
+    QStackedWidget,
+    QFrame,
+    QApplication,
+    QWidget,
+)
+from PyQt6.QtCore import Qt, QPoint, QTimer, QEvent, QObject
+from PyQt6.QtGui import QMouseEvent, QCloseEvent
+
+from config import APP_DATA_DIR, load_settings
 from core.crypto import CryptoHandler
-from core.data_manager import DataManager
+from core.database import DataManager
+from language import t
+from ui.theme_manager import apply_theme, get_current_theme
 from ui.unlock_screen import UnlockScreen
-from ui.main_interface import MainWindow
+from ui.main_window import MainWindow
+from ui.task_manager import task_manager
 
-# 为此模块创建一个专用的 logger 实例
 logger = logging.getLogger(__name__)
+
 
 class SafeKeyApp(QMainWindow):
     """
-    应用程序的主窗口。
-
-    该窗口采用无边框、半透明的现代UI风格。它内部包含一个 QStackedWidget
-    来管理和切换解锁屏幕 (UnlockScreen) 和主功能界面 (MainWindow)。
-    同时，它还负责处理窗口的拖动、样式加载和核心组件的初始化。
+    应用程序的主窗口容器。
+    它管理解锁屏幕和主界面之间的切换。
     """
+
     def __init__(self):
-        """
-        初始化主应用程序窗口。
-        """
         super().__init__()
-        logger.info("主应用程序窗口 (SafeKeyApp) 初始化开始...")
-        
-        self.setWindowTitle("SafeKey")
-        self.resize(900, 600)
-        
-        # 设置窗口为无边框和背景透明。
-        # WA_TranslucentBackground 允许 QSS 中的 border-radius 生效，
-        # 从而创建圆角窗口。
+        logger.info("Initializing SafeKeyApp main window container...")
+
+        self.setWindowTitle(t.get("app_title"))
+        self.resize(1000, 700)
+
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        
-        self.drag_pos = QPoint()
-        
-        # 初始化核心处理程序
-        logger.info(f"应用程序数据目录: {APP_DATA_DIR}")
-        self.crypto_handler = CryptoHandler(APP_DATA_DIR)
-        self.data_manager = DataManager(APP_DATA_DIR, self.crypto_handler)
-        
+
+        # --- 修改: 增加了 _is_dragging 状态标志 ---
+        self.drag_pos: QPoint = QPoint()
+        self._is_dragging: bool = False
+        # --- 修改结束 ---
+
+        self._is_shutting_down = False
+
+        self.auto_lock_timer = QTimer(self)
+        self.auto_lock_timer.setSingleShot(True)
+        self.auto_lock_timer.timeout.connect(self.lock_vault)
+        self._auto_lock_enabled = False
+        self._auto_lock_timeout_ms = 0
+
+        logger.info(f"Application data directory: {APP_DATA_DIR}")
+        self.crypto_handler: CryptoHandler = CryptoHandler(APP_DATA_DIR)
+        self.data_manager: DataManager = DataManager(APP_DATA_DIR, self.crypto_handler)
+
+        app_instance = QApplication.instance()
+        if isinstance(app_instance, QApplication):
+            apply_theme(app_instance, get_current_theme())
+            app_instance.installEventFilter(self)
+
         self.init_ui()
-        self.apply_stylesheet()
-        self.center()
-        
-        logger.info("主应用程序窗口初始化完成。")
+        self.center_on_screen()
 
-    def init_ui(self):
-        """
-        初始化用户界面布局。
+        logger.info("SafeKeyApp main window initialization complete.")
 
-        此方法构建了窗口的基本结构：一个作为背景板的 QFrame，
-        内部包含一个用于切换页面的 QStackedWidget。
-        """
-        # 1. 创建一个 QFrame 作为我们可见的、带有样式的背景。
-        #    这是实现圆角无边框窗口的关键。
+    def init_ui(self) -> None:
         background_panel = QFrame(self)
         background_panel.setObjectName("backgroundPanel")
-        
-        # 2. 将此面板设置为主窗口的中央部件。
         self.setCentralWidget(background_panel)
-        
-        # 3. 在背景面板内部创建一个布局。
+
         panel_layout = QVBoxLayout(background_panel)
         panel_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # 4. 将 QStackedWidget 放入面板的布局中。
+
         self.stacked_widget = QStackedWidget()
         panel_layout.addWidget(self.stacked_widget)
-        
-        # 5. 将解锁屏幕添加到 QStackedWidget 中。
+
         self.unlock_screen = UnlockScreen(self.crypto_handler, self)
         self.unlock_screen.unlocked.connect(self.show_main_app)
-        
-        # 主界面将在成功解锁后才被创建和添加。
-        self.main_widget = None 
-        
+        self.unlock_screen.exit_requested.connect(self.close)
         self.stacked_widget.addWidget(self.unlock_screen)
-        logger.debug("UI布局初始化完成，已添加解锁屏幕。")
 
-    def apply_stylesheet(self):
-        """
-        加载并应用全局 QSS 样式表。
+        self.main_widget: Optional[MainWindow] = None
 
-        它会加载 style.qss (用于底层背景) 和 app_ui.qss (用于所有组件)，
-        然后将它们合并并应用到整个应用程序。
-        """
-        try:
-            logger.info("正在加载样式表...")
-            # 使用 pathlib 确保路径在不同操作系统上的兼容性
-            root_dir = Path(__file__).parent
-            ui_dir = root_dir / "ui"
-            
-            style_qss_path = root_dir / "style.qss"
-            with open(style_qss_path, "r", encoding="utf-8") as f:
-                style_qss = f.read()
-
-            app_ui_qss_path = ui_dir / "app_ui.qss"
-            with open(app_ui_qss_path, "r", encoding="utf-8") as f:
-                app_ui_qss = f.read()
-            
-            # 合并两个样式表并为整个应用程序设置
-            self.setStyleSheet(style_qss + app_ui_qss)
-            logger.info("样式表加载并应用成功。")
-
-        except FileNotFoundError as e:
-            logger.error(f"样式表文件未找到: {e}", exc_info=True)
-        except Exception as e:
-            logger.error(f"加载样式表时发生未知错误: {e}", exc_info=True)
-
-    def show_main_app(self):
-        """
-        在用户成功解锁后，显示主应用程序界面。
-        """
-        logger.info("解锁成功，正在切换到主界面...")
+    def show_main_app(self) -> None:
+        logger.info("Unlock successful. Switching to the main application view.")
         if not self.main_widget:
-            # 延迟实例化：只有在需要时才创建主界面，可以加快初始启动速度
-            self.main_widget = MainWindow(self.data_manager)
+            logger.info("Instantiating MainWindow for the first time...")
+            self.main_widget = MainWindow(
+                data_manager=self.data_manager, main_app_window=self
+            )
+            self.main_widget.controller.settings_changed.connect(
+                self._on_settings_changed
+            )
             self.stacked_widget.addWidget(self.main_widget)
-            logger.info("主界面 (MainWindow) 已创建并添加到堆栈。")
-            
-        self.stacked_widget.setCurrentWidget(self.main_widget)
-        logger.info("已切换到主界面。")
 
-    def center(self):
-        """
-        将窗口移动到屏幕中央。
-        """
-        if self.screen():
-            screen_geometry = self.screen().availableGeometry()
+        self.stacked_widget.setCurrentWidget(self.main_widget)
+        self._setup_auto_lock()
+        logger.info("View switched to MainWindow.")
+
+    def lock_vault(self) -> None:
+        if self.stacked_widget.currentWidget() == self.unlock_screen:
+            return
+        logger.info("Vault is being locked due to inactivity.")
+        self.auto_lock_timer.stop()
+        self.crypto_handler.key = None
+        if self.main_widget:
+            self.main_widget.deleteLater()
+            self.main_widget = None
+        self.stacked_widget.setCurrentWidget(self.unlock_screen)
+
+    def _setup_auto_lock(self) -> None:
+        settings = load_settings()
+        self._auto_lock_enabled = settings.get("auto_lock_enabled", True)
+        timeout_minutes = settings.get("auto_lock_timeout_minutes", 15)
+        self._auto_lock_timeout_ms = timeout_minutes * 60 * 1000
+
+        if self._auto_lock_enabled and self._auto_lock_timeout_ms > 0:
+            logger.info(f"Auto-lock enabled. Timeout: {timeout_minutes} minutes.")
+            self.auto_lock_timer.start(self._auto_lock_timeout_ms)
+        else:
+            logger.info("Auto-lock is disabled.")
+            self.auto_lock_timer.stop()
+
+    def _on_settings_changed(self) -> None:
+        logger.info("Settings have changed, re-evaluating auto-lock timer.")
+        self._setup_auto_lock()
+
+    def eventFilter(self, a0: "QObject | None", a1: "QEvent | None") -> bool:
+        watched = a0
+        event = a1
+
+        if event and self._auto_lock_enabled and self.auto_lock_timer.isActive():
+            if event.type() in [
+                QEvent.Type.KeyPress,
+                QEvent.Type.MouseButtonPress,
+                QEvent.Type.MouseMove,
+            ]:
+                self.auto_lock_timer.start(self._auto_lock_timeout_ms)
+        return super().eventFilter(watched, event)
+
+    def center_on_screen(self) -> None:
+        screen = self.screen()
+        if screen:
+            screen_geometry = screen.availableGeometry()
             center_point = screen_geometry.center()
             self.move(
                 int(center_point.x() - self.width() / 2),
-                int(center_point.y() - self.height() / 2)
+                int(center_point.y() - self.height() / 2),
             )
 
-    def mousePressEvent(self, event):
-        """
-        处理鼠标按下事件，用于实现无边框窗口拖动。
-        
-        Args:
-            event (QMouseEvent): 鼠标事件对象。
-        """
+    def retranslate_ui(self) -> None:
+        logger.info("Retranslating the entire application UI...")
+        self.setWindowTitle(t.get("app_title"))
+
+        if self.unlock_screen:
+            self.unlock_screen.retranslate_ui()
+        if self.main_widget:
+            self.main_widget.retranslate_ui()
+
+        logger.info("UI retranslation complete.")
+
+    # --- 修改开始: 修复无边框窗口的拖动逻辑 ---
+    def mousePressEvent(self, a0: "QMouseEvent | None") -> None:
+        event = a0
+        if not event:
+            super().mousePressEvent(event)
+            return
+
+        # 仅当鼠标左键按下时才处理
         if event.button() == Qt.MouseButton.LeftButton:
-            # 记录当前鼠标的全局位置
+            # 这个事件只会在点击未被子控件（如按钮）消费的区域时触发。
+            # 因此，我们可以安全地认为拖动操作应该开始。
             self.drag_pos = event.globalPosition().toPoint()
+            self._is_dragging = True
             event.accept()
+        else:
+            super().mousePressEvent(event)
 
-    def mouseMoveEvent(self, event):
-        """
-        处理鼠标移动事件，用于实现无边框窗口拖动。
+    def mouseMoveEvent(self, a0: "QMouseEvent | None") -> None:
+        event = a0
+        if not event:
+            super().mouseMoveEvent(event)
+            return
 
-        Args:
-            event (QMouseEvent): 鼠标事件对象。
-        """
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            # 计算鼠标移动的向量，并移动窗口
+        # 必须同时检查鼠标左键是否按下以及是否处于拖动状态
+        if event.buttons() == Qt.MouseButton.LeftButton and self._is_dragging:
             self.move(self.pos() + event.globalPosition().toPoint() - self.drag_pos)
             self.drag_pos = event.globalPosition().toPoint()
             event.accept()
+        else:
+            super().mouseMoveEvent(event)
 
-    def closeEvent(self, event):
-        """
-        在应用程序关闭前，执行清理操作。
+    def mouseReleaseEvent(self, a0: "QMouseEvent | None") -> None:
+        event = a0
+        if not event:
+            super().mouseReleaseEvent(event)
+            return
+            
+        # 当鼠标左键松开时，总是结束拖动状态
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._is_dragging = False
+            event.accept()
+        else:
+            super().mouseReleaseEvent(event)
 
-        Args:
-            event (QCloseEvent): 关闭事件对象。
+    def closeEvent(self, a0: "QCloseEvent | None") -> None:
+        event = a0
+        if not event:
+            super().closeEvent(event)
+            return
+    # --- 修改结束 ---
         """
-        logger.info("接收到关闭事件，正在关闭数据库连接...")
-        self.data_manager.close()
-        logger.info("数据库连接已关闭。应用程序即将退出。")
-        event.accept()
+        Handles the shutdown process gracefully.
+        """
+        if self._is_shutting_down:
+            event.ignore()
+            return
+
+        logger.info("Close event received. Scheduling graceful shutdown...")
+        self._is_shutting_down = True
+
+        self.hide()
+        event.ignore()
+
+        def on_shutdown_finished(*args):
+            logger.info("Database connection closed. Exiting application.")
+            app = QApplication.instance()
+            if app:
+                app.quit()
+
+        task_manager.run_in_background(
+            task=self.data_manager.close,
+            on_success=on_shutdown_finished,
+            on_error=on_shutdown_finished,
+        )
