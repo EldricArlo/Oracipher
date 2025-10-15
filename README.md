@@ -197,3 +197,9 @@ Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理�
 开发者: [eldric] - [eldric520lol@gmail.com](mailto:eldric520lol@gmail.com)
 
 项目链接: [https://github.com/EldricArlo/Oracipher/tree/10.8.0-version](https://github.com/EldricArlo/Oracipher/tree/10.8.0-version)
+
+## 这个版本的优化
+
+1. 简单优化了UI视觉上的设计；
+2. 又花了界面弹窗无故位移的问题；
+3. 优化了一些简单的细节上的问题
