@@ -42,10 +42,8 @@ class SafeKeyApp(QMainWindow):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
-        # --- 修改: 增加了 _is_dragging 状态标志 ---
         self.drag_pos: QPoint = QPoint()
         self._is_dragging: bool = False
-        # --- 修改结束 ---
 
         self._is_shutting_down = False
 
@@ -165,7 +163,6 @@ class SafeKeyApp(QMainWindow):
 
         logger.info("UI retranslation complete.")
 
-    # --- 修改开始: 修复无边框窗口的拖动逻辑 ---
     def mousePressEvent(self, a0: "QMouseEvent | None") -> None:
         event = a0
         if not event:
@@ -174,8 +171,8 @@ class SafeKeyApp(QMainWindow):
 
         # 仅当鼠标左键按下时才处理
         if event.button() == Qt.MouseButton.LeftButton:
-            # 这个事件只会在点击未被子控件（如按钮）消费的区域时触发。
-            # 因此，我们可以安全地认为拖动操作应该开始。
+            # 这个事件只会在点击未被子控件（如按钮）消费的区域时触发
+            # 因此，我们可以安全地认为拖动操作应该开始
             self.drag_pos = event.globalPosition().toPoint()
             self._is_dragging = True
             event.accept()
@@ -214,7 +211,7 @@ class SafeKeyApp(QMainWindow):
         if not event:
             super().closeEvent(event)
             return
-    # --- 修改结束 ---
+            
         """
         Handles the shutdown process gracefully.
         """
