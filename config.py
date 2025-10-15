@@ -24,9 +24,7 @@ def get_default_settings() -> Dict[str, Any]:
         "language": "zh_CN",
         "theme": "light",
         "auto_lock_enabled": True,
-        # --- MODIFICATION START ---
-        "auto_lock_timeout_minutes": 15,  # 恢复为一个更通用的默认值
-        # --- MODIFICATION END ---
+        "auto_lock_timeout_minutes": 15,
     }
 
 
