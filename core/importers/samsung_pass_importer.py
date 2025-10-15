@@ -6,10 +6,9 @@ import logging
 import base64
 import hashlib
 
-# --- MODIFICATION START: Import 're' for regular expressions ---
+# Import 're' for regular expressions
 import re
 
-# --- MODIFICATION END ---
 from typing import List, Dict, Any
 
 from Crypto.Cipher import AES
@@ -18,7 +17,7 @@ from Crypto.Util.Padding import unpad
 logger = logging.getLogger(__name__)
 
 
-# --- MODIFICATION START: Improved URL cleaning logic ---
+# Improved URL cleaning logic
 def clean_android_url(url: str) -> str:
     """
     智能清理URL，优先保留标准网址，只转换非标准的 Android App Link。
@@ -64,10 +63,6 @@ def clean_android_url(url: str) -> str:
 
     # 3. 如果以上都不是，直接返回原始的、未知的URL格式。
     return url
-
-
-# --- MODIFICATION END ---
-
 
 def parse_decrypted_content(decrypted_content: str) -> List[Dict[str, Any]]:
     logger.info(
