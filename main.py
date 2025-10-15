@@ -51,7 +51,6 @@ def main():
         f.data().decode("ascii").lower() for f in QImageReader.supportedImageFormats()
     ]
     if "svg" not in supported_formats:
-        # 修改: 在记录日志后，弹出对话框并退出
         logger.critical("CRITICAL ERROR: SVG image format is NOT supported.")
         QMessageBox.critical(
             None,
