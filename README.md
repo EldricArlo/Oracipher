@@ -1,4 +1,4 @@
-<div align="center">
+i<div align="center">
     <h1>Oracipher</h>
 </div>
 
@@ -42,7 +42,7 @@ Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理�
 *   **核心框架**: [PyQt6](https://www.riverbankcomputing.com/software/pyqt/)
 *   **加密库**: [cryptography](https://cryptography.io/), [argon2-cffi](https://argon2-cffi.readthedocs.io/)
 *   **二维码处理**: [pyzbar](https://pypi.org/project/pyzbar/), [Pillow](https://python-pillow.org/)
-*   **数据库**: `sqlite3` (Python 内置)
+*   **数据库**: `sqlite3`
 *   **环境配置**: `python-dotenv`
 *   **打包工具**: [PyInstaller](https://pyinstaller.org/)
 
