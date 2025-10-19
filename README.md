@@ -47,12 +47,12 @@
 
 ## 🫥 技术栈与依赖
 
-*   **核心框架**: [PyQt6](https://www.riverbankcomputing.com/software/pyqt/)
-*   **加密库**: [cryptography](https://cryptography.io/), [argon2-cffi](https://argon2-cffi.readthedocs.io/)
-*   **二维码处理**: [pyzbar](https://pypi.org/project/pyzbar/), [Pillow](https://python-pillow.org/)
-*   **数据库**: [sqlite3](https://docs.python.org/3.14/library/sqlite3.html)
-*   **环境配置**: [python-dotenv](https://www.npmjs.com/package/dotenv)
-*   **打包工具**: [PyInstaller](https://pyinstaller.org/)
+*   **核心框架**:    [PyQt6](https://www.riverbankcomputing.com/software/pyqt/)
+*   **加密库**:      [cryptography](https://cryptography.io/),   [argon2-cffi](https://argon2-cffi.readthedocs.io/)
+*   **二维码处理**:  [pyzbar](https://pypi.org/project/pyzbar/), [Pillow](https://python-pillow.org/)
+*   **数据库**:      [sqlite3](https://docs.python.org/3.14/library/sqlite3.html)
+*   **环境配置**:    [python-dotenv](https://www.npmjs.com/package/dotenv)
+*   **打包工具**:    [PyInstaller](https://pyinstaller.org/)
 
 ---
 
