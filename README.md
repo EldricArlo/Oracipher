@@ -10,7 +10,7 @@
   <p>
     <a href="https://github.com/EldricArlo/Oracipher/releases"><img src="https://img.shields.io/github/v/release/EldricArlo/Oracipher?style=for-the-badge&logo=github" alt="Release"></a>
     <a href="https://github.com/EldricArlo/Oracipher/issues"><img src="https://img.shields.io/github/issues/EldricArlo/Oracipher?style=for-the-badge&logo=github" alt="Issues"></a>
-    <a href="https://github.com/EldricArlo/Oracipher/LICENSE.md"><img src="https://img.shields.io/github/license/EldricArlo/Oracipher?style=for-the-badge" alt="License"></a>
+    <a href="https://github.com/EldricArlo/Oracipher/main/LICENSE.md"><img src="https://img.shields.io/github/license/EldricArlo/Oracipher?style=for-the-badge" alt="License"></a>
     <a href="#"><img src="https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python" alt="Python Version"></a>
     <a href="#"><img src="https://img.shields.io/badge/Framework-PyQt6-green.svg?style=for-the-badge&logo=qt" alt="Framework"></a>
   </p>
@@ -214,8 +214,18 @@
 
 项目链接: [https://github.com/EldricArlo/Oracipher/tree/10.8.0-version](https://github.com/EldricArlo/Oracipher/tree/10.8.0-version)
 
+---
+
 ## 🫠 这个版本的优化
 
 1. 简单优化了UI视觉上的设计；
 2. 又花了界面弹窗无故位移的问题；
 3. 优化了一些简单的细节上的问题.
+
+---
+
+## 😘 致谢
+
+*   感谢所有为本项目提供灵感和支持的开源社区。
+*   特别感谢 PyQt 和 Cryptography 库的开发者们。
+*   感谢所有提出宝贵意见和贡献代码的贡献者们。
