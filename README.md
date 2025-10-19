@@ -1,5 +1,8 @@
 <div align="center">
     <h1><img src="./images/icon-256.png" alt="Oracipher Icon" width=102></a>racipher</h>
+</div>
+
+<div align="center">
     <a>Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理器</a>
     <a>它秉承安全第一和数据本地化的核心原则，为用户提供一个完全在自己掌控之下的密码保险库</a>
     <a>所有数据都经过业界领先的加密算法在本地设备上加密，您的主密码是唯一密钥，它绝不会被存储或传输</a>
