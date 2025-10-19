@@ -123,7 +123,7 @@
     ```
 
 2.  **创建并激活虚拟环境**
-    # Windows
+    *** Windows
     ```powershell
     python -m venv venv
     ```
@@ -131,7 +131,7 @@
     .\venv\Scripts\activate
     ```
 
-    # macOS / Linux
+    *** macOS / Linux
     ```bash
     python3 -m venv venv
     ```
