@@ -10,7 +10,7 @@
   <p>
     <a href="https://github.com/EldricArlo/Oracipher/releases"><img src="https://img.shields.io/github/v/release/EldricArlo/Oracipher?style=for-the-badge&logo=github" alt="Release"></a>
     <a href="https://github.com/EldricArlo/Oracipher/issues"><img src="https://img.shields.io/github/issues/EldricArlo/Oracipher?style=for-the-badge&logo=github" alt="Issues"></a>
-    <a href="https://github.com/EldricArlo/Oracipher/LICENSE"><img src="https://img.shields.io/github/license/EldricArlo/Oracipher?style=for-the-badge" alt="License"></a>
+    <a href="https://github.com/EldricArlo/Oracipher/main/LICENSE"><img src="https://img.shields.io/github/license/EldricArlo/Oracipher?style=for-the-badge" alt="License"></a>
     <a href="#"><img src="https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python" alt="Python Version"></a>
     <a href="#"><img src="https://img.shields.io/badge/Framework-PyQt6-green.svg?style=for-the-badge&logo=qt" alt="Framework"></a>
   </p>
