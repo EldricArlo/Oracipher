@@ -1,11 +1,19 @@
 <div align="center">
-    <h1><img src="./images/icon-256.png" alt="Oracipher Icon" width=102></a>racipher</h>
-</div>
-
-<div align="center">
-    <a>Oracipher 是一款基于 Python 和 PyQt6 构建的现代化桌面密码管理器</a>
-    <a>它秉承安全第一和数据本地化的核心原则，为用户提供一个完全在自己掌控之下的密码保险库</a>
-    <a>所有数据都经过业界领先的加密算法在本地设备上加密，您的主密码是唯一密钥，它绝不会被存储或传输</a>
+  <img src="./images/icon-256.png" alt="Oracipher Icon" width="128">
+  <h1 style="border-bottom: none;">Oracipher</h1>
+  <p>
+    <strong>一款安全、本地优先的现代化桌面密码管理器</strong>
+  </p>
+  <p>
+    <em>完全掌控您的数字身份，数据永远只属于您。</em>
+  </p>
+  <p>
+    <a href="https://github.com/EldricArlo/Oracipher/releases"><img src="https://img.shields.io/github/v/release/EldricArlo/Oracipher?style=for-the-badge&logo=github" alt="Release"></a>
+    <a href="https://github.com/EldricArlo/Oracipher/issues"><img src="https://img.shields.io/github/issues/EldricArlo/Oracipher?style=for-the-badge&logo=github" alt="Issues"></a>
+    <a href="https://github.com/EldricArlo/Oracipher/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/EldricArlo/Oracipher?style=for-the-badge" alt="License"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python" alt="Python Version"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Framework-PyQt6-green.svg?style=for-the-badge&logo=qt" alt="Framework"></a>
+  </p>
 </div>
 
 ---
